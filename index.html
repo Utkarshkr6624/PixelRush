@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<!-- PIXEL RUSH — home page (index.html)
+     The arcade front door: hero, featured rail, genre aisles, stats, how-it-works,
+     closing CTA. Almost every section is a "scene" built from stacked parallax
+     .layer elements, so the reading order of each scene is:
+       decorative layers (depth-0..2, 5 — always aria-hidden)  ->  the content
+       layer (.layer--flow, depth-3/4)  ->  anything the user must read.
+     Only the content layers sit in the accessibility tree. The sections below are
+     commented as regions; anything whose purpose is not self-evident is commented
+     inline. Head metadata and the JSON-LD @graph are defined in qa/SEO-GUIDE.md —
+     change the canonical host there, not here. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PixelRush — Free Browser Arcade Games | Play Instantly, No Download</title>
+<meta name="description" content="PixelRush is a free browser arcade with dozens of instant-play games — arcade, puzzle, racing, strategy and more. 100% free, no signup, no download. Press START and play right now.">
+<link rel="canonical" href="https://pixelrush.example/">
+<meta name="theme-color" content="#05060f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PixelRush — Free Browser Arcade Games">
+<meta property="og:description" content="Free browser arcade. No install. No account. Just press START. Arcade, puzzle, racing and strategy games you play in one tap.">
+<meta property="og:url" content="https://pixelrush.example/">
+<meta property="og:site_name" content="PixelRush">
+<meta property="og:image" content="https://pixelrush.example/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="keywords" content="free online games, browser games, no download games, arcade games, play games online, puzzle games, casual games">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Reduced-motion guard: reveal states must never depend on a stylesheet that has not loaded yet. -->
+  <style id="rm-guard">@media (prefers-reduced-motion: reduce){html.js-motion [data-animate],html.js-motion .reveal,html.js-motion [data-depth]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}}</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/scenes.css">
+<link rel="stylesheet" href="css/games.css">
+
+<!-- Page-local: the #how step cards became real links. The anchor reproduces the
+     card's own grid + padding (pulled out with a negative margin) so the whole
+     numbered card is the hit target without re-flowing anything else. Hover
+     already comes from .step:hover; this only adds the link reset and the
+     keyboard focus ring. -->
+<style>
+.step__link {
+  display: grid; gap: 12px; align-content: start;
+  margin: calc(-1 * clamp(20px, 2.6vw, 32px));
+  padding: clamp(20px, 2.6vw, 32px);
+  border-radius: inherit;
+  color: inherit; text-decoration: none; cursor: pointer;
+}
+.step__link:focus-visible {
+  outline: 3px solid var(--c, var(--cyan));
+  outline-offset: 5px;
+}
+@media (prefers-reduced-motion: reduce) { .step__link:focus-visible { outline-offset: 2px; } }
+</style>
+
+<!-- ============================ STRUCTURED DATA ============================
+     One ld+json block, one @graph. Shared entities carry stable @ids so this
+     page joins the same graph as every other page on the site:
+       #website      -> the WebSite node, with the SearchAction sitelink
+       #organization -> the Organization node, referenced by @id elsewhere
+       #webpage      -> this page (the home page)
+     Canonical host, site name and description are fixed by qa/SEO-GUIDE.md.
+     The logo is the same inline SVG data URI used for <link rel="icon"> above —
+     there is no raster logo on this site. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://pixelrush.example/#website",
+      "url": "https://pixelrush.example/",
+      "name": "PixelRush",
+      "description": "PixelRush is a free browser arcade. Twenty-four instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://pixelrush.example/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://pixelrush.example/games.html?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://pixelrush.example/#organization",
+      "name": "PixelRush",
+      "url": "https://pixelrush.example/",
+      "description": "PixelRush is a free browser arcade. Twenty-four instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
+      "email": "mailto:Utkarsh6624@gmail.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2305060f'/><path d='M8 9h4v5h8V9h4v14h-4v-5h-8v5H8z' fill='%2322e7ff'/></svg>"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://pixelrush.example/#webpage",
+      "url": "https://pixelrush.example/",
+      "name": "PixelRush — Free Browser Arcade Games | Play Instantly, No Download",
+      "description": "PixelRush is a free browser arcade with dozens of instant-play games — arcade, puzzle, racing, strategy and more. 100% free, no signup, no download. Press START and play right now.",
+      "inLanguage": "en",
+      "isPartOf": { "@id": "https://pixelrush.example/#website" },
+      "about": { "@id": "https://pixelrush.example/#organization" }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<!-- Must stay inline and un-deferred: it sets the class that the #rm-guard style
+     in <head> keys off, so motion state is known before first paint. -->
+<script>document.documentElement.classList.add('js-motion')</script>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ============================ PRELOADER ============================ -->
+<div id="preloader">
+  <div class="preloader__inner">
+    <svg class="preloader__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="pl-g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#22e7ff"/>
+          <stop offset=".5" stop-color="#8b5cf6"/>
+          <stop offset="1" stop-color="#ff2fb9"/>
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="58" height="58" rx="15" fill="#0a0c1c" stroke="url(#pl-g)" stroke-width="3"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="url(#pl-g)"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="none" stroke="#c8ff2e" stroke-width="1" opacity=".5"/>
+    </svg>
+    <div class="preloader__bar"><span class="preloader__fill"></span></div>
+    <p class="preloader__label">LOADING</p>
+  </div>
+</div>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+      <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+      <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+    </a>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Primary">
+      <a class="nav__link" href="games.html">Games</a>
+      <a class="nav__link" href="#genres">Genres</a>
+      <a class="nav__link" href="#games">Top</a>
+      <a class="nav__link" href="#how">About</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="true" aria-label="Toggle motion and visual effects">
+        <span class="motion-toggle__dot" aria-hidden="true"></span>
+        <span class="motion-toggle__label" data-motion-label>ON</span>
+      </button>
+      
+      <!-- Settings: cursor size + native-pointer escape hatch. Owned by js/engine.js. -->
+      <div class="nav__setwrap" style="position:relative;display:inline-flex">
+        <button class="nav__set" id="nav-settings" type="button" aria-expanded="false" aria-controls="nav-settings-panel" aria-label="Display settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6M5.4 5.4l1.9 1.9M16.7 16.7l1.9 1.9M18.6 5.4l-1.9 1.9M7.3 16.7l-1.9 1.9"/></svg></button>
+        <div class="nav__panel" id="nav-settings-panel" role="dialog" aria-label="Display settings">
+          <p class="nav__panel-title">Display</p>
+          <button class="nav__switch" id="px-cursor-switch" type="button" role="switch" aria-checked="true">
+            <span>Neon cursor</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+          <p class="nav__hint">Turn this off to use your normal system pointer.</p>
+          <div class="nav__row">
+            <div class="nav__row-top"><span>Cursor size</span><span class="nav__row-val" id="px-size-val">MED</span></div>
+            <div class="nav__seg" id="px-size-seg" role="group" aria-label="Cursor size">
+              <button type="button" data-px-size="s" aria-checked="false">S</button>
+              <button type="button" data-px-size="m" aria-checked="true">M</button>
+              <button type="button" data-px-size="l" aria-checked="false">L</button>
+              <button type="button" data-px-size="xl" aria-checked="false">XL</button>
+            </div>
+          </div>
+          <button class="nav__switch" id="px-motion-switch" type="button" role="switch" aria-checked="true">
+            <span>Animations</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <a class="btn btn--primary nav__cta" href="games.html">All games</a>
+      <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open the menu">
+        <span class="nav__burger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="scene" id="hero" data-parallax-strength="1" aria-labelledby="hero-title">
+    <!-- depth-0 : grid horizon, synth sun, stars, scanlines, grain -->
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="hero__grid"></div>
+      <div class="hero__sun"></div>
+      <div class="hero__stars"></div>
+      <div class="scanlines"></div>
+      <div class="grain"></div>
+      <div class="vignette"></div>
+    </div>
+
+    <!-- depth-1 : two glow blobs, screen-blended -->
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:12%;--y:26%;--c:var(--cyan);--dur:24s"></span>
+      <span class="glow-blob" style="--x:78%;--y:68%;--c:var(--magenta);--dur:30s;--delay:-8s"></span>
+    </div>
+
+    <!-- depth-2 : floating shards + a spinning coin + a joystick -->
+    <div class="layer depth-2 hero__shards" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:16%;--y:24%;--s:76px;--c:var(--cyan);--dur:7.5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false">
+          <path d="M32 2 60 30 42 62 4 44 10 16z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M32 2 42 62 4 44z" fill="currentColor" opacity=".16"/>
+        </svg>
+      </span>
+      <span class="shard" style="--x:88%;--y:22%;--s:58px;--c:var(--acid);--dur:9s;--delay:-3s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false">
+          <circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="32" cy="32" r="14" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 8"/>
+          <path d="M32 20v12l8 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="shard" style="--x:70%;--y:86%;--s:66px;--c:var(--magenta);--dur:6.5s;--delay:-1.5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false">
+          <rect x="25" y="10" width="14" height="26" rx="7" fill="currentColor" opacity=".25" stroke="currentColor" stroke-width="2"/>
+          <circle cx="32" cy="10" r="9" fill="currentColor"/>
+          <rect x="10" y="40" width="44" height="10" rx="5" fill="none" stroke="currentColor" stroke-width="2.5" opacity=".8"/>
+          <circle cx="21" cy="55" r="5" fill="currentColor"/>
+          <circle cx="43" cy="55" r="5" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="shard" style="--x:30%;--y:88%;--s:44px;--c:var(--violet);--dur:8s;--delay:-5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false">
+          <path d="M10 54 28 12l10 24 6-12 10 30z" fill="currentColor" opacity=".22" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- depth-3 : the cabinet, drawn entirely in inline SVG -->
+    <div class="layer depth-3" data-depth="3" aria-hidden="true">
+      <div class="cabinet">
+        <svg viewBox="0 0 420 640" focusable="false">
+          <defs>
+            <linearGradient id="cab-body" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#1a1e46"/>
+              <stop offset="1" stop-color="#070a18"/>
+            </linearGradient>
+            <linearGradient id="cab-screen" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0c3157"/>
+              <stop offset="1" stop-color="#061024"/>
+            </linearGradient>
+            <linearGradient id="cab-marquee" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#22e7ff"/>
+              <stop offset=".5" stop-color="#ff2fb9"/>
+              <stop offset="1" stop-color="#c8ff2e"/>
+            </linearGradient>
+            <radialGradient id="cab-vig" cx=".5" cy=".45" r=".75">
+              <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+              <stop offset="1" stop-color="#000" stop-opacity=".8"/>
+            </radialGradient>
+            <linearGradient id="cab-scan" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#22e7ff" stop-opacity="0"/>
+              <stop offset="1" stop-color="#22e7ff" stop-opacity=".55"/>
+            </linearGradient>
+          </defs>
+
+          <!-- side art -->
+          <path d="M20 96 44 74v452l-24-22z" fill="#0b0e24" stroke="#8b5cf6" stroke-opacity=".5" stroke-width="2"/>
+          <path d="M400 96 376 74v452l24-22z" fill="#0b0e24" stroke="#8b5cf6" stroke-opacity=".5" stroke-width="2"/>
+
+          <!-- body shell -->
+          <path d="M44 74h332l-14 66H58z" fill="url(#cab-body)" stroke="#22e7ff" stroke-opacity=".45" stroke-width="2"/>
+          <path d="M58 140h304v104H58z" fill="url(#cab-body)" stroke="#22e7ff" stroke-opacity=".26" stroke-width="2"/>
+          <path d="M58 244h304l-16 78H74z" fill="#0d1030" stroke="#8b5cf6" stroke-opacity=".45" stroke-width="2"/>
+          <path d="M74 322h272l-10 34H84z" fill="#12163a"/>
+          <path d="M84 356h252l24 236a10 10 0 0 1-10 12H70a10 10 0 0 1-10-12z" fill="url(#cab-body)" stroke="#ff2fb9" stroke-opacity=".35" stroke-width="2"/>
+          <path d="M60 604h300l-8 30H68z" fill="#05060f" stroke="#f2f5ff" stroke-opacity=".18" stroke-width="2"/>
+
+          <!-- marquee -->
+          <rect class="cab-glow" x="76" y="84" width="268" height="42" rx="8" fill="url(#cab-marquee)" opacity=".92"/>
+          <text x="210" y="113" text-anchor="middle" font-family="Orbitron, system-ui, sans-serif" font-size="23" font-weight="900" fill="#05060f" letter-spacing="2">PIXEL RUSH</text>
+
+          <!-- screen -->
+          <rect x="72" y="152" width="276" height="82" rx="10" fill="#05060f" stroke="#22e7ff" stroke-opacity=".6" stroke-width="2"/>
+          <rect x="84" y="162" width="252" height="62" rx="6" fill="url(#cab-screen)"/>
+          <g class="cab-glow">
+            <rect x="96" y="176" width="20" height="14" fill="#c8ff2e"/>
+            <rect x="120" y="176" width="20" height="14" fill="#22e7ff"/>
+            <rect x="144" y="176" width="20" height="14" fill="#ff2fb9"/>
+            <rect x="96" y="196" width="20" height="14" fill="#ff8a3d"/>
+            <rect x="120" y="196" width="20" height="14" fill="#8b5cf6"/>
+            <rect x="144" y="196" width="20" height="14" fill="#22e7ff"/>
+            <path d="M186 176h150v34H186z" fill="none" stroke="#22e7ff" stroke-opacity=".55"/>
+            <path d="M186 186h112M186 200h132" stroke="#22e7ff" stroke-opacity=".4" stroke-width="2"/>
+          </g>
+          <rect x="84" y="162" width="252" height="20" rx="6" fill="url(#cab-scan)" class="cab-scan" opacity=".7"/>
+          <rect x="84" y="162" width="252" height="62" rx="6" fill="url(#cab-vig)"/>
+
+          <!-- control panel -->
+          <path d="M84 250h252l16 66H68z" fill="#171a3c" stroke="#ff8a3d" stroke-opacity=".5" stroke-width="2"/>
+          <circle cx="152" cy="280" r="18" fill="#05060f" stroke="#ff8a3d" stroke-width="2"/>
+          <rect x="148" y="248" width="8" height="28" rx="4" fill="#c9d1f0"/>
+          <circle class="cab-glow" cx="152" cy="244" r="12" fill="#ff8a3d"/>
+          <circle class="cab-glow" cx="240" cy="272" r="13" fill="#05060f" stroke="#ff2fb9" stroke-width="2"/>
+          <circle cx="240" cy="272" r="8" fill="#ff2fb9"/>
+          <circle class="cab-glow" cx="282" cy="286" r="13" fill="#05060f" stroke="#22e7ff" stroke-width="2"/>
+          <circle cx="282" cy="286" r="8" fill="#22e7ff"/>
+
+          <!-- coin door -->
+          <rect x="176" y="330" width="68" height="24" rx="4" fill="#05060f" stroke="#c8ff2e" stroke-opacity=".65" stroke-width="2"/>
+          <rect x="196" y="338" width="28" height="5" rx="2.5" fill="#c8ff2e" opacity=".8"/>
+
+          <!-- decals -->
+          <path d="M96 380h228l-4 34H100z" fill="none" stroke="url(#cab-marquee)" stroke-opacity=".6" stroke-width="2"/>
+          <path d="M124 424h172v120H124z" fill="none" stroke="#ff2fb9" stroke-opacity=".32" stroke-width="2"/>
+          <path d="M148 452h124M148 476h84M148 500h140" stroke="#8b5cf6" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
+          <path d="M100 566h220" stroke="#22e7ff" stroke-opacity=".22" stroke-width="2"/>
+        </svg>
+        <span class="cabinet__floor"></span>
+      </div>
+    </div>
+
+    <!-- depth-4 : the copy plane -->
+    <div class="layer depth-4 hero__copy" data-depth="4">
+      <p class="eyebrow hero__eyebrow" data-animate="fade-up"><span class="pulse-dot" aria-hidden="true"></span>Free browser arcade · no install · no account</p>
+      <h1 class="hero__title" id="hero-title" data-animate="split-text"><span>PLAY.</span> <span class="accent">NOW.</span></h1>
+      <p class="hero__sub" data-animate="wipe-up">Twenty-four instant-play machines, one browser tab, zero excuses.
+        Arcade reflex, puzzle logic, racing nerve, strategy depth — every cabinet boots in a second and
+        every one of them is free, silent and ad-free. Bring your thumbs.</p>
+      <div class="hero__cta" data-animate="scale-in">
+        <a class="btn btn--primary btn--lg" href="games.html">Browse all games</a>
+        <a class="btn btn--ghost btn--lg" href="#games">See the hot six</a>
+      </div>
+      <ul class="hero__stats" data-animate="stagger-children">
+        <li class="hero__stat"><span class="hero__stat-num">24</span><span class="hero__stat-label">Games live</span></li>
+        <li class="hero__stat"><span class="hero__stat-num">0</span><span class="hero__stat-label">Downloads</span></li>
+        <li class="hero__stat"><span class="hero__stat-num">&lt;1s</span><span class="hero__stat-label">To first play</span></li>
+        <li class="hero__stat"><span class="hero__stat-num">&infin;</span><span class="hero__stat-label">Free retries</span></li>
+      </ul>
+    </div>
+
+    <!-- depth-5 : 14 particles -->
+    <div class="layer depth-5 hero__particles" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:6%;--p-top:72%;--p-size:3px;--p-dur:9s;--p-delay:0s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:13%;--p-top:31%;--p-size:2px;--p-dur:12s;--p-delay:-3s;--p-color:var(--ink)"></i>
+      <i class="particle" style="--p-left:21%;--p-top:88%;--p-size:4px;--p-dur:10s;--p-delay:-6s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:29%;--p-top:18%;--p-size:2px;--p-dur:14s;--p-delay:0s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:37%;--p-top:62%;--p-size:3px;--p-dur:11s;--p-delay:-2s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:44%;--p-top:12%;--p-size:2px;--p-dur:13s;--p-delay:-8s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:52%;--p-top:80%;--p-size:3px;--p-dur:9.5s;--p-delay:0s;--p-color:var(--orange)"></i>
+      <i class="particle" style="--p-left:58%;--p-top:44%;--p-size:2px;--p-dur:15s;--p-delay:-4s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:66%;--p-top:22%;--p-size:4px;--p-dur:10.5s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:73%;--p-top:70%;--p-size:2px;--p-dur:13.5s;--p-delay:-7s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:81%;--p-top:36%;--p-size:3px;--p-dur:11.5s;--p-delay:0s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:88%;--p-top:84%;--p-size:2px;--p-dur:12.5s;--p-delay:-1s;--p-color:var(--ink)"></i>
+      <i class="particle" style="--p-left:94%;--p-top:16%;--p-size:3px;--p-dur:9.8s;--p-delay:0s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:48%;--p-top:55%;--p-size:2px;--p-dur:16s;--p-delay:-9s;--p-color:var(--orange)"></i>
+    </div>
+
+    <a class="scroll-cue" href="#games" aria-label="Scroll down to the featured games">
+      Scroll
+      <span class="scroll-cue__line" aria-hidden="true"></span>
+    </a>
+  </section>
+
+  <!-- ============================ TICKER ============================ -->
+  <!-- Marquee of genre names. The two .ticker__set spans are byte-identical copies
+       of each other: the track is translated by exactly one set's width, so the
+       second set takes over seamlessly as the first scrolls out. Editing one
+       means editing both. The whole thing is decorative (aria-hidden), which is
+       why the genre list is repeated as screen-reader text underneath. -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span class="ticker__set">
+        <span class="ticker__item">Arcade</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Puzzle</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Racing</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Strategy</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Casual</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Sports</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">24 games</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No signup</span><span class="ticker__sep">◆</span>
+      </span>
+      <span class="ticker__set">
+        <span class="ticker__item">Arcade</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Puzzle</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Racing</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Strategy</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Casual</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Sports</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">24 games</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No signup</span><span class="ticker__sep">◆</span>
+      </span>
+    </div>
+  </div>
+  <!-- Text equivalent of the aria-hidden marquee above. Do not delete it. -->
+  <p class="sr-only">Genres on PixelRush: arcade, puzzle, racing, strategy, casual and sports.</p>
+
+  <!-- ============================ FEATURED RAIL ============================ -->
+  <!-- "The hot six" — a horizontally scrollable rail of hand-picked cabinets.
+       Only the four live ones and the trailing "Browse all games" tile appear
+       here; the full 24-game list lives on games.html. Card markup mirrors
+       js/games-data.js: data-slug matches the entry's slug, and the play link is
+       play.html?game=<slug>. A card whose data-status is "coming-soon" swaps its
+       link element for a non-interactive div marked aria-disabled, so it cannot
+       be focused or activated. -->
+  <section class="scene" id="games" aria-labelledby="featured-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:22%;--y:20%;--c:var(--cyan);--dur:26s"></span>
+      <span class="glow-blob" style="--x:80%;--y:74%;--c:var(--magenta);--dur:32s;--delay:-11s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:8%;--y:64%;--s:70px;--c:var(--violet);--dur:9s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M32 2 60 30 42 62 4 44 10 16z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5"/></svg>
+      </span>
+      <span class="shard" style="--x:92%;--y:30%;--s:56px;--c:var(--acid);--dur:11s;--delay:-4s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="10 12"/></svg>
+      </span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up">Featured machines</p>
+          <h2 class="section-head__title" id="featured-title" data-animate="split-text"><span>The hot six</span> <span class="accent">right now</span></h2>
+          <p class="section-head__sub" data-animate="wipe-up">Keep scrolling — the rail slides sideways with you.
+            These are the cabinets everybody is standing in front of tonight, and every one of them is free to play.</p>
+        </div>
+        <p class="rail-hint">
+          <span class="rail-hint__keys" aria-hidden="true"><span class="rail-hint__key">←</span><span class="rail-hint__key">→</span></span>
+          Drag or scroll sideways for more cabinets
+        </p>
+      </div>
+    </div>
+
+    <div class="layer layer--flow depth-3" data-depth="3">
+      <ul class="rail" id="featured-rail" aria-label="Featured games — drag or scroll sideways">
+          <!-- The whole scroll area is one <li>; its children are the sliding items. -->
+          <li class="rail__track">
+
+            <div class="rail__item">
+              <article class="gcard" data-genre="Arcade" data-status="live" data-slug="reaction" data-title="neon reaction" style="--g:var(--cyan)">
+                <a class="gcard__link" href="play.html?game=reaction" aria-label="Play Neon Reaction">
+                  <div class="gcard__art" style="--g:var(--cyan)">
+                    <span class="gcard__glyph"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="32" cy="32" r="5" fill="currentColor"/><path d="M32 6v8M32 50v8M6 32h8M50 32h8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span>
+                    <span class="gcard__scan"></span>
+                    <span class="gcard__shine"></span>
+                  </div>
+                  <div class="gcard__body">
+                    <h3 class="gcard__title">Neon Reaction</h3>
+                    <p class="gcard__blurb">One tap. One reaction. One absurdly high score.</p>
+                    <ul class="gcard__meta"><li>Arcade</li><li>Easy</li><li>1 min</li></ul>
+                  </div>
+                  <span class="gcard__play" aria-hidden="true">PLAY</span>
+                </a>
+              </article>
+            </div>
+
+            <div class="rail__item">
+              <article class="gcard" data-genre="Arcade" data-status="live" data-slug="snake" data-title="neon snake" style="--g:var(--acid)">
+                <a class="gcard__link" href="play.html?game=snake" aria-label="Play Neon Snake">
+                  <div class="gcard__art" style="--g:var(--acid)">
+                    <span class="gcard__glyph"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 46V22a6 6 0 016-6h22a6 6 0 016 6v8H30a6 6 0 00-6 6v10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="46" r="5" fill="currentColor"/></svg></span>
+                    <span class="gcard__scan"></span>
+                    <span class="gcard__shine"></span>
+                  </div>
+                  <div class="gcard__body">
+                    <h3 class="gcard__title">Neon Snake</h3>
+                    <p class="gcard__blurb">Grow a light-streak through the grid. Wall yourself and it is over.</p>
+                    <ul class="gcard__meta"><li>Arcade</li><li>Easy</li><li>3 min</li></ul>
+                  </div>
+                  <span class="gcard__play" aria-hidden="true">PLAY</span>
+                </a>
+              </article>
+            </div>
+
+            <div class="rail__item">
+              <article class="gcard" data-genre="Puzzle" data-status="live" data-slug="blockfall" data-title="blockfall" style="--g:var(--violet)">
+                <a class="gcard__link" href="play.html?game=blockfall" aria-label="Play Blockfall">
+                  <div class="gcard__art" style="--g:var(--violet)">
+                    <span class="gcard__glyph"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="10" width="20" height="20" rx="3" fill="currentColor"/><rect x="34" y="10" width="20" height="20" rx="3" fill="currentColor" opacity=".45"/><rect x="10" y="34" width="44" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="4"/></svg></span>
+                    <span class="gcard__scan"></span>
+                    <span class="gcard__shine"></span>
+                  </div>
+                  <div class="gcard__body">
+                    <h3 class="gcard__title">Blockfall</h3>
+                    <p class="gcard__blurb">Stack falling neon blocks and clear four lines before the grid fills.</p>
+                    <ul class="gcard__meta"><li>Puzzle</li><li>Medium</li><li>5 min</li></ul>
+                  </div>
+                  <span class="gcard__play" aria-hidden="true">PLAY</span>
+                </a>
+              </article>
+            </div>
+
+            <div class="rail__item">
+              <article class="gcard" data-genre="Arcade" data-status="live" data-slug="neon-paddle" data-title="neon paddle" style="--g:var(--magenta)">
+                <a class="gcard__link" href="play.html?game=neon-paddle" aria-label="Play Neon Paddle">
+                  <div class="gcard__art" style="--g:var(--magenta)">
+                    <span class="gcard__glyph"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="8" y="27" width="6" height="10" rx="3" fill="currentColor"/><rect x="50" y="27" width="6" height="10" rx="3" fill="currentColor"/><path d="M24 20a16 16 0 000 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span>
+                    <span class="gcard__scan"></span>
+                    <span class="gcard__shine"></span>
+                  </div>
+                  <div class="gcard__body">
+                    <h3 class="gcard__title">Neon Paddle</h3>
+                    <p class="gcard__blurb">Volley against a wall or a friend. First to eleven takes the grid.</p>
+                    <ul class="gcard__meta"><li>Arcade</li><li>Medium</li><li>2 min</li></ul>
+                  </div>
+                  <span class="gcard__play" aria-hidden="true">PLAY</span>
+                </a>
+              </article>
+            </div>
+
+            <div class="rail__item">
+              <article class="gcard" data-genre="Puzzle" data-status="live" data-slug="hexmerge" data-title="hex merge" style="--g:var(--acid)">
+                <a class="gcard__link" href="play.html?game=hexmerge" aria-label="Play Hex Merge">
+                  <div class="gcard__art" style="--g:var(--acid)">
+                    <span class="gcard__glyph"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8l16 10v20L32 48 16 38V18z" fill="currentColor" opacity=".45"/><path d="M24 32l8-5 8 5v10l-8 5-8-5z" fill="currentColor"/></svg></span>
+                    <span class="gcard__scan"></span>
+                    <span class="gcard__shine"></span>
+                  </div>
+                  <div class="gcard__body">
+                    <h3 class="gcard__title">Hex Merge</h3>
+                    <p class="gcard__blurb">Drop hexes onto the board and merge equal ranks into bigger, richer ones.</p>
+                    <ul class="gcard__meta"><li>Puzzle</li><li>Easy</li><li>4 min</li></ul>
+                  </div>
+                  <span class="gcard__play" aria-hidden="true">PLAY</span>
+                </a>
+              </article>
+            </div>
+
+            <div class="rail__item">
+              <article class="gcard" data-genre="Strategy" data-status="live" data-slug="tower-guard" data-title="tower guard" style="--g:var(--orange)">
+                <a class="gcard__link" href="play.html?game=tower-guard" aria-label="Play Tower Guard">
+                  <div class="gcard__art" style="--g:var(--orange)">
+                    <span class="gcard__glyph"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 54V26l12-14 12 14v28z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><circle cx="32" cy="38" r="5" fill="currentColor"/></svg></span>
+                    <span class="gcard__scan"></span>
+                    <span class="gcard__shine"></span>
+                  </div>
+                  <div class="gcard__body">
+                    <h3 class="gcard__title">Tower Guard</h3>
+                    <p class="gcard__blurb">Spend credits, stack turrets, hold the lane through twelve escalating waves.</p>
+                    <ul class="gcard__meta"><li>Strategy</li><li>Hard</li><li>8 min</li></ul>
+                  </div>
+                  <span class="gcard__play" aria-hidden="true">PLAY</span>
+                </a>
+              </article>
+            </div>
+            <div class="rail__item">
+              <!-- Not a game card: the end-of-rail call to action. -->
+              <div class="rail__cta">
+                <a class="btn btn--primary" href="games.html">Browse all games</a>
+                <p class="cta__fine">Free, no signup, instant play.</p>
+              </div>
+            </div>
+          </li>
+
+          </ul>
+
+          <!-- Scrollbar replacement: the inner fill is scaled by js/site.js as the
+               rail is dragged or scrolled. Purely decorative, hence aria-hidden. -->
+          <div class="rail-progress" aria-hidden="true"><span class="rail-progress__fill"></span></div>
+          <div class="rail-nav">
+            <button type="button" data-rail-prev aria-label="Scroll the featured games left">&#8592;</button>
+            <button type="button" data-rail-next aria-label="Scroll the featured games right">&#8594;</button>
+          </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:5%;--p-top:80%;--p-size:3px;--p-dur:12s;--p-delay:0s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:19%;--p-top:24%;--p-size:2px;--p-dur:14s;--p-delay:-5s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:34%;--p-top:70%;--p-size:3px;--p-dur:10s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:50%;--p-top:34%;--p-size:2px;--p-dur:13s;--p-delay:-3s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:65%;--p-top:78%;--p-size:3px;--p-dur:11s;--p-delay:0s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:80%;--p-top:28%;--p-size:2px;--p-dur:15s;--p-delay:-7s;--p-color:var(--orange)"></i>
+      <i class="particle" style="--p-left:93%;--p-top:62%;--p-size:3px;--p-dur:12.5s;--p-delay:0s;--p-color:var(--cyan)"></i>
+    </div>
+  </section>
+
+  <!-- ============================ GENRES ============================ -->
+  <section class="scene" id="genres" aria-labelledby="genres-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:16%;--y:28%;--c:var(--magenta);--dur:28s"></span>
+      <span class="glow-blob" style="--x:86%;--y:72%;--c:var(--cyan);--dur:34s;--delay:-14s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:10%;--y:30%;--s:52px;--c:var(--orange);--dur:8.5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M32 6v52M6 32h52" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+      </span>
+      <span class="shard" style="--x:92%;--y:64%;--s:60px;--c:var(--acid);--dur:10.5s;--delay:-6s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M10 44 32 12l22 32z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      </span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up">Pick your poison</p>
+          <h2 class="section-head__title" id="genres-title" data-animate="split-text"><span>Six aisles.</span> <span class="accent">Twenty-four cabinets.</span></h2>
+          <p class="section-head__sub" data-animate="wipe-up">Every lane is playable in under a minute and runs entirely in
+            your browser. Find the genre that eats your whole lunch break, then come back for the other five.</p>
+        </div>
+
+        <div class="genre-grid" data-animate="stagger-children">
+          <a class="genre" data-genre="Arcade" href="games.html?genre=Arcade" style="--c:var(--cyan)">
+            <span class="genre__inner">
+              <span class="genre__glyph" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="30" height="30" focusable="false"><path d="M6 32h36v10H6z" fill="currentColor" opacity=".5"/><rect x="13" y="8" width="22" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="20" cy="17" r="2.6" fill="currentColor"/><circle cx="28" cy="17" r="2.6" fill="currentColor"/></svg>
+              </span>
+              <h3 class="genre__name">Arcade</h3>
+              <p class="genre__count">Reflex drills, chases and score attacks. Zero tutorial, full volume.</p>
+              <span class="genre__link">Enter aisle <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="genre" data-genre="Puzzle" href="games.html?genre=Puzzle" style="--c:var(--magenta)">
+            <span class="genre__inner">
+              <span class="genre__glyph" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="30" height="30" focusable="false"><rect x="8" y="8" width="14" height="14" rx="2.5" fill="currentColor"/><rect x="26" y="26" width="14" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="3.5"/><rect x="22" y="17" width="4" height="9" fill="currentColor" opacity=".55"/></svg>
+              </span>
+              <h3 class="genre__name">Puzzle</h3>
+              <p class="genre__count">Grid logic, chain combos and solves that click into place.</p>
+              <span class="genre__link">Enter aisle <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="genre" data-genre="Racing" href="games.html?genre=Racing" style="--c:var(--acid)">
+            <span class="genre__inner">
+              <span class="genre__glyph" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="30" height="30" focusable="false"><path d="M5 33h38v8H5z" fill="currentColor" opacity=".5"/><path d="M14 31 24 10l10 21" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M24 19v8" stroke="currentColor" stroke-width="3.5"/></svg>
+              </span>
+              <h3 class="genre__name">Racing</h3>
+              <p class="genre__count">Lane weaving and top-speed nerve tests you can finish on the bus.</p>
+              <span class="genre__link">Enter aisle <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="genre" data-genre="Strategy" href="games.html?genre=Strategy" style="--c:var(--violet)">
+            <span class="genre__inner">
+              <span class="genre__glyph" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="30" height="30" focusable="false"><path d="M17 6h14v14H17zM6 28h14v14H6zM28 28h14v14H28z" fill="currentColor"/><path d="M24 20v8" stroke="currentColor" stroke-width="4"/></svg>
+              </span>
+              <h3 class="genre__name">Strategy</h3>
+              <p class="genre__count">Tower layouts and wave planning for players who think first.</p>
+              <span class="genre__link">Enter aisle <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="genre" data-genre="Casual" href="games.html?genre=Casual" style="--c:var(--orange)">
+            <span class="genre__inner">
+              <span class="genre__glyph" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="30" height="30" focusable="false"><circle cx="17" cy="19" r="11" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="32" cy="31" r="9" fill="currentColor" opacity=".6"/><path d="M28 12h12" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
+              </span>
+              <h3 class="genre__name">Casual</h3>
+              <p class="genre__count">One-thumb chain games built for queues and dead meetings.</p>
+              <span class="genre__link">Enter aisle <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="genre" data-genre="Sports" href="games.html?genre=Sports" style="--c:var(--cyan)">
+            <span class="genre__inner">
+              <span class="genre__glyph" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="30" height="30" focusable="false"><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M13 13l22 22M35 13 13 35" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
+              </span>
+              <h3 class="genre__name">Sports</h3>
+              <p class="genre__count">Swishes, top-spin and buzzer-beaters with instant restarts.</p>
+              <span class="genre__link">Enter aisle <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:9%;--p-top:70%;--p-size:3px;--p-dur:11s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:28%;--p-top:30%;--p-size:2px;--p-dur:14s;--p-delay:-4s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:47%;--p-top:82%;--p-size:3px;--p-dur:10s;--p-delay:0s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:64%;--p-top:26%;--p-size:2px;--p-dur:13s;--p-delay:-8s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:82%;--p-top:66%;--p-size:3px;--p-dur:12s;--p-delay:0s;--p-color:var(--orange)"></i>
+      <i class="particle" style="--p-left:95%;--p-top:38%;--p-size:2px;--p-dur:15s;--p-delay:0s;--p-color:var(--cyan)"></i>
+    </div>
+  </section>
+
+  <!-- ============================ STATS ============================ -->
+  <section class="scene" id="stats" aria-labelledby="stats-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:14%;--c:var(--cyan);--dur:30s"></span>
+      <span class="glow-blob" style="--x:18%;--y:80%;--c:var(--magenta);--dur:26s;--delay:-9s"></span>
+      <span class="glow-blob" style="--x:84%;--y:46%;--c:var(--violet);--dur:36s;--delay:-18s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:6%;--y:26%;--s:48px;--c:var(--acid);--dur:9.5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M8 44 22 20l10 14 8-10 16 20z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="shard" style="--x:94%;--y:72%;--s:54px;--c:var(--orange);--dur:12s;--delay:-5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><rect x="10" y="10" width="44" height="44" rx="8" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="8 8"/></svg>
+      </span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner">
+        <h2 class="wordlight" id="stats-title">
+          <span class="wordlight__w" style="--i:0">Insert</span>
+          <span class="wordlight__w" style="--i:1">Coin</span>
+          <span class="wordlight__w" style="--i:2">Get</span>
+          <span class="wordlight__w" style="--i:3">Playing</span>
+        </h2>
+
+        <!-- Counters. Each .stat__num ships as "0" and is animated up to
+             data-count-to with data-count-suffix appended, once, by js/site.js —
+             so the markup here is only the starting value, not the real figure. -->
+        <ul class="stats__grid" data-animate="stagger-children">
+          <li class="stat" style="--c:var(--cyan)">
+            <span class="stat__num" data-count-to="24" data-count-suffix="+">0</span>
+            <span class="stat__label">Games live right now</span>
+          </li>
+          <li class="stat" style="--c:var(--magenta)">
+            <span class="stat__num" data-count-to="180" data-count-suffix="k+">0</span>
+            <span class="stat__label">Players this month</span>
+          </li>
+          <li class="stat" style="--c:var(--acid)">
+            <span class="stat__num" data-count-to="46" data-count-suffix="k">0</span>
+            <span class="stat__label">Hours played</span>
+          </li>
+          <li class="stat" style="--c:var(--orange)">
+            <span class="stat__num" data-count-to="24" data-count-suffix="+">0</span>
+            <span class="stat__label">More cabinets landing</span>
+          </li>
+        </ul>
+        <!-- Text equivalent of the animated counters above, which read as "0" to a
+             screen reader before the count-up runs. Do not delete it. -->
+        <p class="sr-only">PixelRush currently hosts 24 games, around 180,000 monthly players and roughly
+          46,000 hours of play a month, with zero advertising.</p>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:12%;--p-top:24%;--p-size:3px;--p-dur:10s;--p-delay:0s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:31%;--p-top:80%;--p-size:2px;--p-dur:13s;--p-delay:-6s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:53%;--p-top:18%;--p-size:3px;--p-dur:11s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:71%;--p-top:72%;--p-size:2px;--p-dur:14s;--p-delay:-2s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:88%;--p-top:36%;--p-size:3px;--p-dur:12s;--p-delay:0s;--p-color:var(--violet)"></i>
+    </div>
+  </section>
+
+  <!-- ============================ HOW IT WORKS ============================ -->
+  <section class="scene" id="how" aria-labelledby="how-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:12%;--y:62%;--c:var(--acid);--dur:29s"></span>
+      <span class="glow-blob" style="--x:88%;--y:28%;--c:var(--cyan);--dur:33s;--delay:-12s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:8%;--y:34%;--s:50px;--c:var(--cyan);--dur:8s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M16 48V16h32" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 40l10 8-10 8z" fill="currentColor"/></svg>
+      </span>
+      <span class="shard" style="--x:93%;--y:44%;--s:46px;--c:var(--magenta);--dur:10s;--delay:-7s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="14 10"/></svg>
+      </span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up">From tab to score</p>
+          <h2 class="section-head__title" id="how-title" data-animate="split-text"><span>Three steps.</span> <span class="accent">That's the whole game.</span></h2>
+          <p class="section-head__sub" data-animate="wipe-up">No launcher, no patch notes, no 40 GB download.
+            The cabinet boots the second the page does — on a phone, a laptop or a library PC.</p>
+        </div>
+
+        <!-- Ordered list, and it matters: the steps read as 1-2-3. The .step__num
+             badges are aria-hidden so they are not announced twice. Each card is a
+             real link: the <a class="step__link"> fills the whole .step box (the
+             negative margin cancels the card padding) so the numbered card itself is
+             the hit target, and it carries the destination as its accessible name. -->
+        <ol class="how__grid" data-animate="stagger-children">
+          <li class="step" data-animate="clip-reveal" style="--c:var(--cyan)">
+            <a class="step__link" href="games.html" aria-label="Step 1 — Pick your cabinet: browse the full game catalog">
+              <span class="step__num" aria-hidden="true">01</span>
+              <h3 class="step__title">Pick your cabinet</h3>
+              <p class="step__text">Scroll the rail or open the full library and filter by genre, difficulty or run
+                length. Every card tells you how long a session takes before you commit to it.</p>
+              <span class="step__kbd">Shift + arrow</span>
+            </a>
+          </li>
+          <li class="step" data-animate="clip-reveal" style="--c:var(--magenta)">
+            <a class="step__link" href="play.html?game=blockfall" aria-label="Step 2 — Hit START: play Blockfall now">
+              <span class="step__num" aria-hidden="true">02</span>
+              <h3 class="step__title">Hit START</h3>
+              <p class="step__text">The game boots straight into the player shell — keyboard on desktop, thumb on mobile.
+                No install prompt, no permission wall, no ad that ruins your run.</p>
+              <span class="step__kbd">Space / tap</span>
+            </a>
+          </li>
+          <li class="step" data-animate="clip-reveal" style="--c:var(--acid)">
+            <a class="step__link" href="play.html?game=snake" aria-label="Step 3 — Chase the ghost score: play Neon Snake and beat your high score">
+              <span class="step__num" aria-hidden="true">03</span>
+              <h3 class="step__title">Chase the ghost score</h3>
+              <p class="step__text">Your personal best is saved on this device. Beat it, brag about it, then go back
+                and beat it again. The leaderboard never closes.</p>
+              <span class="step__kbd">R to restart</span>
+            </a>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:8%;--p-top:34%;--p-size:3px;--p-dur:12s;--p-delay:0s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:37%;--p-top:76%;--p-size:2px;--p-dur:10s;--p-delay:-4s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:59%;--p-top:22%;--p-size:3px;--p-dur:14s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:77%;--p-top:68%;--p-size:2px;--p-dur:11s;--p-delay:-9s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:93%;--p-top:44%;--p-size:3px;--p-dur:13s;--p-delay:0s;--p-color:var(--violet)"></i>
+    </div>
+  </section>
+
+  <!-- ============================ CTA FINALE ============================ -->
+  <section class="scene" id="cta" data-animate="fade-in" aria-labelledby="cta-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:88%;--c:var(--magenta);--dur:31s"></span>
+      <span class="glow-blob" style="--x:50%;--y:8%;--c:var(--cyan);--dur:27s;--delay:-13s"></span>
+    </div>
+    <div class="layer depth-2 curtain" data-depth="2" aria-hidden="true">
+      <span class="curtain__panel curtain__panel--l"></span>
+      <span class="curtain__panel curtain__panel--r"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="cta__inner">
+        <p class="eyebrow" data-animate="fade-up">The floor is open</p>
+        <h2 class="cta__title" id="cta-title" data-animate="split-text"><span>Ready</span> <span>Player</span> <span>One?</span></h2>
+        <p class="cta__sub" data-animate="wipe-up">The whole arcade is unlocked and every cabinet is free.
+          Pick one, set a score, come back hungry.</p>
+        <div class="cta__actions" data-animate="scale-in">
+          <a class="btn btn--primary btn--lg" href="games.html">Enter the arcade</a>
+          <a class="btn btn--ghost btn--lg" href="mailto:Utkarsh6624@gmail.com?subject=Suggest%20a%20game">Suggest a game</a>
+          <!-- Randomizer: rolls one game out of window.GAMES and opens a prefilled
+               "Suggest a game: <title>" email for it. Plain-text label + icon, so it
+               reads the same as the two links beside it. -->
+          <button class="btn btn--ghost btn--lg" type="button" id="suggest-random"
+                  aria-describedby="suggest-random-hint"
+                  aria-label="Surprise me: suggest a random game by email">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+            Surprise me
+          </button>
+        </div>
+        <p class="cta__fine" id="suggest-random-hint">“Surprise me” rolls a random cabinet from the library and opens an email proposing that game.</p>
+        <p class="sr-only" role="status" id="suggest-random-status"></p>
+        <p class="cta__fine">No account · no download · plays in one tap</p>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:16%;--p-top:50%;--p-size:3px;--p-dur:10s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:35%;--p-top:26%;--p-size:2px;--p-dur:13s;--p-delay:-5s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:53%;--p-top:74%;--p-size:3px;--p-dur:11s;--p-delay:0s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:71%;--p-top:34%;--p-size:2px;--p-dur:14s;--p-delay:-8s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:88%;--p-top:64%;--p-size:3px;--p-dur:12s;--p-delay:0s;--p-color:var(--orange)"></i>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<!-- Site-wide link columns. Genre links are query-string filters handled by
+     games.html (?genre=…); "How it works" jumps back up to the #how scene.
+     Each column heading is an <h2> so the footer stays level-correct under the
+     section <h2>s above it. -->
+<footer class="footer" id="about">
+  <div class="footer__grid">
+    <div class="footer__brand-col">
+      <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+        <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+        <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+      </a>
+      <p class="footer__blurb">A free browser arcade. No install, no account, no waiting — just press START and play.
+        Built for two-minute breaks and all-night grinds alike.</p>
+      <p class="footer__tagline">Free browser arcade. No install. No account. Just press START.</p>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Arcade</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html">All games</a></li>
+        <li><a class="footer__link" href="games.html?genre=Arcade">Arcade</a></li>
+        <li><a class="footer__link" href="games.html?genre=Puzzle">Puzzle</a></li>
+        <li><a class="footer__link" href="games.html?genre=Racing">Racing</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">More aisles</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html?genre=Strategy">Strategy</a></li>
+        <li><a class="footer__link" href="games.html?genre=Casual">Casual</a></li>
+        <li><a class="footer__link" href="games.html?genre=Sports">Sports</a></li>
+        <li><a class="footer__link" href="#how">How it works</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Top cabinets</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="play.html?game=reaction">Neon Reaction</a></li>
+        <li><a class="footer__link" href="play.html?game=snake">Neon Snake</a></li>
+        <li><a class="footer__link" href="play.html?game=neon-paddle">Neon Paddle</a></li>
+        <li><a class="footer__link" href="play.html?game=blockfall">Blockfall</a></li>
+      </ul>
+      <!-- "Back to top" targets #main-content, not "#", so keyboard users land on
+           the <main> landmark rather than the very top of the document. -->
+      <ul class="footer__socials">
+        <li><a class="footer__social" href="mailto:Utkarsh6624@gmail.com">Email us</a></li>
+        <li><a class="footer__social" href="games.html">All games</a></li>
+        <li><a class="footer__social" href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h2 class="footer__title">The small print</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="about.html">About PixelRush</a></li>
+        <li><a class="footer__link" href="contact.html">Contact us</a></li>
+        <li><a class="footer__link" href="privacy.html">Privacy policy</a></li>
+        <li><a class="footer__link" href="terms.html">Terms of use</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__copy">&copy; <span id="year">2026</span> PixelRush. Free forever, on every screen.</p>
+    <p class="footer__note">Built with vanilla HTML/CSS/JS — nothing to install.</p>
+    <!-- Flat repeat of the link columns above, for crawlers and small footers. -->
+    <p class="footer__copy"><a class="footer__link" href="index.html">Home</a> · <a class="footer__link" href="games.html">Games</a> · <a class="footer__link" href="about.html">About</a> · <a class="footer__link" href="contact.html">Contact</a> · <a class="footer__link" href="privacy.html">Privacy</a> · <a class="footer__link" href="terms.html">Terms</a></p>
+  </div>
+</footer>
+
+<!-- Behaviour layer. engine.js is the shared scene/loop/canvas runtime,
+     games-data.js publishes the 24-entry catalog as window.GAMES, site.js wires
+     this page: nav, reveal animations, parallax, counters, rail dragging. All
+     three are deferred so they never block the first paint. -->
+<script src="js/engine.js" defer></script>
+<script src="js/games-data.js" defer></script>
+<script src="js/site.js" defer></script>
+
+<!-- CTA randomizer. Waits for DOMContentLoaded because window.GAMES is published
+     by the deferred games-data.js, which runs after this inline script. Pools from
+     GAMES only; if the catalog is missing or empty it falls back to the plain
+     "Suggest a game" mailto instead of failing. Keeps the previous pick out of the
+     next roll so repeated presses move. -->
+<script>
+(function () {
+  'use strict';
+  var TO = 'Utkarsh6624@gmail.com';
+  var btn = document.getElementById('suggest-random');
+  if (!btn) return;
+  var status = document.getElementById('suggest-random-status');
+  var last = null;
+
+  function mailto(subject, body) {
+    return 'mailto:' + TO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
+
+  function propose(g) {
+    var where = 'https://pixelrush.example/play.html?game=' + encodeURIComponent(g.slug);
+    return mailto('Suggest a game: ' + g.title, [
+      'Hi PixelRush,',
+      '',
+      'I would love to see a PixelRush cabinet like this one:',
+      '',
+      g.title + ' — ' + (g.blurb || 'A free, instant-play browser game.'),
+      'Genre: ' + g.genre + ' · Difficulty: ' + g.difficulty + ' · Session: ' + g.duration,
+      'Play it here: ' + where,
+      '',
+      'More cabinets like this one, please.',
+      '',
+      'Sent from pixelrush.example'
+    ].join('\n'));
+  }
+
+  function roll() {
+    var list = (window.GAMES && typeof window.GAMES.length === 'number') ? window.GAMES.slice() : [];
+    if (!list.length) {
+      if (status) status.textContent = 'No games in the catalog — opening a blank suggestion.';
+      return mailto('Suggest a game', 'Hi PixelRush,\n\nI would love to see a new PixelRush cabinet.\n\nSent from pixelrush.example');
+    }
+    var pool = list.filter(function (g) { return g && g.slug && g.slug !== last; });
+    if (!pool.length) pool = list.filter(function (g) { return g && g.title; });
+    if (!pool.length) pool = list;
+    var pick = pool[Math.floor(Math.random() * pool.length)];
+    last = pick.slug;
+    if (status) status.textContent = 'Suggesting ' + pick.title + '.';
+    return propose(pick);
+  }
+
+  btn.addEventListener('click', function () {
+    var href;
+    try { href = roll(); } catch (err) { href = mailto('Suggest a game', 'Hi PixelRush,\n\n'); }
+    btn.setAttribute('data-last-suggestion', href);
+    window.location.assign(href);
+  });
+})();
+</script>
+</body>
+</html>

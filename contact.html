@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- ============================ IDENTITY + SOCIAL ============================
+     The canonical description of this page. Keep title/description/og:title/
+     og:description in sync with the JSON-LD block further down — they are two
+     renderings of the same string, and a mismatch between them is what causes
+     search engines to pick the wrong one. -->
+<title>Contact PixelRush — Suggest a Game, Report a Bug, Say Hello</title>
+<meta name="description" content="Email PixelRush at Utkarsh6624@gmail.com. Suggest a new game, report a bug on a specific cabinet, or just say hello. One real inbox, no ticket system, replies within a few days.">
+<link rel="canonical" href="https://pixelrush.example/contact.html">
+<meta name="theme-color" content="#05060f">
+<!-- Open Graph. NOTE: these are authored as name="property=..." rather than
+     property="...", so most crawlers ignore them. Kept verbatim, not corrected.
+     Only twitter:card is declared; Twitter/X inherits og:* where it does read them. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contact PixelRush — Suggest a Game, Report a Bug, Say Hello">
+<meta property="og:description" content="One inbox, one person reading it. Suggest a game, report a bug, or say hello. No ticket system — replies take a few days.">
+<meta property="og:url" content="https://pixelrush.example/contact.html">
+<meta property="og:site_name" content="PixelRush">
+<meta property="og:image" content="https://pixelrush.example/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="keywords" contact="contact pixel rush, report a game bug, suggest a browser game, free browser arcade support">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Reduced-motion guard: reveal states must never depend on a stylesheet that has not loaded yet. -->
+  <style id="rm-guard">@media (prefers-reduced-motion: reduce){html.js-motion [data-animate],html.js-motion .reveal,html.js-motion [data-depth]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}}</style>
+<!-- Load order matters: base sets tokens and typography, scenes builds the layered
+     parallax scenes, games styles the cabinet/play surfaces. -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/scenes.css">
+<link rel="stylesheet" href="css/games.css">
+<style>
+  /* Page-local only. Everything here extends the shared prose treatment
+     (.seo-block) with a handful of small pieces this page needs. */
+  .contact-address {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.05rem, 1rem + 2.4vw, 2.1rem);
+    letter-spacing: .01em;
+    line-height: 1.2;
+    color: var(--cyan);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    text-shadow: 0 0 22px rgba(34, 231, 255, .45);
+  }
+  .contact-address:hover { color: var(--ink); }
+  .contact-fine {
+    font-size: .9rem;
+    color: var(--ink-dim);
+    max-width: 56ch;
+  }
+  .seo-block h3 { margin-block-start: .5rem; }
+  .seo-block ul,
+  .seo-block ol { padding-inline-start: 1.35rem; display: grid; gap: .5rem; color: var(--ink-dim); }
+  .seo-block li strong { color: var(--ink); }
+  .chip {
+    display: inline-block;
+    padding: .32em .7em;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(34, 231, 255, .08);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: .82rem;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .route-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-block: .2rem; }
+</style>
+
+  <!-- Structured data. One @graph, so this page joins the same entity graph as every
+       other page. The shared #website entity is referenced by @id only. The Organization
+       is restated here because this page is the site's contact surface and needs its
+       email and ContactPoint to travel with the ContactPage. The ContactPage points at
+       the WebPage node, which describes the document itself. Keep the Organization block
+       byte-identical to the one on index.html / about.html. -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://pixelrush.example/contact.html#webpage",
+      "url": "https://pixelrush.example/contact.html",
+      "name": "Contact PixelRush — Suggest a Game, Report a Bug, Say Hello",
+      "description": "Email PixelRush at Utkarsh6624@gmail.com. Suggest a new game, report a bug on a specific cabinet, or just say hello. One real inbox, no ticket system, replies within a few days.",
+      "inLanguage": "en",
+      "isPartOf": { "@id": "https://pixelrush.example/#website" },
+      "publisher": { "@id": "https://pixelrush.example/#organization" },
+      "about": { "@id": "https://pixelrush.example/#organization" }
+    },
+    {
+      "@type": "ContactPage",
+      "@id": "https://pixelrush.example/contact.html#contactpage",
+      "url": "https://pixelrush.example/contact.html",
+      "name": "Contact PixelRush — Suggest a Game, Report a Bug, Say Hello",
+      "description": "Email PixelRush at Utkarsh6624@gmail.com. Suggest a new game, report a bug on a specific cabinet, or just say hello. One real inbox, no ticket system, replies within a few days.",
+      "inLanguage": "en",
+      "isPartOf": { "@id": "https://pixelrush.example/#website" },
+      "mainEntity": { "@id": "https://pixelrush.example/contact.html#webpage" },
+      "about": { "@id": "https://pixelrush.example/#organization" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://pixelrush.example/#organization",
+      "name": "PixelRush",
+      "url": "https://pixelrush.example/",
+      "description": "PixelRush is a free browser arcade. Twenty-four instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
+      "email": "mailto:Utkarsh6624@gmail.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2305060f'/><path d='M8 9h4v5h8V9h4v14h-4v-5h-8v5H8z' fill='%2322e7ff'/></svg>"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "@id": "https://pixelrush.example/contact.html#contactpoint",
+        "contactType": "customer support",
+        "email": "mailto:Utkarsh6624@gmail.com",
+        "url": "https://pixelrush.example/contact.html",
+        "availableLanguage": ["en"]
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<!-- Sets the js-motion class before first paint. The reveal/parallax rules are
+     scoped to it, so adding it late makes hidden elements flash in. -->
+<script>document.documentElement.classList.add('js-motion')</script>
+<!-- First focusable element on the page; targets #main-content. -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+      <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+      <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+    </a>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Primary">
+      <a class="nav__link" href="games.html">Games</a>
+      <a class="nav__link" href="index.html#genres">Genres</a>
+      <a class="nav__link" href="index.html#games">Top</a>
+      <a class="nav__link" href="index.html#how">About</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="true" aria-label="Toggle motion and visual effects">
+        <span class="motion-toggle__dot" aria-hidden="true"></span>
+        <span class="motion-toggle__label" data-motion-label>ON</span>
+      </button>
+      
+      <!-- Settings: cursor size + native-pointer escape hatch. Owned by js/engine.js. -->
+      <div class="nav__setwrap" style="position:relative;display:inline-flex">
+        <button class="nav__set" id="nav-settings" type="button" aria-expanded="false" aria-controls="nav-settings-panel" aria-label="Display settings"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M22.52 13.29 21.53 16.65 18.45 16.03 20.24 18.67 18.53 20.35 15.45 22.02 13.71 19.41 13.11 22.54 10.71 22.52 7.35 21.53 7.97 18.45 5.33 20.24 3.65 18.53 1.98 15.45 4.59 13.71 1.46 13.11 1.48 10.71 2.47 7.35 5.55 7.97 3.76 5.33 5.47 3.65 8.55 1.98 10.29 4.59 10.89 1.46 13.29 1.48 16.65 2.47 16.03 5.55 18.67 3.76 20.35 5.47 22.02 8.55 19.41 10.29 22.54 10.89Z M15.4 12a3.4 3.4 0 1 0-6.8 0 3.4 3.4 0 1 0 6.8 0Z"/></svg></button>
+        <div class="nav__panel" id="nav-settings-panel" role="dialog" aria-label="Display settings">
+          <p class="nav__panel-title">Display</p>
+          <button class="nav__switch" id="px-cursor-switch" type="button" role="switch" aria-checked="true">
+            <span>Neon cursor</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+          <p class="nav__hint">Turn this off to use your normal system pointer.</p>
+          <div class="nav__row">
+            <div class="nav__row-top"><span>Cursor size</span><span class="nav__row-val" id="px-size-val">MED</span></div>
+            <div class="nav__seg" id="px-size-seg" role="group" aria-label="Cursor size">
+              <button type="button" data-px-size="s" aria-checked="false">S</button>
+              <button type="button" data-px-size="m" aria-checked="true">M</button>
+              <button type="button" data-px-size="l" aria-checked="false">L</button>
+              <button type="button" data-px-size="xl" aria-checked="false">XL</button>
+            </div>
+          </div>
+          <button class="nav__switch" id="px-motion-switch" type="button" role="switch" aria-checked="true">
+            <span>Animations</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <a class="btn btn--primary nav__cta" href="games.html">All games</a>
+      <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open the menu">
+        <span class="nav__burger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="scene" id="hero" data-parallax-strength="1" aria-labelledby="contact-title">
+    <!-- depth-0 : grid horizon, scanlines, grain -->
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="hero__grid"></div>
+      <div class="scanlines"></div>
+      <div class="grain"></div>
+      <div class="vignette"></div>
+    </div>
+
+    <!-- depth-1 : two glow blobs, screen-blended -->
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:14%;--y:30%;--c:var(--cyan);--dur:24s"></span>
+      <span class="glow-blob" style="--x:82%;--y:70%;--c:var(--magenta);--dur:30s;--delay:-8s"></span>
+    </div>
+
+    <!-- depth-2 : floating shards -->
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:14%;--y:22%;--s:62px;--c:var(--cyan);--dur:7.5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false">
+          <rect x="8" y="16" width="48" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M8 18 30 34 56 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="shard" style="--x:88%;--y:78%;--s:54px;--c:var(--acid);--dur:9s;--delay:-3s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false">
+          <path d="M32 6 58 32 32 58 6 32z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M32 6 44 32 32 58 20 32z" fill="currentColor" opacity=".2"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- depth-4 : the copy plane -->
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner">
+        <p class="eyebrow" data-animate="fade-up"><span class="pulse-dot" aria-hidden="true"></span>Player support · one real inbox</p>
+        <h1 class="display" id="contact-title" data-animate="fade-up">CONTACT</h1>
+        <p class="hero__sub" data-animate="wipe-up">Everything lands in a single email address, read by the person who
+          builds the cabinets. There is no ticket desk, no live chat and no form that swallows your message.
+          Write to us and you will get a reply — just not always the same day.</p>
+
+        <p data-animate="fade-up"><a class="contact-address" href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a></p>
+
+        <div class="hero__cta" data-animate="scale-in">
+          <a class="btn btn--primary btn--lg" href="mailto:Utkarsh6624@gmail.com">Email PixelRush</a>
+          <a class="btn btn--ghost btn--lg" href="games.html">Browse the games first</a>
+        </div>
+
+        <p class="contact-fine" data-animate="fade-up">No support ticket system, so there is no case number to quote
+          and no priority queue. Replies usually take a few days. A long weekend can stretch that.</p>
+      </div>
+    </div>
+
+    <!-- depth-5 : particles -->
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:8%;--p-top:74%;--p-size:3px;--p-dur:9s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:26%;--p-top:30%;--p-size:2px;--p-dur:12s;--p-delay:-3s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:47%;--p-top:82%;--p-size:3px;--p-dur:10.5s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:69%;--p-top:26%;--p-size:2px;--p-dur:13s;--p-delay:-6s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:90%;--p-top:66%;--p-size:3px;--p-dur:11s;--p-color:var(--cyan)"></i>
+    </div>
+
+    <a class="scroll-cue" href="#routes" aria-label="Scroll down to the ways you can contact us">
+      Scroll
+      <span class="scroll-cue__line" aria-hidden="true"></span>
+    </a>
+  </section>
+
+  <!-- ============================ THREE ROUTES ============================ -->
+  <section class="scene" id="routes" aria-labelledby="routes-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:20%;--y:22%;--c:var(--cyan);--dur:26s"></span>
+      <span class="glow-blob" style="--x:82%;--y:76%;--c:var(--magenta);--dur:32s;--delay:-11s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:7%;--y:66%;--s:56px;--c:var(--violet);--dur:9s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M32 4 60 32 32 60 4 32z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="shard" style="--x:93%;--y:32%;--s:50px;--c:var(--acid);--dur:11s;--delay:-4s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><rect x="12" y="10" width="40" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M22 24h20M22 34h20M22 44h12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner">
+        <div class="seo-block">
+          <p class="eyebrow" data-animate="fade-up">Pick your route</p>
+          <h2 data-animate="fade-up">Three ways in, one inbox</h2>
+          <p data-animate="fade-up">Whichever route you take, it is the same address and the same reader. The only
+            thing that changes is the subject line — and getting that right is what stops your message getting
+            filed in the wrong pile. Each route below comes with a ready-made button that fills the subject in
+            for you, so you can just start typing.</p>
+
+          <h3 data-animate="fade-up">1. Suggest a game</h3>
+          <p data-animate="fade-up">You played something on another site and thought we should have it. Or you
+            invented a mechanic in the shower and want to know whether it would fit here. Both are worth sending.
+            Ideas that are already in the pipeline get an honest answer, even when it is no.</p>
+          <p data-animate="fade-up">Suggested subject line:</p>
+          <p data-animate="fade-up"><span class="chip">Game suggestion: &lt;the name&gt;</span></p>
+          <p data-animate="fade-up">Include, if you can:</p>
+          <ul data-animate="stagger-children">
+            <li data-animate="fade-up"><strong>What it is.</strong> One line on the core mechanic. A bullet list of rules is fine.</li>
+            <li data-animate="fade-up"><strong>Why it belongs here.</strong> The genre it would sit in, and roughly how long one run takes.</li>
+            <li data-animate="fade-up"><strong>Where you played it.</strong> A link or the name of the app, if it exists somewhere already.</li>
+            <li data-animate="fade-up"><strong>Controls.</strong> Keyboard, one-thumb on mobile, or both. This genuinely changes the build.</li>
+          </ul>
+          <!-- Subject is pre-filled so each route lands in a different folder.
+               Keep the trailing "%3A%20" (colon + space) on the mailto. -->
+          <div class="route-actions" data-animate="fade-up">
+            <a class="btn btn--primary" href="mailto:Utkarsh6624@gmail.com?subject=Game%20suggestion%3A%20">Suggest a game</a>
+          </div>
+
+          <h3 data-animate="fade-up">2. Report a bug on a specific game</h3>
+          <p data-animate="fade-up">Something broke, or something never worked in the first place. This is the route
+            that actually gets things fixed, so be as specific as you can and name the game in the subject line.
+            "The snake one" is not enough — we ship more than one of everything eventually.</p>
+          <p data-animate="fade-up">Suggested subject line:</p>
+          <p data-animate="fade-up"><span class="chip">Bug: &lt;game name&gt; on &lt;browser&gt;</span></p>
+          <p data-animate="fade-up">An example of a good one:</p>
+          <p data-animate="fade-up"><span class="chip">Bug: Neon Snake on Safari (iPhone 15, iOS 18)</span></p>
+          <p data-animate="fade-up">Include, if you can:</p>
+          <ul data-animate="stagger-children">
+            <li data-animate="fade-up"><strong>Which game.</strong> The name shown on the card, not a description of it.</li>
+            <li data-animate="fade-up"><strong>Browser and version.</strong> Chrome, Firefox, Safari or Edge — and the version number if the browser is showing one.</li>
+            <li data-animate="fade-up"><strong>Device.</strong> Desktop, tablet or phone, plus the operating system.</li>
+            <li data-animate="fade-up"><strong>What you did.</strong> The exact inputs, in order. "Held left for about three seconds."</li>
+            <li data-animate="fade-up"><strong>What you expected</strong>, and <strong>what happened instead</strong>, including any message on screen.</li>
+            <li data-animate="fade-up"><strong>How often.</strong> Every single run, or once in ten. That decides how fast it gets looked at.</li>
+          </ul>
+          <div class="route-actions" data-animate="fade-up">
+            <a class="btn btn--primary" href="mailto:Utkarsh6624@gmail.com?subject=Bug%3A%20">Report a bug</a>
+            <a class="btn btn--ghost" href="games.html">Open the game list</a>
+          </div>
+
+          <h3 data-animate="fade-up">3. General feedback, or just saying hello</h3>
+          <p data-animate="fade-up">Difficulty feels off. The colours are hard to read on a dim screen. You want
+            more of a genre you already like. You just wanted to say the site is good. All of that is welcome and
+            all of it gets read, even when the answer is "noted, and here is why we did it this way".</p>
+          <p data-animate="fade-up">Suggested subject line:</p>
+          <p data-animate="fade-up"><span class="chip">Feedback: &lt;the thing you want to talk about&gt;</span></p>
+          <p data-animate="fade-up">A plain <span class="chip">Hello</span> is fine too. Include the game and device
+            if your point is about how something plays — that context is the part that makes feedback actionable.
+            If you are reporting a fault, use route 2 instead so it does not get lost in general mail.</p>
+          <div class="route-actions" data-animate="fade-up">
+            <a class="btn btn--primary" href="mailto:Utkarsh6624@gmail.com?subject=Feedback%3A%20">Send feedback</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:9%;--p-top:70%;--p-size:3px;--p-dur:11s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:34%;--p-top:28%;--p-size:2px;--p-dur:14s;--p-delay:-4s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:58%;--p-top:80%;--p-size:3px;--p-dur:10s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:81%;--p-top:34%;--p-size:2px;--p-dur:13s;--p-delay:-7s;--p-color:var(--violet)"></i>
+    </div>
+  </section>
+
+  <!-- ============================ BEFORE YOU WRITE ============================ -->
+  <section class="scene" id="before-you-write" aria-labelledby="before-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:16%;--c:var(--acid);--dur:30s"></span>
+      <span class="glow-blob" style="--x:16%;--y:78%;--c:var(--cyan);--dur:26s;--delay:-9s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:6%;--y:28%;--s:48px;--c:var(--orange);--dur:9.5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M32 6 40 24 58 26 44 40 48 58 32 49 16 58 20 40 6 26 24 24z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="shard" style="--x:94%;--y:70%;--s:52px;--c:var(--magenta);--dur:12s;--delay:-5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="9 9"/></svg>
+      </span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner">
+        <div class="seo-block">
+          <p class="eyebrow eyebrow--acid" data-animate="fade-up">Bug reports only</p>
+          <h2 data-animate="fade-up">Before you write about a bug</h2>
+          <p data-animate="fade-up">A minute of checking saves both of us a thread. None of this is a fob — if you
+            have already done it, send the report anyway. It is just the fastest route to an actual fix.</p>
+          <ol data-animate="stagger-children">
+            <li data-animate="fade-up"><strong>Reload the page.</strong> Every cabinet is a fresh boot. If the fault
+              is still there afterwards, it is a real one.</li>
+            <li data-animate="fade-up"><strong>Try a private window.</strong> A saved high score or a stuck
+              keypress in this tab can make a game look broken when it is fine.</li>
+            <li data-animate="fade-up"><strong>Restart the run.</strong> Press R, or tap restart, and reproduce the
+              exact moment again. Half of all faults only appear on the second run.</li>
+            <li data-animate="fade-up"><strong>Check whether the motion toggle is the problem.</strong> The ON/OFF
+              button in the header disables the parallax and reveal effects. If the game only misbehaves with it on,
+              say so in the report — that is a different bug to the one I would otherwise go hunting for.</li>
+            <li data-animate="fade-up"><strong>Test on one other browser.</strong> If it works in Firefox and dies in
+              Chrome, say both. If it dies everywhere, say that too. It tells me where to start looking.</li>
+            <li data-animate="fade-up"><strong>Note whether it blocks you.</strong> A cosmetic glitch and a
+              one-button-is-dead freeze get looked at in a different order. Saying which one you hit is not
+              complaining — it is routing.</li>
+          </ol>
+          <p data-animate="fade-up">Then send it. The address is
+            <a class="contact-address" href="mailto:Utkarsh6624@gmail.com?subject=Bug%3A%20">Utkarsh6624@gmail.com</a>
+            with the game and your browser in the subject line.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:12%;--p-top:26%;--p-size:3px;--p-dur:10s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:41%;--p-top:78%;--p-size:2px;--p-dur:13s;--p-delay:-5s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:73%;--p-top:30%;--p-size:3px;--p-dur:11.5s;--p-color:var(--orange)"></i>
+      <i class="particle" style="--p-left:92%;--p-top:64%;--p-size:2px;--p-dur:12.5s;--p-delay:-8s;--p-color:var(--magenta)"></i>
+    </div>
+  </section>
+
+  <!-- ============================ CLOSING ============================ -->
+  <section class="scene" id="cta" data-animate="fade-in" aria-labelledby="cta-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:88%;--c:var(--magenta);--dur:31s"></span>
+      <span class="glow-blob" style="--x:50%;--y:8%;--c:var(--cyan);--dur:27s;--delay:-13s"></span>
+    </div>
+    <div class="layer depth-2 curtain" data-depth="2" aria-hidden="true">
+      <span class="curtain__panel curtain__panel--l"></span>
+      <span class="curtain__panel curtain__panel--r"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="cta__inner">
+        <p class="eyebrow" data-animate="fade-up">No queue, no ticket number</p>
+        <h2 class="cta__title" id="cta-title" data-animate="fade-up"><span>One</span> <span>Inbox.</span> <span>Be Quick.</span></h2>
+        <p class="cta__sub" data-animate="wipe-up">One address, one reader, a few days for a reply. Write in plain
+          words — no template, no formality. If you are not sure which route is yours, just use general feedback.</p>
+        <div class="cta__actions" data-animate="scale-in">
+          <a class="btn btn--primary btn--lg" href="mailto:Utkarsh6624@gmail.com">Email PixelRush</a>
+          <a class="btn btn--ghost btn--lg" href="games.html">Back to the arcade</a>
+        </div>
+        <p class="cta__fine">No account · no download · plays in one tap</p>
+        <p class="cta__fine">Also worth reading:
+          <a class="footer__link" href="about.html">About PixelRush</a> ·
+          <a class="footer__link" href="privacy.html">Privacy policy</a> ·
+          <a class="footer__link" href="terms.html">Terms of use</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:16%;--p-top:50%;--p-size:3px;--p-dur:10s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:44%;--p-top:24%;--p-size:2px;--p-dur:13s;--p-delay:-5s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:72%;--p-top:72%;--p-size:3px;--p-dur:11s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:90%;--p-top:38%;--p-size:2px;--p-dur:12s;--p-delay:-8s;--p-color:var(--violet)"></i>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer" id="about">
+  <div class="footer__grid">
+    <div class="footer__brand-col">
+      <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+        <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+        <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+      </a>
+      <p class="footer__blurb">A free browser arcade. No install, no account, no waiting — just press START and play.
+        Built for two-minute breaks and all-night grinds alike.</p>
+      <p class="footer__tagline">Free browser arcade. No install. No account. Just press START.</p>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Arcade</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html">All games</a></li>
+        <li><a class="footer__link" href="games.html?genre=Arcade">Arcade</a></li>
+        <li><a class="footer__link" href="games.html?genre=Puzzle">Puzzle</a></li>
+        <li><a class="footer__link" href="games.html?genre=Racing">Racing</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">More aisles</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html?genre=Strategy">Strategy</a></li>
+        <li><a class="footer__link" href="games.html?genre=Casual">Casual</a></li>
+        <li><a class="footer__link" href="games.html?genre=Sports">Sports</a></li>
+        <li><a class="footer__link" href="index.html#how">How it works</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Top cabinets</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="play.html?game=reaction">Neon Reaction</a></li>
+        <li><a class="footer__link" href="play.html?game=snake">Neon Snake</a></li>
+        <li><a class="footer__link" href="play.html?game=neon-paddle">Neon Paddle</a></li>
+        <li><a class="footer__link" href="play.html?game=blockfall">Blockfall</a></li>
+      </ul>
+      <ul class="footer__socials">
+        <li><a class="footer__social" href="mailto:Utkarsh6624@gmail.com">Email us</a></li>
+        <li><a class="footer__social" href="games.html">All games</a></li>
+        <li><a class="footer__social" href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h2 class="footer__title">The small print</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="about.html">About PixelRush</a></li>
+        <li><a class="footer__link" href="contact.html">Contact us</a></li>
+        <li><a class="footer__link" href="privacy.html">Privacy policy</a></li>
+        <li><a class="footer__link" href="terms.html">Terms of use</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__copy">&copy; <span id="year" data-year>2026</span> PixelRush. Free forever, on every screen.</p>
+    <p class="footer__note">Built with vanilla HTML/CSS/JS — nothing to install.</p>
+    <p class="footer__copy"><a class="footer__link" href="index.html">Home</a> · <a class="footer__link" href="games.html">Games</a> · <a class="footer__link" href="about.html">About</a> · <a class="footer__link" href="contact.html">Contact</a> · <a class="footer__link" href="privacy.html">Privacy</a> · <a class="footer__link" href="terms.html">Terms</a></p>
+  </div>
+</footer>
+
+<script src="js/engine.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

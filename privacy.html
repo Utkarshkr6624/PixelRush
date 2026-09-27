@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Privacy Policy — PixelRush | No Signup, Plain English</title>
+<meta name="description" content="The PixelRush privacy policy in plain English. No accounts, no analytics scripts, no sale of your data. Explains what advertising can and cannot see, the web fonts, and how to clear your local scores.">
+<link rel="canonical" href="https://pixelrush.example/privacy.html">
+<meta name="theme-color" content="#05060f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Privacy Policy — PixelRush">
+<meta property="og:description" content="No accounts, no analytics scripts, no selling your data. What advertising can and cannot see, in plain English, and how to opt out.">
+<meta property="og:url" content="https://pixelrush.example/privacy.html">
+<meta property="og:site_name" content="PixelRush">
+<meta property="og:image" content="https://pixelrush.example/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="index,follow">
+<!--
+  Structured data for the privacy policy page.
+  Per qa/SEO-GUIDE.md this page is a plain WebPage in the shared @id graph.
+  The Organization is referenced by @id only — the full Organization object is
+  defined once elsewhere so the entities connect across pages instead of
+  drifting apart. "website" is likewise referenced, never redefined here.
+  All values are real: the name and description are this page's own Open Graph
+  and meta description, and dateModified is the "Last updated" date shown in the
+  hero, not an invented timestamp.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://pixelrush.example/privacy.html#webpage",
+      "url": "https://pixelrush.example/privacy.html",
+      "name": "Privacy Policy — PixelRush",
+      "description": "No accounts, no analytics scripts, no selling your data. What advertising can and cannot see, in plain English, and how to opt out.",
+      "inLanguage": "en",
+      "dateModified": "2026-01-01",
+      "isPartOf": { "@id": "https://pixelrush.example/#website" },
+      "publisher": { "@id": "https://pixelrush.example/#organization" },
+      "about": { "@id": "https://pixelrush.example/#organization" }
+    }
+  ]
+}
+</script>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Reduced-motion guard: reveal states must never depend on a stylesheet that has not loaded yet. -->
+  <style id="rm-guard">@media (prefers-reduced-motion: reduce){html.js-motion [data-animate],html.js-motion .reveal,html.js-motion [data-depth]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}}</style>
+  <style>
+    /* Page-local only: the "what we collect" summary table. Shared files are untouched. */
+    .pn-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-block: .4rem .6rem; }
+    .pn-table { width: 100%; min-width: 30rem; border-collapse: collapse; font-size: .95rem; }
+    .pn-table caption { text-align: left; color: var(--ink-dim); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; padding-block-end: .7rem; }
+    .pn-table th, .pn-table td { text-align: left; vertical-align: top; padding: .7rem .8rem; border-bottom: 1px solid var(--line); }
+    .pn-table thead th { font-family: var(--font-display); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
+    .pn-table tbody td { color: var(--ink-dim); }
+    .pn-table tbody td:first-child { color: var(--ink); }
+    .pn-table__no { color: var(--acid); }
+    .pn-table__yes { color: var(--magenta); }
+    .pn-note { border-inline-start: 2px solid var(--cyan); padding-inline-start: 1rem; color: var(--ink-dim); }
+  </style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/scenes.css">
+<link rel="stylesheet" href="css/games.css">
+</head>
+<body>
+<script>document.documentElement.classList.add('js-motion')</script>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ============================ PRELOADER ============================ -->
+<div id="preloader">
+  <div class="preloader__inner">
+    <svg class="preloader__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="pl-g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#22e7ff"/>
+          <stop offset=".5" stop-color="#8b5cf6"/>
+          <stop offset="1" stop-color="#ff2fb9"/>
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="58" height="58" rx="15" fill="#0a0c1c" stroke="url(#pl-g)" stroke-width="3"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="url(#pl-g)"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="none" stroke="#c8ff2e" stroke-width="1" opacity=".5"/>
+    </svg>
+    <div class="preloader__bar"><span class="preloader__fill"></span></div>
+    <p class="preloader__label">Inserting credits — booting the arcade</p>
+  </div>
+</div>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+      <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+      <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+    </a>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Primary">
+      <a class="nav__link" href="games.html">Games</a>
+      <a class="nav__link" href="index.html#genres">Genres</a>
+      <a class="nav__link" href="index.html#games">Top</a>
+      <a class="nav__link" href="about.html">About</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="true" aria-label="Toggle motion and visual effects">
+        <span class="motion-toggle__dot" aria-hidden="true"></span>
+        <span class="motion-toggle__label" data-motion-label>ON</span>
+      </button>
+      
+      <!-- Settings: cursor size + native-pointer escape hatch. Owned by js/engine.js. -->
+      <div class="nav__setwrap" style="position:relative;display:inline-flex">
+        <button class="nav__set" id="nav-settings" type="button" aria-expanded="false" aria-controls="nav-settings-panel" aria-label="Display settings"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M22.52 13.29 21.53 16.65 18.45 16.03 20.24 18.67 18.53 20.35 15.45 22.02 13.71 19.41 13.11 22.54 10.71 22.52 7.35 21.53 7.97 18.45 5.33 20.24 3.65 18.53 1.98 15.45 4.59 13.71 1.46 13.11 1.48 10.71 2.47 7.35 5.55 7.97 3.76 5.33 5.47 3.65 8.55 1.98 10.29 4.59 10.89 1.46 13.29 1.48 16.65 2.47 16.03 5.55 18.67 3.76 20.35 5.47 22.02 8.55 19.41 10.29 22.54 10.89Z M15.4 12a3.4 3.4 0 1 0-6.8 0 3.4 3.4 0 1 0 6.8 0Z"/></svg></button>
+        <div class="nav__panel" id="nav-settings-panel" role="dialog" aria-label="Display settings">
+          <p class="nav__panel-title">Display</p>
+          <button class="nav__switch" id="px-cursor-switch" type="button" role="switch" aria-checked="true">
+            <span>Neon cursor</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+          <p class="nav__hint">Turn this off to use your normal system pointer.</p>
+          <div class="nav__row">
+            <div class="nav__row-top"><span>Cursor size</span><span class="nav__row-val" id="px-size-val">MED</span></div>
+            <div class="nav__seg" id="px-size-seg" role="group" aria-label="Cursor size">
+              <button type="button" data-px-size="s" aria-checked="false">S</button>
+              <button type="button" data-px-size="m" aria-checked="true">M</button>
+              <button type="button" data-px-size="l" aria-checked="false">L</button>
+              <button type="button" data-px-size="xl" aria-checked="false">XL</button>
+            </div>
+          </div>
+          <button class="nav__switch" id="px-motion-switch" type="button" role="switch" aria-checked="true">
+            <span>Animations</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <a class="btn btn--primary nav__cta" href="games.html">All games</a>
+      <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open the menu">
+        <span class="nav__burger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ============================ LITE HERO ============================ -->
+  <section class="scene" id="privacy-hero" aria-labelledby="privacy-title">
+    <!--
+      The scene is a stack of parallax layers. depth-0 … depth-5 are purely
+      decorative: they carry aria-hidden="true" and are translated by
+      js/engine.js from their data-depth. Only the .layer--flow layer holds
+      real text — that class is load-bearing, without it the section collapses
+      and clips its own content.
+    -->
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--cyan" style="left:6%;top:10%;--x:6%;--y:10%"></span>
+      <span class="glow-blob glow-blob--magenta" style="left:76%;top:54%;--x:76%;--y:54%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-drift" style="--x:14%;--y:32%;--s:3px;--o:.9"></span>
+      <span class="particle float-loop" style="--x:86%;--y:28%;--s:4px;--o:.7"></span>
+    </div>
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <span class="particle" style="--p-left:8%;--p-top:66%;--p-size:3px;--p-dur:11s"></span>
+      <span class="particle" style="--p-left:26%;--p-top:22%;--p-size:2px;--p-dur:14s;--p-delay:1.4s;--p-color:var(--magenta)"></span>
+      <span class="particle" style="--p-left:44%;--p-top:78%;--p-size:3px;--p-dur:12s;--p-delay:.7s"></span>
+      <span class="particle" style="--p-left:63%;--p-top:18%;--p-size:2px;--p-dur:16s;--p-delay:2.2s;--p-color:var(--acid)"></span>
+      <span class="particle" style="--p-left:81%;--p-top:72%;--p-size:3px;--p-dur:10s;--p-delay:3s"></span>
+      <span class="particle" style="--p-left:94%;--p-top:40%;--p-size:2px;--p-dur:13s;--p-delay:1.1s;--p-color:var(--violet)"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">Privacy</span>
+        </nav>
+        <p class="eyebrow" data-animate="fade-up">No signup · local scores · ads explained</p>
+        <h1 id="privacy-title" data-animate="wipe-up">PRIVACY POLICY</h1>
+        <p class="lead" data-animate="fade-up">This is the whole thing, in plain English. PixelRush still has no
+          account and no database, and your high score still lives in your own browser. The arcade now carries
+          advertising, so a third party is involved — and this page says exactly what that means, what it does not
+          mean, and how you switch it off.</p>
+        <p class="text-dim" data-animate="fade-up">Last updated: <time datetime="2026-01-01">1 January 2026</time></p>
+        <p class="u-row u-row--center" data-animate="stagger-children">
+          <span class="chip">0 accounts</span>
+          <span class="chip">0 databases</span>
+          <span class="chip">Ads explained here</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TICKER ============================ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span class="ticker__set">
+        <span class="ticker__item">No accounts</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Free forever</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">24 games</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Scores stay local</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Ads explained</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No paywall</span><span class="ticker__sep">◆</span>
+      </span>
+      <span class="ticker__set" aria-hidden="true">
+        <span class="ticker__item">No accounts</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Free forever</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">24 games</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Scores stay local</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Ads explained</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No paywall</span><span class="ticker__sep">◆</span>
+      </span>
+    </div>
+  </div>
+  <!--
+    Screen-reader summary of the whole policy. The decorative ticker above is
+    aria-hidden, so this is the accessible version of the same message and the
+    only part of the top of the page assistive tech actually announces.
+  -->
+  <p class="sr-only">PixelRush privacy summary: no accounts, no sign-up, no analytics scripts run by us, and no sale of personal data. The page carries advertising served by a third party, which may set cookies or similar storage, see your IP address and build a profile; we do not receive that data. High scores are stored only in your own browser.</p>
+
+  <!-- ============================ THE POLICY ============================ -->
+  <section class="scene" id="policy" aria-labelledby="policy-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="scanlines" style="opacity:.35"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--acid" style="left:10%;top:16%;--x:10%;--y:16%"></span>
+      <span class="glow-blob glow-blob--violet" style="left:78%;top:66%;--x:78%;--y:66%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-loop" style="--x:88%;--y:58%;--s:4px;--o:.8"></span>
+    </div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <!--
+          The policy itself. One <article> holding every <h2> section in reading
+          order; the only <h3> is nested under "High scores and settings", so
+          heading levels never skip. The page-local table below is styled by the
+          .pn-* rules in the head <style> block, not by the shared stylesheets.
+        -->
+        <article class="seo-block">
+
+          <!-- Opening summary — the six guarantees, stated once, in full. -->
+          <h2 id="policy-title" data-animate="wipe-up">The short version</h2>
+          <p data-animate="fade-up">PixelRush is a folder of static files. It has no back end, no database, no user
+            table and no admin panel. We cannot see you, we do not want to, and there is no button anywhere on the site
+            that would let us start. The one new thing is advertising, and that comes with a company we do not
+            control — so here is the line between the two.</p>
+          <ul data-animate="stagger-children">
+            <li><strong>No sign-up, ever.</strong> There is no account system, so there is no account to profile and nothing you do is gated behind one.</li>
+            <li><strong>No analytics run by us.</strong> No Google Analytics, no Plausible, no counters, no heat maps on our side of the page.</li>
+            <li><strong>Advertising is served by someone else.</strong> The arcade carries ads. A third-party ad company may set cookies or similar storage, may see your IP address, and may build a profile from it. We do not control that and we do not get a copy of it. It is written up properly in “Advertising” below.</li>
+            <li><strong>No cookies set by us.</strong> Not one. Not even a “did you enjoy this page?” one. If a cookie turns up on this site, it came from the ad company or the font host, not from PixelRush.</li>
+            <li><strong>Your score stays put.</strong> High scores live in your own browser’s local storage, on your device only.</li>
+            <li><strong>Still free, still no paywall.</strong> No trial timer, no “remove ads” button, no premium tier, no in-app purchases. Ads pay the hosting; they never charge you for a game.</li>
+          </ul>
+
+          <h2 data-animate="fade-up">What we collect</h2>
+          <p data-animate="fade-up">Short answer: almost nothing, and none of it from you — with one honest exception for
+            the ad company. Here is the full list, item by item, so you do not have to guess. The “Do we collect it?”
+            column is about PixelRush. Where a row says “not us”, that is the part you should read twice.</p>
+          <!--
+            The "what we collect" table. It is the one element on the page that
+            needs real labels, so every cell uses <th scope> rather than a CSS
+            trick. .pn-table__no / .pn-table__yes only recolour the verdict word —
+            the verdict itself is always spelled out in text, so the meaning
+            survives with the colour stripped.
+          -->
+          <div class="pn-table-wrap" data-animate="fade-up">
+            <table class="pn-table">
+              <caption>Everything PixelRush touches, and where it goes</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Thing</th>
+                  <th scope="col">Do we collect it?</th>
+                  <th scope="col">Where it goes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Account, username, password</th>
+                  <td><span class="pn-table__no">No</span></td>
+                  <td>It is never created. There is no sign-up form on this site.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Name, email address, phone number</th>
+                  <td><span class="pn-table__no">No</span></td>
+                  <td>Only if you email us first — see “Contacting us” below. The ad company does not know your name or your email address.</td>
+                </tr>
+                <tr>
+                  <th scope="row">High scores, game settings, your motion toggle</th>
+                  <td><span class="pn-table__yes">Yes, locally</span></td>
+                  <td>Your own browser’s local storage, on your own device. It is never uploaded, and the ad company never sees it.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Analytics, page views, session recordings</th>
+                  <td><span class="pn-table__no">No</span></td>
+                  <td>We run no analytics script of any kind on these pages.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Cookies set by PixelRush</th>
+                  <td><span class="pn-table__no">No</span></td>
+                  <td>This site sets no cookies of its own. Any third-party cookie you see here came from the ad company or the font host.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Ad company: your IP address, device and browser</th>
+                  <td><span class="pn-table__yes">Yes, by them, not us</span></td>
+                  <td>The ad company serving the ad, so it can decide what to show. We do not receive it and cannot see it.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Ad company: cookies and similar storage</th>
+                  <td><span class="pn-table__yes">Yes, by them, not us</span></td>
+                  <td>Set in your browser by the ad company — typically cookies, and sometimes local storage or an advertising identifier. We do not control it and we cannot read it.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Ad company: pixels, beacons and interest profiles</th>
+                  <td><span class="pn-table__yes">Yes, by them, not us</span></td>
+                  <td>Used to measure whether an ad was shown or clicked, and to build a profile for advertising. That profile stays with the ad company. It is not shared with us.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Your IP address, when you load the two web fonts</th>
+                  <td><span class="pn-table__yes">Yes, by Google</span></td>
+                  <td>Google, which serves the font files from its own servers. Details below.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Basic server access logs</th>
+                  <td><span class="pn-table__yes">Yes, by the host</span></td>
+                  <td>Whoever serves the files handles ordinary request logs, then usually deletes them.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Anything you send us by email</th>
+                  <td><span class="pn-table__yes">Yes, if you choose to</span></td>
+                  <td>One inbox: <span class="mono">Utkarsh6624@gmail.com</span>. Nothing else.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="pn-note" data-animate="fade-up">Three sets of rows in that table are not us: the ad company, the font
+            host and the web host. We do not control what any of the three collect, and we have said so rather than
+            pretending otherwise. “Advertising” below explains the first one in full.</p>
+
+          <!--
+            Everything below this point is the detailed policy, in the order a
+            reader actually asks about it: accounts, what runs on the page, ads,
+            cookies, local data, fonts, hosting, children, contact, changes.
+          -->
+          <h2 data-animate="fade-up">No accounts and no sign-up</h2>
+          <p data-animate="fade-up">There is no register button, no login form, no “connect your Steam account” and no
+            newsletter box. The arcade is open from the first second. If a future version of the site ever introduces an
+            account or a mailing list, this page will be updated before that goes live, and it will say exactly what
+            would be stored and why.</p>
+
+          <h2 data-animate="fade-up">What we run, and what the ad company runs</h2>
+          <p data-animate="fade-up">The site loads exactly two scripts of our own: <span class="mono">js/engine.js</span>
+            and <span class="mono">js/site.js</span>. Both are first-party files sitting in this site's own
+            <span class="mono">js/</span> folder. Read them — they are a few hundred lines of vanilla JavaScript that
+            move particles, wire up the menu and reveal text on scroll. Neither one makes a network request, opens a
+            socket, reads a device identifier or writes anything to a remote service.</p>
+          <p data-animate="fade-up">On our side of the page there is no Google Analytics, no tag manager, no A/B
+            testing tool, no session recorder, no heat-map tool, no chat widget, no social share buttons and no
+            embedded third-party content. We do not fingerprint your browser, we do not canvas-hash it, and we do not
+            use a “unique visitor” counter dressed up as a statistic. The counters on the home page are fixed numbers
+            written into the page. They are not read off a database, because there is no database.</p>
+          <p data-animate="fade-up">What we do not run is not the same as what appears on the page. The ad company’s
+            code is there, it is not ours, and it is described properly in the next section rather than glossed over
+            here.</p>
+          <p data-animate="fade-up">We do not sell, rent, trade or share personal data, because we hold no personal
+            data to sell. We also do not receive the ad company’s data, so there is nothing of yours in our hands to
+            pass on. If that ever changes, it will be written here first.</p>
+
+          <h2 data-animate="fade-up">Advertising</h2>
+          <p data-animate="fade-up">The arcade now carries advertising. That is the deal: the games are free, there is no
+            paywall and no subscription, and the ads are what keeps the hosting bill paid. It also means a company we
+            do not control is involved in your visit, so here is exactly how that works.</p>
+          <ul data-animate="stagger-children">
+            <li><strong>Who serves the ads.</strong> A third-party advertising company, not PixelRush. The provider
+              has not been chosen yet, so this page names the category rather than a company. When one is picked, its
+              name, its privacy policy and its opt-out page will be listed here, in this section, before the ads go
+              live.</li>
+            <li><strong>What they can see.</strong> Serving an ad means their systems see your IP address, and they
+              will usually also see your browser, your device, your screen size and your approximate location,
+              because that is what an IP address roughly reveals.</li>
+            <li><strong>What they can store.</strong> They can set cookies, and they can use similar storage such as
+              local storage or an advertising identifier. Pixels and beacons — the invisible requests used to check
+              whether an ad was shown, and whether you clicked it — are part of the same mechanism.</li>
+            <li><strong>What they can build.</strong> They can use all of that to work out what you might like, and to
+              profile you for advertising purposes across sites. That is a profile about your browsing, not about your
+              account, because you do not have one.</li>
+            <li><strong>What we get.</strong> Nothing about you. The ad company does not hand us your profile, your IP
+              address or its identifiers, and we cannot look them up. We can see aggregate figures such as how many
+              times an ad was shown, and we cannot tell which visitor that was.</li>
+            <li><strong>What this does not touch.</strong> Your high scores, your game settings and your motion toggle.
+              Those stay in your browser’s local storage, on your device, and are never sent to us or to the ad
+              company.</li>
+          </ul>
+          <p data-animate="fade-up">If you would rather not be measured, you have three levers, in the order most people
+            like them:</p>
+          <ul data-animate="stagger-children">
+            <li><strong>Your own controls.</strong> Every major browser has a tracking-protection or “privacy” setting
+              that limits third-party cookies and cross-site tracking. Turning it on is your decision, and it costs this
+              site nothing.</li>
+            <li><strong>The ad company’s controls.</strong> The provider will offer its own opt-out and “your privacy
+              choices” page, and once a provider is named that page will be linked from here. That is where you ask
+              them to stop profiling you.</li>
+            <li><strong>A blocker.</strong> A content blocker or a privacy extension will hide the ads, and with them
+              the storage. Every game still plays, because no game is bought, timed or unlocked with an ad.</li>
+          </ul>
+          <p class="pn-note" data-animate="fade-up">We are not going to describe this site as free of tracking, because
+            an ad is a tracking mechanism whether or not anyone says the word. What we can say is narrower and true:
+            there is no account, no profile on our side, and nothing here is for sale.</p>
+
+          <h2 data-animate="fade-up">Cookies and storage</h2>
+          <p data-animate="fade-up">PixelRush sets no cookies. Not a session cookie, not a preference cookie, not a
+            “we would love to know if you came from a search” cookie. Nothing is stored by us on your device through
+            cookies, and nothing is read back from one.</p>
+          <p data-animate="fade-up">Third parties on the page do use them. The ad company sets its own cookies and
+            similar storage, and the font host can see the request that fetches a typeface. You can tell them apart in
+            your browser’s site-data list by who set them. If you follow a link to another website, that website may
+            set its own cookies too — that is between you and them, and this policy stops at our front door.</p>
+
+          <h2 data-animate="fade-up">High scores and settings live in your browser</h2>
+          <p data-animate="fade-up">Some games save a personal best, and the site remembers a few preferences, such as
+            whether you have switched motion effects off. All of it is written to <span class="mono">localStorage</span>
+            — a storage area built into your own browser. The data is written to your device, read back by the same page
+            on the same device, and never transmitted anywhere. It is a note your browser passes to itself, not a
+            message it sends to us.</p>
+          <p data-animate="fade-up">The practical consequences are worth spelling out, because they cut both ways:</p>
+          <ul data-animate="stagger-children">
+            <li>Your scores do not sync between your phone and your laptop. There is no account to sync through.</li>
+            <li>Clearing your browser data wipes your scores. That is the trade this site makes on purpose — your scores leave no trace on us at all.</li>
+            <li>Private or incognito windows usually throw the data away the moment you close the tab.</li>
+            <li>Browsing with cookies and site data blocked, or with storage restricted, will simply mean scores do not stick between visits. Every game still plays.</li>
+          </ul>
+
+          <h3 data-animate="fade-up">How to clear what is stored</h3>
+          <p data-animate="fade-up">Nothing we store is sensitive, and clearing it takes a few seconds. Pick whichever of
+            these suits you:</p>
+          <ul data-animate="stagger-children">
+            <li><strong>All of it, in one go.</strong> Open your browser settings, find <em>Clear browsing data</em> (Chrome, Edge and Firefox all call it roughly that), tick cached files and cookies, and clear. Your PixelRush scores and settings go with it.</li>
+            <li><strong>Just this site's data.</strong> In Chrome or Edge, click the padlock or the tune icon in the address bar, then <em>Cookies and site data</em> → <em>Manage on-device site data</em> → delete anything for the arcade's domain.</li>
+            <li><strong>Just the arcade's storage.</strong> Open the developer console on any PixelRush page and run <span class="mono">localStorage.clear()</span>, then reload.</li>
+            <li><strong>One game at a time.</strong> Each cabinet keeps its own entry under a namespaced key, so clearing a single game's entry leaves the rest alone.</li>
+            <li><strong>Ad storage set by others.</strong> The steps above clear what the site stored, and the first two also clear the cookies the ad company has set, because those are site data too. The ad company’s own profile of you lives on their side, so ask them to delete it using the opt-out link on their privacy page.</li>
+          </ul>
+          <p data-animate="fade-up">Your browser may also offer a tracking protection setting such as “Do Not Track” or
+            “Strict privacy”. Leave it on if you like. It costs this site nothing, and it limits at least some of what
+            the ad company can do.</p>
+
+          <h2 data-animate="fade-up">Web fonts, and what Google can see</h2>
+          <p data-animate="fade-up">The arcade uses two typefaces, and loading them is the second place where a third
+            party is genuinely involved. The font files are served by Google Fonts from
+            <span class="mono">fonts.googleapis.com</span> and <span class="mono">fonts.gstatic.com</span>, rather than
+            being bundled with the site.</p>
+          <p data-animate="fade-up">When your browser fetches a font, that request necessarily carries your IP address,
+            along with the usual request headers. That means Google can see that your IP requested a font, and when. We
+            cannot prevent that without self-hosting the font files, and we are telling you rather than quietly hoping
+            you do not notice. We do not send Google any identifiers of our own, we run no Google analytics or Google
+            advertising product on this site, and no Google account is required to load a web font.</p>
+          <p data-animate="fade-up">If you would rather Google saw nothing at all, the standard defences all work here
+            too: a content blocker, a hardened privacy extension, or your browser's built-in tracking protection. The
+            pages fall back to system fonts and stay perfectly readable.</p>
+
+          <h2 data-animate="fade-up">How the site is served</h2>
+          <p data-animate="fade-up">PixelRush is a set of static files — HTML, CSS, JavaScript and images — sitting on a
+            host that does nothing but hand them over. There is no application server, no server-side language, no
+            database, no user table and no login service. When you open a page, the server's whole job is to send you
+            that file.</p>
+          <p data-animate="fade-up">Whoever hosts the files keeps ordinary web server logs, because keeping them is
+            how every host on the internet stays alive: the requests made, the time, the file returned, the status code
+            and the IP address they came from. Those logs are used for security, abuse handling and keeping the site
+            running, and they are typically rotated or deleted within weeks. We do not read them to work out who you are,
+            we do not use them to build a profile, and we do not add anything to them.</p>
+
+          <h2 data-animate="fade-up">Children</h2>
+          <p data-animate="fade-up">Players of all ages are welcome, including children — there is no age gate, no
+            sign-up wall and nothing to sign up for, and nothing we collect is tied to a person, because there is no
+            person to attach it to. We gather no data from anyone under 18 ourselves.</p>
+          <p data-animate="fade-up">The advertising does not know who you are either — no ad company here is given a
+            child’s name, an email address or a date of birth — but it can still see an IP address and set storage, and
+            most ad providers exclude known child users on request rather than by default. If you want a clean slate,
+            a guardian can use the clearing steps above and get back to a blank page in under a minute. If you want the
+            ads gone entirely, the browser or blocker options in “Advertising” are the way.</p>
+
+          <h2 data-animate="fade-up">Contacting us</h2>
+          <p data-animate="fade-up">One address, and it is the only route to the person who runs this place:
+            <a href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a>. It is a normal mailbox, so anything you
+            send is read by a human being rather than a ticket bot.</p>
+          <p data-animate="fade-up">If you email us, the obvious price of it is that we now hold whatever you wrote —
+            your email address, your name if you signed it, and the content of the message. We use it to reply, and for
+            nothing else. We do not add you to a list, we do not forward it to anyone, and we delete it once the thread
+            is finished with.</p>
+          <p data-animate="fade-up">The <a href="contact.html">contact page</a> has the same address and a bit more
+            detail. You can also read the <a href="terms.html">terms of use</a> and the
+            <a href="about.html">about page</a> if you want the wider picture.</p>
+
+          <h2 data-animate="fade-up">Changes to this policy</h2>
+          <p data-animate="fade-up">This policy may change, and when it does, the date at the top of the page changes
+            with it. The new version takes effect as soon as it is published here.</p>
+          <p data-animate="fade-up">The honest caveat: if this site ever starts collecting something it does not collect
+            now, the change will be written into this page and the updated date will be visible, rather than slipped
+            into the fine print. The same applies to the ad provider: when one is named, this page will name it, link
+            its privacy policy and its opt-out, and say what it can see. Until then, the summary above stands —
+            nothing to log into, no profile on our side, and your scores still stay on your device.</p>
+
+          <p class="text-dim" data-animate="fade-up">&copy; <span data-year>2026</span> PixelRush. Free forever, on
+            every screen, with no account and no paywall.</p>
+
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CTA FINALE ============================ -->
+  <section class="scene" id="privacy-cta" data-animate="fade-in" aria-labelledby="privacy-cta-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:88%;--c:var(--cyan);--dur:31s"></span>
+      <span class="glow-blob" style="--x:50%;--y:8%;--c:var(--magenta);--dur:27s;--delay:-13s"></span>
+    </div>
+    <div class="layer depth-2 curtain" data-depth="2" aria-hidden="true">
+      <span class="curtain__panel curtain__panel--l"></span>
+      <span class="curtain__panel curtain__panel--r"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="cta__inner">
+        <p class="eyebrow" data-animate="fade-up">No account. No paywall. No surprises.</p>
+        <h2 class="cta__title" id="privacy-cta-title" data-animate="split-text"><span>Back</span> <span>to</span> <span>the</span> <span>arcade</span></h2>
+        <p class="cta__sub" data-animate="wipe-up">Reading a privacy policy is a strange thing to do right before
+          playing. Respect the craft, then get back in the queue — the cabinets are all free.</p>
+        <div class="cta__actions" data-animate="scale-in">
+          <a class="btn btn--primary btn--lg" href="games.html">Enter the arcade</a>
+          <a class="btn btn--ghost btn--lg" href="mailto:Utkarsh6624@gmail.com?subject=Privacy%20question">Ask a privacy question</a>
+        </div>
+        <p class="cta__fine">No account · no download · plays in one tap</p>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:16%;--p-top:50%;--p-size:3px;--p-dur:10s;--p-delay:0s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:35%;--p-top:26%;--p-size:2px;--p-dur:11s;--p-delay:-5s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:53%;--p-top:74%;--p-size:3px;--p-dur:12s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:71%;--p-top:34%;--p-size:2px;--p-dur:13s;--p-delay:-8s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:88%;--p-top:64%;--p-size:3px;--p-dur:14s;--p-delay:0s;--p-color:var(--orange)"></i>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer" id="about">
+  <!-- Footer. `id="about"` is a legacy anchor kept so old inbound links still land. -->
+  <div class="footer__grid">
+    <div class="footer__brand-col">
+      <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+        <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+        <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+      </a>
+      <p class="footer__blurb">A free browser arcade. No install, no account, no waiting — just press START and play.
+        Built for two-minute breaks and all-night grinds alike.</p>
+      <p class="footer__tagline">Free browser arcade. No install. No account. Just press START.</p>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Arcade</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html">All games</a></li>
+        <li><a class="footer__link" href="games.html?genre=Arcade">Arcade</a></li>
+        <li><a class="footer__link" href="games.html?genre=Puzzle">Puzzle</a></li>
+        <li><a class="footer__link" href="games.html?genre=Racing">Racing</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">More aisles</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html?genre=Strategy">Strategy</a></li>
+        <li><a class="footer__link" href="games.html?genre=Casual">Casual</a></li>
+        <li><a class="footer__link" href="games.html?genre=Sports">Sports</a></li>
+        <li><a class="footer__link" href="index.html#how">How it works</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Top cabinets</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="play.html?game=reaction">Neon Reaction</a></li>
+        <li><a class="footer__link" href="play.html?game=snake">Neon Snake</a></li>
+        <li><a class="footer__link" href="play.html?game=neon-paddle">Neon Paddle</a></li>
+        <li><a class="footer__link" href="play.html?game=blockfall">Blockfall</a></li>
+      </ul>
+      <ul class="footer__socials">
+        <li><a class="footer__social" href="mailto:Utkarsh6624@gmail.com">Email us</a></li>
+        <li><a class="footer__social" href="games.html">All games</a></li>
+        <li><a class="footer__social" href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h2 class="footer__title">The small print</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="about.html">About PixelRush</a></li>
+        <li><a class="footer__link" href="contact.html">Contact us</a></li>
+        <li><a class="footer__link" href="privacy.html">Privacy policy</a></li>
+        <li><a class="footer__link" href="terms.html">Terms of use</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__copy">&copy; <span id="year">2026</span> PixelRush. Free forever, on every screen.</p>
+    <p class="footer__note">Built with vanilla HTML/CSS/JS — nothing to install.</p>
+    <p class="footer__copy"><a class="footer__link" href="index.html">Home</a> · <a class="footer__link" href="games.html">Games</a> · <a class="footer__link" href="about.html">About</a> · <a class="footer__link" href="contact.html">Contact</a> · <a class="footer__link" href="privacy.html">Privacy</a> · <a class="footer__link" href="terms.html">Terms</a></p>
+  </div>
+</footer>
+
+<!-- Both scripts are first-party and make no network requests. See "What we run" in the policy. -->
+<script src="js/engine.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

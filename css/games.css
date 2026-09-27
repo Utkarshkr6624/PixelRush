@@ -1,0 +1,963 @@
+/* ==========================================================================
+   PIXEL RUSH — css/games.css
+   games.html catalog (search / filters / sort / grid / no-results / FAQ),
+   the .gcard component (also used by the home rail), the play.html player
+   shell, and the 404 page.
+
+   WHAT IT OWNS
+     · the games.html catalog chrome: hero, sticky control bar, result row,
+       card grid, empty state, FAQ accordion
+     · .gcard — the single card component shared by the games.html grid, the
+       index.html home rail (sized by scenes.css) and the play.html picker
+     · the play.html player shell: stage frame, HUD, picker, error panel
+     · the 404 page hero
+     · the responsive breakpoints and the motion-reduction overrides that
+       apply to all of the above
+
+   LOAD ORDER
+     base.css  ->  games.css  ->  scenes.css
+     (each page links them in that order; games.css sits in the middle and is
+     free to rely on tokens and resets defined in base.css, but must not
+     assume anything scenes.css defines — scenes.css is allowed to override
+     us and does so deliberately)
+
+   DEPENDENCIES
+     · design tokens (--nav-h, --cyan, --glass, --r-lg, --ease-out,
+       --ease-spring, --maxw, …) all come from base.css
+     · behaviour comes from js/catalog.js (grid, filtering, sort) and
+       js/player.js (HUD, picker). This file is presentation only — it never
+       adds or removes a class that JS depends on, it only styles states the
+       markup already carries.
+     · data-attributes and root classes consumed below: [data-status] on
+       .gcard (written by js/catalog.js from js/games-data.js), and the
+       html.motion-off class (written by js/engine.js when the visitor uses
+       the #motion-toggle). html.perf-lite is a hook — no page or script adds
+       it today, but styles across the site honour it, so keep styling it.
+
+   NOTHING IN HERE MAY BE REMOVED OUT OF ORDER: the numbered regions below
+   are also the reading order, and every rule after it inherits from the ones
+   before it (e.g. region 8 deliberately re-states region 4 to win the
+   cascade for reduced motion).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. LIGHT HERO (games.html #games-hero)
+   The one "short" hero on the site — index.html and play.html get the tall
+   scene hero from scenes.css. The inline-block padding is the nav offset
+   (--nav-h) plus breathing room, so the first heading never sits under the
+   fixed header. min-height is a floor for the preloader-to-hero transition,
+   not a fixed height, so long leads never get clipped.
+   -------------------------------------------------------------------------- */
+#games-hero {
+  padding-block: calc(var(--nav-h) + clamp(50px, 9vh, 110px)) clamp(40px, 7vh, 80px);
+  min-height: 46vh;
+}
+#games-hero .shell { text-align: center; display: grid; justify-items: center; gap: 1rem; }
+#games-hero h1 { font-size: clamp(2.6rem, 8vw, 6.2rem); }
+#games-hero .lead { text-align: center; }
+
+.breadcrumb { display: flex; gap: .5rem; align-items: center; color: var(--ink-mute); font-size: .85rem; }
+.breadcrumb a { transition: color .3s; }
+.breadcrumb a:hover { color: var(--cyan); }
+
+/* --------------------------------------------------------------------------
+   2. CONTROL BAR (search / genre chips / sort)
+   Sticky directly under the nav: --nav-h is the nav's own height, so this
+   bar parks flush beneath it instead of overlapping. The translucent
+   background + backdrop-filter is what makes it usable over scrolling cards.
+
+   Markup: .catalog-bar > .search + .sort + .filters-row > .chip-group.
+
+   The bar is a two-row grid. Row one is the search field (which grows into
+   all the free space) with the sort pill parked at its end; row two is the
+   chip group, which gets a full-width row of its own so it never has to
+   wrap into the leftover space beside a stretched field. Giving the search
+   a full row is also what stops its placeholder being clipped: the field is
+   wide enough for the whole hint at every breakpoint.
+
+   --bar-gap is the single spacing token for the whole control cluster, so
+   the rhythm survives every breakpoint instead of being re-guessed per rule.
+   -------------------------------------------------------------------------- */
+.catalog-bar {
+  --bar-gap: clamp(.6rem, 1.6vw, 1rem);
+  position: sticky;
+  /* the nav shrinks to --nav-h-min when stuck, so this tracks the live height */
+  top: var(--nav-live, var(--nav-h));
+  z-index: 40;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "search sort"
+    "chips chips";
+  gap: var(--bar-gap) clamp(.9rem, 2vw, 1.5rem);
+  align-items: center;
+  padding-block: clamp(.7rem, 1.4vw, 1rem);
+  background: rgba(5, 6, 15, .93);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  border-block: 1px solid var(--line);
+}
+
+/* .search is position:relative so the magnifier and the clear button can be
+   absolutely placed inside the field. The input's asymmetric padding
+   (.8em 2.9em) reserves room for BOTH the icon (start) and the clear
+   button (end) — shrinking it would put the placeholder under them. */
+.search {
+  grid-area: search;
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  /* Capped rather than stretched: an unconstrained 1fr column leaves a
+     1000px pill holding 300px of placeholder, which reads as an accident.
+     The leftover column-1 space is the gap between field and sort pill. */
+  max-inline-size: 42rem;
+}
+.search__icon { position: absolute; inset-inline-start: 14px; inline-size: 18px; color: var(--ink-mute); pointer-events: none; transition: color .3s; }
+.search input {
+  inline-size: 100%;
+  min-block-size: 46px;
+  padding: .8em 2.9em;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  color: var(--ink);
+  font-size: .95rem;
+  transition: border-color .3s, box-shadow .35s, background .3s;
+}
+.search input::placeholder { color: var(--ink-mute); }
+/* The icon picks up the field's active state, so the focus ring reads as one
+   object rather than a glowing pill with a grey magnifier bolted to it. */
+.search:focus-within .search__icon { color: var(--cyan); }
+.search input:focus { outline: none; border-color: var(--cyan); background: rgba(34, 231, 255, .06); box-shadow: 0 0 0 3px rgba(34, 231, 255, .18), var(--glow-cyan, 0 0 24px rgba(34, 231, 255, .35)); }
+/* The clear button is display:none by default and is revealed purely by
+   js/catalog.js toggling .has-value on the .search wrapper — no JS writes
+   inline styles, so the whole control's visibility is described here. */
+.search__clear {
+  position: absolute;
+  inset-inline-end: 8px;
+  inline-size: 30px; block-size: 30px;
+  display: none;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink-mute);
+  border: 1px solid var(--line);
+  background: rgba(5, 6, 15, .7);
+  transition: color .3s, transform .35s var(--ease-spring, cubic-bezier(.34, 1.56, .64, 1)), border-color .3s;
+}
+.search__clear:hover { color: var(--ink); border-color: color-mix(in oklab, var(--cyan) 55%, transparent); transform: rotate(90deg) scale(1.1); }
+.search__clear:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; color: var(--ink); }
+.search.has-value .search__clear { display: grid; }
+
+/* Genre chips are emitted by js/catalog.js from the genres in
+   js/games-data.js; their selected look is a base.css rule, so only the
+   row's own wrapping/alignment is declared here. .filters-row is the bar's
+   second row and .chip-group is the cluster of chips inside it — these two
+   used to share a single class, so a flex-wrap row was nested inside
+   another flex-wrap row and the sort pill kept stranding itself on a line
+   of its own.
+
+   .filters-row is `display: contents`, so it no longer contributes a box of
+   its own: the sort pill and the chip cluster become direct items of the
+   bar's grid and each takes its own row. No markup had to be moved for
+   that, and the wrapper carried no semantics to lose. */
+.filters-row { display: contents; }
+.chip-group {
+  grid-area: chips;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .45rem .5rem;
+  min-inline-size: 0;
+}
+/* base.css owns .chip's selected/hover look; what is added here is a focus
+   ring (it had none) and a shared block-size so the chips line up with the
+   search field and the sort pill on the same axis. */
+.chip-group .chip { min-block-size: 34px; }
+.chip-group .chip:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; color: var(--ink); }
+
+/* The sort control. A native <select> cannot be re-skinned like a .btn, but it
+   can be stopped from rendering as an OS widget: appearance:none hands the closed
+   state back to CSS, so the select itself now wears the same treatment as the
+   search field beside it (--line border, --glass fill, cyan focus glow) plus its
+   own chevron, instead of a borderless transparent child sitting inside a second
+   pill. The .sort wrapper keeps the layout job only - it is a label plus one
+   control, not a second control wrapped around the first.
+
+   The chevron is a data-URI SVG rather than a background-image gradient because
+   it has to be a real stroke in the accent colour; the colour is written into
+   the URI (there is no way to read a custom property from one). */
+.sort {
+  grid-area: sort;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  min-block-size: 34px;
+  white-space: nowrap;
+}
+.sort label { font-family: var(--font-display); font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-mute); }
+.sort select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background-color: var(--glass);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%2322e7ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.6 6 6.4 11 1.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .85em center;
+  background-size: 11px 7px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  padding: .55em 2.3em .55em 1.1em;
+  min-block-size: 34px;
+  cursor: pointer;
+  transition: border-color .3s, box-shadow .35s, background-color .3s;
+}
+.sort:hover select { border-color: color-mix(in oklab, var(--cyan) 50%, transparent); background-color: rgba(34, 231, 255, .06); }
+/* Keyboard focus is `outline: none` on the control itself, so the visible ring
+   lives on the same element via :focus-within - it is never removed, only moved. */
+.sort:focus-within select { border-color: var(--cyan); background-color: rgba(34, 231, 255, .06); box-shadow: 0 0 0 3px rgba(34, 231, 255, .18), var(--glow-cyan, 0 0 24px rgba(34, 231, 255, .35)); }
+.sort select:focus { outline: none; }
+/* The open list is OS-drawn, so the most it will ever honour is the option
+   colours - without these the list is white-on-white on some platforms. */
+.sort option, .sort optgroup { background: var(--bg-2); color: var(--ink); font-family: var(--font-display); }
+.sort option:checked { color: var(--cyan); }
+.sort option:hover { background: var(--bg-3); }
+
+/* "N games" counter on the left, active-filter summary on the right; both
+   are text nodes written by js/catalog.js — only their look is here. The
+   hairline ties the counter to the bar above it and stops the two halves
+   from drifting apart when the count text changes length. */
+.result-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.2rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 1.35rem .4rem;
+  padding-block-start: .9rem;
+  border-block-start: 1px solid var(--line);
+  color: var(--ink-mute);
+  font-size: .9rem;
+}
+.result-row > p { margin: 0; }
+#result-count {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+/* A small status dot keyed to the same cyan as the count, so the row reads as
+   a live status line rather than a stray heading. */
+#result-count::before {
+  content: "";
+  inline-size: 6px;
+  block-size: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px rgba(34, 231, 255, .9);
+}
+.result-row a { color: var(--cyan); text-underline-offset: 3px; }
+.result-row a:hover { color: var(--acid); }
+
+/* --------------------------------------------------------------------------
+   3. GAME GRID
+   auto-fill + minmax(270px, 1fr) means the column count follows the
+   container width with no breakpoints of its own — the 640px rule in region
+   8 only exists to cap the card width on phones.
+
+   Everything after the grid is .seo-block, the long-form copy at the foot of
+   games.html — see its own note about the global reset.
+   -------------------------------------------------------------------------- */
+#game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: clamp(1rem, 2.4vw, 1.8rem);
+  padding-block: clamp(1.2rem, 3vw, 2.4rem);
+}
+
+.seo-block { max-width: 74ch; display: grid; gap: .9rem; padding-block: clamp(2rem, 5vw, 4rem); }
+.seo-block h2 { font-size: clamp(1.5rem, 3.4vw, 2.3rem); }
+.seo-block p { color: var(--ink-dim); }
+/* The global reset strips list markers for UI lists (nav, chips, card grids).
+   Long-form prose needs them back, or every list reads as a run-on paragraph. */
+.seo-block ul, .seo-block ol { padding-inline-start: 1.4rem; }
+.seo-block ul { list-style: disc outside; }
+.seo-block ol { list-style: decimal outside; }
+.seo-block li { color: var(--ink-dim); }
+.seo-block li + li { margin-block-start: .45rem; }
+.seo-block li::marker { color: var(--cyan); }
+.seo-block strong { color: var(--ink); font-weight: 700; }
+
+/* --------------------------------------------------------------------------
+   4. .gcard — the card component (SPEC.md card markup contract)
+   One card, three call sites: the games.html grid, the index.html home rail
+   and the play.html picker. The markup is fixed by SPEC.md — .gcard wraps a
+   single .gcard__link (the whole card is the tap target) containing
+   .gcard__art > .gcard__glyph + .gcard__scan + .gcard__shine, then
+   .gcard__body with the title, blurb and a .gcard__meta list. Hover-only
+   decoration is ALWAYS paired with :focus-visible on .gcard__link, because
+   the link is what takes focus and a keyboard user must get the same reveal
+   a mouse user does.
+
+   THE ACCENT CONTRACT: --g is a per-card custom property set inline by
+   js/catalog.js from the `colour` field in js/games-data.js. Every glow,
+   gradient and border in this region is derived from it via color-mix(), so
+   adding a genre means editing js/games-data.js, never this file. It falls
+   back to --cyan so an un-set value degrades to the house colour.
+   -------------------------------------------------------------------------- */
+.gcard {
+  --g: var(--cyan);
+  position: relative;
+  /* Fluid rather than a fixed width, so the catalog grid, the home rail
+     (sized by scenes.css) and #game-picker all share one card. */
+  inline-size: 100%;
+  max-inline-size: 100%;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .012));
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform .5s var(--ease-out), border-color .4s, box-shadow .5s var(--ease-out);
+}
+.gcard:hover {
+  transform: translateY(-10px) perspective(900px) rotateX(5deg) scale(1.02);
+  border-color: color-mix(in oklab, var(--g) 60%, transparent);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .55), 0 0 42px color-mix(in oklab, var(--g) 28%, transparent);
+}
+/* [hidden] is restated because the card sets `position: relative` plus a
+   transform transition, and in some engines `display` from the [hidden]
+   UA rule loses to a later display value — this makes the guarantee
+   unconditional for both filtered-out and coming-soon cards. */
+.gcard[hidden] { display: none; }
+
+.gcard__link { position: relative; display: block; display: grid; gap: 0; }
+
+/* The card art: a tinted sky gradient plus a perspective floor grid faked
+   entirely in CSS (::before) — no canvas, no images. The grid is masked with
+   a bottom-to-top gradient so it fades out instead of ending on a hard
+   line, and it rotates a few degrees further on hover, which is what sells
+   the depth. */
+.gcard__art {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 120% at 50% 0%, color-mix(in oklab, var(--g) 26%, transparent), transparent 62%),
+    linear-gradient(160deg, var(--bg-3), var(--bg-2));
+  border-bottom: 1px solid var(--line);
+}
+.gcard__art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--g) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--g) 14%, transparent) 1px, transparent 1px);
+  background-size: 26px 26px;
+  transform: perspective(420px) rotateX(58deg) scale(1.5) translateY(14%);
+  transform-origin: 50% 100%;
+  transition: transform .7s var(--ease-out);
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 72%);
+  mask-image: linear-gradient(to top, #000, transparent 72%);
+}
+.gcard:hover .gcard__art::before { transform: perspective(420px) rotateX(52deg) scale(1.7) translateY(6%); }
+
+/* The glyph is the game's icon, tinted with the card accent. Note the
+   keyframe animates the independent `translate` property, NOT `transform` —
+   `transform` is already busy with the hover lift and scale, and a
+   transform-based keyframe would clobber it mid-animation. */
+.gcard__glyph {
+  position: relative;
+  inline-size: clamp(56px, 26%, 82px);
+  color: var(--g);
+  filter: drop-shadow(0 0 16px color-mix(in oklab, var(--g) 70%, transparent));
+  transform: translateY(-4%);
+  transition: transform .6s var(--ease-spring, cubic-bezier(.34, 1.56, .64, 1)), filter .4s;
+  /* The ambient float is driven by interaction, not by an always-on loop:
+     24 cards each running a 6s infinite animation is 24 permanently
+     composited layers for a detail nobody sees until they hover anyway. */
+  animation: none;
+}
+.gcard:hover .gcard__glyph,
+.gcard__link:focus-visible .gcard__glyph { transform: translateY(-10%) scale(1.14); filter: drop-shadow(0 0 26px color-mix(in oklab, var(--g) 90%, transparent)); animation: glyph-float 3.4s var(--ease-in-out) infinite; }
+@keyframes glyph-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+
+/* .gcard__scan is a CRT sweep that travels down the art on hover; .gcard__shine
+   is a single specular pass across the whole card. Both are pointer-events:none
+   and mix-blend-mode:screen so they never intercept the link's tap target and
+   never darken the artwork underneath. */
+.gcard__scan {
+  position: absolute;
+  inset-inline: 0;
+  block-size: 34%;
+  background: linear-gradient(180deg, transparent, color-mix(in oklab, var(--g) 16%, transparent), transparent);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  /* same reasoning: a per-card 4.5s loop, replaced by a one-off sweep on hover */
+  animation: none;
+  opacity: 0;
+  transform: translateY(-60%);
+  transition: transform .8s var(--ease-out), opacity .45s var(--ease-out);
+}
+.gcard:hover .gcard__scan,
+.gcard__link:focus-visible .gcard__scan { opacity: 1; transform: translateY(190%); }
+
+.gcard__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(112deg, transparent 34%, rgba(255, 255, 255, .22) 50%, transparent 66%);
+  transform: translateX(-130%);
+  transition: transform .85s var(--ease-out);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.gcard:hover .gcard__shine, .gcard__link:focus-visible .gcard__shine { transform: translateX(130%); }
+
+.gcard__body { display: grid; gap: .5rem; padding: 1.1rem 1.15rem 1.3rem; }
+.gcard__title { font-size: 1.12rem; letter-spacing: .01em; transition: color .3s; }
+.gcard:hover .gcard__title { color: color-mix(in oklab, var(--g) 70%, var(--ink)); }
+.gcard__blurb { color: var(--ink-dim); font-size: .95rem; line-height: 1.5; }
+
+/* .gcard__meta is a <ul> rendered as pills; the first child is always the
+   genre and is picked out in the card accent, the rest (difficulty, duration)
+   stay muted so the genre is the only thing that competes with the title. */
+.gcard__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .3rem;
+}
+.gcard__meta li {
+  padding: .28em .7em;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  font-family: var(--font-display);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.gcard__meta li:first-child { color: var(--g); border-color: color-mix(in oklab, var(--g) 40%, transparent); }
+
+/* The "PLAY" pill. It starts off-canvas above the card and springs in on
+   hover/focus. The card itself is the link, so this is an affordance cue,
+   not a separate control — it must never be given its own pointer handling
+   or focus stop. */
+.gcard__play {
+  position: absolute;
+  inset-block-start: .8rem; inset-inline-end: .8rem;
+  padding: .5em 1.1em;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .2em;
+  color: #05060f;
+  background: linear-gradient(120deg, var(--g), #fff);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--g) 60%, transparent);
+  transform: translateY(-6px) scale(.8);
+  opacity: 0;
+  transition: transform .5s var(--ease-spring, cubic-bezier(.34, 1.56, .64, 1)), opacity .35s;
+}
+.gcard:hover .gcard__play, .gcard__link:focus-visible .gcard__play { transform: translateY(0) scale(1); opacity: 1; }
+
+/* "SOON" state. catalog.js emits .gcard__soon; site.js reuses .gcard__play
+   with the text "SOON" for an unlaunched card. Both are styled the same. */
+.gcard__badge,
+.gcard__soon {
+  position: absolute;
+  inset-block-start: .8rem; inset-inline-start: .8rem;
+  padding: .35em .8em;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: .6rem;
+  font-weight: 900;
+  letter-spacing: .22em;
+  color: var(--orange);
+  border: 1px solid color-mix(in oklab, var(--orange) 55%, transparent);
+  background: rgba(5, 6, 15, .7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Unlaunched games. js/games-data.js sets status, and js/catalog.js mirrors
+   it onto the card as [data-status="coming-soon"]. The card keeps its shape
+   and stays legible (desaturated, dimmed glyph) but loses the hover tilt
+   and plays the badge always-on, because there is nothing to click into. */
+.gcard[data-status="coming-soon"] { filter: saturate(.55); }
+.gcard[data-status="coming-soon"] .gcard__link { cursor: default; }
+.gcard[data-status="coming-soon"]:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0, 0, 0, .5); border-color: color-mix(in oklab, var(--g) 40%, transparent); }
+.gcard[data-status="coming-soon"] .gcard__play {
+  color: var(--orange);
+  background: rgba(5, 6, 15, .75);
+  border: 1px solid color-mix(in oklab, var(--orange) 55%, transparent);
+  box-shadow: 0 0 18px color-mix(in oklab, var(--orange) 30%, transparent);
+  opacity: 1;
+  transform: none;
+}
+.gcard[data-status="coming-soon"] .gcard__glyph { animation: none; opacity: .6; }
+
+/* Two ways a card leaves the grid, both pure CSS state:
+   .is-filtered-out is set by js/catalog.js when a search or genre chip
+   excludes it (used where the hidden attribute would break the in-flight
+   card-in animation); [hidden] above covers the "no games at all" path.
+   card-in is the first-paint stagger — --i is the per-card delay index
+   written inline by js/catalog.js, so cards cascade in instead of popping
+   as one block. It animates `transform` and so is switched off wholesale in
+   region 8 for reduced motion. */
+.gcard.is-filtered-out { display: none; }
+.gcard { animation: card-in .7s var(--ease-out) both; animation-delay: var(--i, 0ms); }
+@keyframes card-in { from { opacity: 0; transform: translate3d(0, 26px, 0) scale(.97); } to { opacity: 1; transform: none; } }
+
+/* Empty state: shown by js/catalog.js when a search returns nothing, hidden
+   again with the [hidden] attribute (restated below for the same reason as
+   the card's). */
+#no-results {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(3rem, 9vw, 6rem) 1rem;
+  text-align: center;
+  color: var(--ink-dim);
+}
+#no-results[hidden] { display: none; }
+#no-results svg { inline-size: 62px; color: var(--ink-mute); opacity: .6; }
+
+/* --------------------------------------------------------------------------
+   5. FAQ
+   A native <details>/<summary> accordion — no JS is involved, which is why
+   the custom marker has to be suppressed explicitly (list-style:none plus
+   ::-webkit-details-marker, the latter still needed in WebKit) and replaced
+   with the ::after "+" that rotates 135deg to become an "×" when open.
+   The open state is styled through the `open` attribute on <details>.
+   -------------------------------------------------------------------------- */
+.faq { display: grid; gap: .6rem; max-width: 80ch; }
+.faq details {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--glass);
+  overflow: hidden;
+  transition: border-color .35s, background .35s;
+}
+.faq details[open] { border-color: color-mix(in oklab, var(--cyan) 45%, transparent); background: rgba(34, 231, 255, .05); }
+.faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  list-style: none;
+  transition: color .3s;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+";
+  font-size: 1.3rem;
+  color: var(--cyan);
+  transition: transform .45s var(--ease-out);
+}
+.faq details[open] summary::after { transform: rotate(135deg); }
+.faq summary:hover { color: var(--cyan); }
+.faq details p { padding: 0 1.2rem 1.2rem; color: var(--ink-dim); }
+
+/* Opening a <details> grows the document by the height of the answer, and
+   the browser then "corrects" for that with a scroll-anchoring adjustment.
+   base.css sets `scroll-behavior: smooth` on <html>, which makes that
+   correction ANIMATED instead of instant — so the correction is visible as
+   the whole viewport drifting up and down after the click has already
+   happened. Measured on this page: 11-16px of animated scrollY drift per
+   toggle at 390px, 41px at a 600px-tall desktop window, and the drift only
+   appeared on some toggles, which is why it reads as random.
+
+   Two things are neutralised here, and both are scoped to this section:
+
+   1. overflow-anchor: none — the FAQ is excluded from the anchor
+      candidate set (a subtree rooted at an ineligible element is ineligible
+      too), so growing an answer can never move the viewport. Nothing is
+      lost: the user is already looking at the accordion they clicked, so
+      there is nothing to keep in place. The footer below it is excluded for
+      the same reason — otherwise, when the viewport spans the end of the
+      FAQ and the top of the footer, the anchor would sit in the footer and
+      the correction would still fire.
+
+   2. content-visibility: visible — base.css applies
+      `content-visibility: auto; contain-intrinsic-size: auto 900px` to every
+      .scene, so a scene's height is an ESTIMATE until it is scrolled into
+      relevance and its real size until it is not. Sections below the FAQ
+      re-estimate on the toggle and the document height changes under a
+      stationary scroll position (measured: the page silently moved 966px
+      and 505px of content on arrival at the FAQ, with scrollY unchanged).
+      Holding the FAQ itself out of that system means the section the user is
+      interacting with always has its true, stable height.
+
+   Anchor navigation to #faq is unaffected — that is a real fragment jump,
+   not a scroll-anchoring correction. */
+#faq, #faq *, .footer, .footer * { overflow-anchor: none; }
+#faq { content-visibility: visible; contain-intrinsic-size: none; }
+
+/* --------------------------------------------------------------------------
+   6. PLAYER SHELL (play.html)
+   Two columns: the game stage (minmax(0, 1fr) so the canvas can shrink
+   below its intrinsic width without forcing the grid wider) and the HUD
+   (fixed 320px, sticky). Below 1000px it becomes a single column, stage
+   first. Markup is written by js/player.js.
+   -------------------------------------------------------------------------- */
+#player-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: clamp(1rem, 2.5vw, 1.8rem);
+  align-items: start;
+  padding-block: clamp(1.5rem, 4vh, 3rem) clamp(3rem, 8vh, 6rem);
+  width: min(var(--maxw), 94vw);
+  margin-inline: auto;
+}
+@media (max-width: 1000px) { #player-shell { grid-template-columns: 1fr; } }
+
+.player-back {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  justify-self: start;
+  color: var(--ink-dim);
+  font-family: var(--font-display);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  transition: color .3s, transform .4s var(--ease-out);
+}
+.player-back:hover { color: var(--cyan); transform: translateX(-6px); }
+
+.player-main { display: grid; gap: 1rem; min-width: 0; }
+
+/* The eyebrow takes the game's accent via the --g custom property that
+   js/player.js sets on the shell from the games-data `colour` field, with
+   --cyan as the fallback. */
+.player-head { display: grid; gap: .4rem; }
+.player-head .eyebrow { color: var(--g, var(--cyan)); }
+.player-head .eyebrow::before { background: linear-gradient(90deg, var(--g, var(--cyan)), transparent); box-shadow: 0 0 12px var(--g, var(--cyan)); }
+#game-title { font-size: clamp(1.9rem, 5vw, 3.4rem); }
+
+.stage-frame {
+  position: relative;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: #02030a;
+  padding: clamp(.5rem, 1.6vw, 1.1rem);
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .6), inset 0 0 60px rgba(34, 231, 255, .06);
+}
+/* The stage is a fixed 16:9 box. Every game canvas is mounted into
+   #game-stage by js/engine.js and is forced to fill it here (the !important
+   is deliberate: individual games set their own canvas size, and without it
+   a mis-sized game would letterbox inside the frame). The letterbox here is
+   the site's intended look, not a bug. */
+#game-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  inline-size: 100%;
+  border-radius: calc(var(--r-lg) - 8px);
+  overflow: hidden;
+  background:
+    radial-gradient(90% 90% at 50% 0%, #0b1030, #02030a 70%);
+  display: grid;
+  place-items: center;
+  color: var(--ink-dim);
+  font-family: var(--font-display);
+  letter-spacing: .12em;
+  text-align: center;
+  padding: 5%;
+}
+/* CRT overlay — pure CSS, canvas-free */
+#game-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, .05) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0, 0, 0, .75) 100%);
+  mix-blend-mode: screen;
+  opacity: .9;
+}
+#game-stage canvas { inline-size: 100% !important; block-size: 100% !important; display: block; }
+
+/* UNREFERENCED as of the last pass — no page or script emits .stage-loading.
+   The live boot state is .player-boot / #game-root, styled page-locally in
+   play.html. Kept (additive changes only); safe to delete. */
+.stage-loading {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  font-family: var(--font-display);
+  font-size: .76rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  animation: pulse-glow 1.6s var(--ease-in-out) infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: .45; filter: brightness(.8); }
+  50%      { opacity: 1;   filter: brightness(1.4); }
+}
+
+/* Shown when play.html is opened with no ?game= or with a slug that is not
+   in js/games-data.js — the user is stuck on a dead page, so it must be
+   impossible to miss. */
+#game-missing {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(2rem, 6vw, 4rem) 1rem;
+  text-align: center;
+}
+#game-missing[hidden] { display: none; }
+
+/* The HUD: score, best, and the controls the game exposes. Rows are a
+   <dl> (dt label / dd value) laid out as flex rows; values are the display
+   font at large size because they change in front of the player. Sticky,
+   offset by the nav height so it parks under the fixed header. */
+#game-hud {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.1rem, 2.2vw, 1.5rem);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .012));
+  position: sticky;
+  top: calc(var(--nav-h) + 1rem);
+}
+.hud-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-block: .55rem; border-bottom: 1px dashed var(--line); }
+.hud-row:last-of-type { border-bottom: 0; }
+.hud-row dt { font-family: var(--font-display); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-mute); }
+.hud-row dd { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: var(--cyan); text-shadow: 0 0 14px rgba(34, 231, 255, .45); }
+.hud-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.hud-actions .btn { padding-inline: .8em; font-size: .68rem; }
+.hud-howto { color: var(--ink-dim); font-size: .95rem; }
+
+/* "More like this" rail at the foot of play.html (#game-picker, hidden until
+   a game is loaded). js/player.js normally emits its own compact .player-pick
+   cards, which play.html styles page-locally; the .gcard rules below are the
+   defensive path for the case where the rail is filled with the standard
+   spec card instead, so both markups render inside the same rail. */
+#game-picker { display: grid; gap: .9rem; }
+#game-picker .gcard { inline-size: 100%; }
+#game-picker .gcard__art { aspect-ratio: 16 / 8; }
+.picker-title { font-family: var(--font-display); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-mute); }
+
+/* UNREFERENCED as of the last pass — nothing in play.html, js/player.js or
+   js/site.js emits .py-panel. The live round-over / paused overlay is
+   .p-over*, injected as a <style> by js/player.js. Left in place (additive
+   changes only); delete it once you're sure nothing external styles it. */
+.py-panel {
+  display: grid;
+  place-items: center;
+  gap: .8rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--orange);
+  font-family: var(--font-display);
+  letter-spacing: .1em;
+}
+
+/* --------------------------------------------------------------------------
+   7. 404
+   The h1 is the page's only heading and is the design: a huge
+   gradient-clipped "404" with a drop-shadow glow. background-clip:text with
+   -webkit-text-fill-color:transparent is the standard pair for painting a
+   gradient into text. 404.html is noindex, so nothing here is a ranking
+   concern — it only has to be unmissable.
+   -------------------------------------------------------------------------- */
+#notfound {
+  min-height: 78svh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 1.2rem;
+}
+#notfound h1 {
+  font-size: clamp(5rem, 22vw, 16rem);
+  line-height: .8;
+  background: linear-gradient(120deg, var(--cyan), var(--magenta));
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(34, 231, 255, .4));
+}
+#notfound .lead { margin-inline: auto; }
+
+/* --------------------------------------------------------------------------
+   8. RESPONSIVE + REDUCTIONS
+   1000px  (region 6) — player shell stacks.
+   900px   — control bar stacks; the sort pill pins to the start edge.
+   640px   — catalog grid becomes a single centred column, cards get an
+             absolute max width, the HUD stops being sticky (a sticky HUD on
+             a short phone viewport eats the whole screen) and its action
+             buttons stack.
+
+   The three reduction blocks below are independent of each other and all
+   three must stay:
+     prefers-reduced-motion — the OS setting.
+     html.motion-off        — the in-page motion toggle (js/engine.js), which
+                               has to win over the media query because a
+                               player may have turned motion off explicitly
+                               even when the OS has not.
+     html.perf-lite         — a hook no script currently adds, but base.css,
+                               scenes.css and several pages already style it;
+                               it drops the decorative composited layers
+                               (scan, shine, card-in) and keeps the hover
+                               lift, which costs nothing.
+   The .ticker__track / .word-light__track selectors below belong to
+   scenes.css — this file styles the scene classes too only so that the
+   reduced-motion override is not silently narrower than the motion it turns
+   off.
+   Nothing here may remove a focus style or an [open]/hover affordance —
+   only movement.
+   -------------------------------------------------------------------------- */
+/* The bar sheds a column at a time. 900px drops the sort onto the search's
+   row (chips take the full width beneath); 640px stacks all three and turns
+   the bar into an ordinary block of the page — see the note there. */
+/* Below 900px the bar stops trying to sit the search and the sort pill on
+   one line: the sort drops onto its own full-width row beneath the search,
+   with the chips beneath that. */
+@media (max-width: 900px) {
+  .catalog-bar {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "search"
+      "sort"
+      "chips";
+  }
+  .sort { justify-self: start; }
+}
+@media (max-width: 640px) {
+  /* Phone: the three controls stack, and every one of them is grown to a
+     44px minimum touch target. That makes the bar ~230px tall — taller than
+     is defensible to keep pinned to the top of a 844px phone screen, so the
+     bar stops being sticky here and simply scrolls with the catalogue. */
+  .catalog-bar { position: static; backdrop-filter: none; -webkit-backdrop-filter: none; background: transparent; border-block: 0; padding-block: 0 1.1rem; }
+  .search input { min-block-size: 48px; font-size: 1rem; }
+  .search { max-inline-size: none; }
+  .search__clear { inline-size: 34px; block-size: 34px; inset-inline-end: 7px; }
+  .chip-group { gap: .5rem; }
+  .chip-group .chip { min-block-size: 44px; padding-inline: 1.15em; }
+  .sort { min-block-size: 44px; padding-block: 0; justify-self: stretch; }
+  /* the <select> is the thing a thumb actually lands on, so it carries the
+     44px minimum and the full width itself rather than borrowing the height
+     of its wrapper */
+  .sort select { min-block-size: 44px; flex: 1; font-size: .8rem; }
+  .result-row { margin-block-start: 1.1rem; font-size: .85rem; }
+  /* The count and the reassurance line stack instead of competing for a
+     360px row, and neither is allowed to overflow it. */
+  .result-row > p { min-inline-size: 0; }
+  #result-count { font-size: .76rem; letter-spacing: .1em; }
+}
+@media (max-width: 640px) {
+  #game-grid { grid-template-columns: 1fr; justify-items: center; }
+  .gcard { inline-size: 100%; max-width: 380px; }
+  #game-hud { position: static; }
+  .hud-actions { grid-template-columns: 1fr; }
+}
+
+html.perf-lite .gcard__scan,
+html.perf-lite .gcard__shine { display: none; }
+html.perf-lite .gcard__glyph { animation: none; }
+html.perf-lite .gcard { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gcard, .gcard__glyph, .gcard__scan { animation: none !important; }
+  .gcard:hover { transform: translateY(-6px); }
+  .ticker__track, .word-light__track { animation: none !important; }
+}
+html.motion-off .gcard, html.motion-off .gcard__glyph, html.motion-off .gcard__scan { animation: none !important; }
+
+
+/* Touch targets: the audit measured select#game-sort at 18px tall and the
+   genre chips at 26px on a 390px phone. */
+@media (pointer: coarse), (max-width: 780px) {
+  select#game-sort, .games-filters select { min-block-size: 44px; padding-block: 10px; }
+  #genre-filters .chip { min-block-size: 44px; padding-inline: 14px; }
+  .gcard__play { min-inline-size: 44px; min-block-size: 44px; }
+}
+
+
+/* --------------------------------------------------------------------------
+   9. TICKER LINKS (games.html)
+   Appended rather than renumbered: scenes.css owns the marquee's layout, size
+   and gradient text, and this region only says what turns those items into
+   real, focusable links on the games page. The gradient text is painted with
+   background-clip:text on a transparent `color`, so a link would otherwise
+   inherit the UA's underline in an invisible colour and still occupy a slot in
+   the tab order twice (the second .ticker__set is the loop's other half and is
+   aria-hidden + tabindex="-1", so only the first set is reachable).
+   -------------------------------------------------------------------------- */
+.ticker__item {
+  text-decoration: none;
+  outline: none;
+}
+.ticker:focus-within .ticker__track { animation-play-state: paused; }
+.ticker__item:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: .28em;
+  text-decoration-thickness: 2px;
+  filter: brightness(1.35) drop-shadow(0 0 14px rgba(34, 231, 255, .6));
+}
+
+
+/* --------------------------------------------------------------------------
+   FAQ open/close animation.
+
+   A native <details> snaps open instantly, which reads as a jolt next to the
+   rest of the site. Chrome 129+ can interpolate the content box with
+   ::details-content + interpolate-size, so the answer eases open and closed
+   instead of appearing. Everything is wrapped in @supports, so browsers
+   without it keep the current instant behaviour rather than breaking.
+   -------------------------------------------------------------------------- */
+@supports (interpolate-size: allow-keywords) {
+  :root { interpolate-size: allow-keywords; }
+
+  .faq details::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    translate: 0 -8px;
+    transition:
+      block-size .38s var(--ease-out),
+      opacity .3s var(--ease-out),
+      translate .38s var(--ease-out),
+      content-visibility .38s allow-discrete;
+  }
+  .faq details[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+    translate: 0 0;
+  }
+  /* the answer's own padding must not stick out while the box is collapsed */
+  .faq details > p { padding-block: 0; }
+  .faq details[open] > p { padding-block: 0 0 1.2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq details::details-content { transition: none !important; }
+  .faq summary::after { transition: none !important; }
+}

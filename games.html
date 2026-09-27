@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- ============================ HEAD: identity + SEO ============================
+     One canonical URL for this page — https://pixelrush.example/games.html — is declared in
+     <link rel="canonical">, repeated in og:url, and used again in the JSON-LD WebPage node at the
+     end of this head. If the base URL changes at deploy time, all three move together. -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>All Games — PixelRush | Free Browser Arcade, No Download</title>
+<meta name="description" content="Browse every free game on PixelRush: 24 instant-play arcade, puzzle, racing, strategy, casual and sports games. Search, filter by genre and play in your browser — no signup, no download.">
+<link rel="canonical" href="https://pixelrush.example/games.html">
+<meta name="theme-color" content="#05060f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="All Games — PixelRush Free Browser Arcade">
+<meta property="og:description" content="24 free instant-play games: arcade, puzzle, racing, strategy, casual and sports. Filter by genre or search by name and press START.">
+<meta property="og:url" content="https://pixelrush.example/games.html">
+<meta property="og:site_name" content="PixelRush">
+<meta property="og:image" content="https://pixelrush.example/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="keywords" content="free online games, browser games, no download games, arcade games, play games online, puzzle games, casual games">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Reduced-motion guard: reveal states must never depend on a stylesheet that has not loaded yet. -->
+  <style id="rm-guard">@media (prefers-reduced-motion: reduce){html.js-motion [data-animate],html.js-motion .reveal,html.js-motion [data-depth]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}}</style>
+<!-- Load order matters: base.css sets tokens and primitives, games.css owns the catalogue grid,
+     search box, genre chips and ticker, scenes.css owns the shared parallax/hero scene layers. -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/games.css">
+<link rel="stylesheet" href="css/scenes.css">
+  <!-- Structured data for this page: CollectionPage + ItemList of the 24 games, WebPage and
+       BreadcrumbList. Values are generated from js/games-data.js — see qa/SEO-GUIDE.md. The shared
+       WebSite and Organization are referenced by @id only; they are declared on index.html. -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://pixelrush.example/games.html#webpage",
+      "url": "https://pixelrush.example/games.html",
+      "name": "All Games — PixelRush",
+      "isPartOf": {
+        "@id": "https://pixelrush.example/#website"
+      },
+      "breadcrumb": {
+        "@id": "https://pixelrush.example/games.html#breadcrumb"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://pixelrush.example/games.html#collection",
+      "url": "https://pixelrush.example/games.html",
+      "name": "All Games — PixelRush",
+      "description": "Browse every free game on PixelRush: 24 instant-play arcade, puzzle, racing, strategy, casual and sports games.",
+      "isPartOf": {
+        "@id": "https://pixelrush.example/games.html#webpage"
+      },
+      "publisher": {
+        "@id": "https://pixelrush.example/#organization"
+      },
+      "inLanguage": "en",
+      "mainEntity": {
+        "@id": "https://pixelrush.example/games.html#gamelist"
+      }
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://pixelrush.example/games.html#gamelist",
+      "name": "All PixelRush games",
+      "numberOfItems": 24,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "url": "https://pixelrush.example/play.html?game=reaction#game",
+          "name": "Neon Reaction",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=reaction#game",
+            "name": "Neon Reaction",
+            "url": "https://pixelrush.example/play.html?game=reaction",
+            "inLanguage": "en",
+            "description": "One tap. One reaction. One absurdly high score.",
+            "genre": "Arcade",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT1M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.7,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "url": "https://pixelrush.example/play.html?game=snake#game",
+          "name": "Neon Snake",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=snake#game",
+            "name": "Neon Snake",
+            "url": "https://pixelrush.example/play.html?game=snake",
+            "inLanguage": "en",
+            "description": "Grow a light-streak through the grid. Wall yourself and it is over.",
+            "genre": "Arcade",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT3M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.8,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "url": "https://pixelrush.example/play.html?game=neon-paddle#game",
+          "name": "Neon Paddle",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=neon-paddle#game",
+            "name": "Neon Paddle",
+            "url": "https://pixelrush.example/play.html?game=neon-paddle",
+            "inLanguage": "en",
+            "description": "Volley against a wall or a friend. First to eleven takes the grid.",
+            "genre": "Arcade",
+            "gamePlatform": "Web browser",
+            "playMode": "1-2 Players",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT2M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.6,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "url": "https://pixelrush.example/play.html?game=turbo-drift#game",
+          "name": "Turbo Drift",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=turbo-drift#game",
+            "name": "Turbo Drift",
+            "url": "https://pixelrush.example/play.html?game=turbo-drift",
+            "inLanguage": "en",
+            "description": "Hold the slide, stack the score, survive the neon highway.",
+            "genre": "Racing",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT4M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.5,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "url": "https://pixelrush.example/play.html?game=blockfall#game",
+          "name": "Blockfall",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=blockfall#game",
+            "name": "Blockfall",
+            "url": "https://pixelrush.example/play.html?game=blockfall",
+            "inLanguage": "en",
+            "description": "Stack falling neon blocks and clear four lines before the grid fills.",
+            "genre": "Puzzle",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT5M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.6,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "url": "https://pixelrush.example/play.html?game=minefield#game",
+          "name": "Minefield",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=minefield#game",
+            "name": "Minefield",
+            "url": "https://pixelrush.example/play.html?game=minefield",
+            "inLanguage": "en",
+            "description": "Clear the grid with logic, not luck. One wrong flag ends the run.",
+            "genre": "Strategy",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT6M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.4,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "url": "https://pixelrush.example/play.html?game=hexmerge#game",
+          "name": "Hex Merge",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=hexmerge#game",
+            "name": "Hex Merge",
+            "url": "https://pixelrush.example/play.html?game=hexmerge",
+            "inLanguage": "en",
+            "description": "Drop hexes onto the board and merge equal ranks into bigger, richer ones.",
+            "genre": "Puzzle",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT4M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.3,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
+          "url": "https://pixelrush.example/play.html?game=circuit-flow#game",
+          "name": "Circuit Flow",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=circuit-flow#game",
+            "name": "Circuit Flow",
+            "url": "https://pixelrush.example/play.html?game=circuit-flow",
+            "inLanguage": "en",
+            "description": "Route power from core to every dead node before the timer burns out.",
+            "genre": "Puzzle",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT5M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.5,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 9,
+          "url": "https://pixelrush.example/play.html?game=wordshift#game",
+          "name": "Word Shift",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=wordshift#game",
+            "name": "Word Shift",
+            "url": "https://pixelrush.example/play.html?game=wordshift",
+            "inLanguage": "en",
+            "description": "Shuffle the letters until the hidden word snaps into place.",
+            "genre": "Puzzle",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT3M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.1,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 10,
+          "url": "https://pixelrush.example/play.html?game=apex-velocity#game",
+          "name": "Apex Velocity",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=apex-velocity#game",
+            "name": "Apex Velocity",
+            "url": "https://pixelrush.example/play.html?game=apex-velocity",
+            "inLanguage": "en",
+            "description": "Chase the ghost line through five apex-heavy circuits. Beat your own ghost.",
+            "genre": "Racing",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT5M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.4,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 11,
+          "url": "https://pixelrush.example/play.html?game=night-rally#game",
+          "name": "Night Rally",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=night-rally#game",
+            "name": "Night Rally",
+            "url": "https://pixelrush.example/play.html?game=night-rally",
+            "inLanguage": "en",
+            "description": "Headlights, loose gravel, zero brakes. Hold the line through the dark.",
+            "genre": "Racing",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT6M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.2,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 12,
+          "url": "https://pixelrush.example/play.html?game=speed-trap#game",
+          "name": "Speed Trap",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=speed-trap#game",
+            "name": "Speed Trap",
+            "url": "https://pixelrush.example/play.html?game=speed-trap",
+            "inLanguage": "en",
+            "description": "Ride the needle in the green. Too fast overheats, too slow disappoints.",
+            "genre": "Racing",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT2M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 13,
+          "url": "https://pixelrush.example/play.html?game=tower-guard#game",
+          "name": "Tower Guard",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=tower-guard#game",
+            "name": "Tower Guard",
+            "url": "https://pixelrush.example/play.html?game=tower-guard",
+            "inLanguage": "en",
+            "description": "Spend credits, stack turrets, hold the lane through twelve escalating waves.",
+            "genre": "Strategy",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT8M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.5,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 14,
+          "url": "https://pixelrush.example/play.html?game=base-builder#game",
+          "name": "Base Builder",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=base-builder#game",
+            "name": "Base Builder",
+            "url": "https://pixelrush.example/play.html?game=base-builder",
+            "inLanguage": "en",
+            "description": "Balance income, upkeep and expansion across a grid that never sleeps.",
+            "genre": "Strategy",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT7M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.3,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 15,
+          "url": "https://pixelrush.example/play.html?game=juice-jam#game",
+          "name": "Juice Jam",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=juice-jam#game",
+            "name": "Juice Jam",
+            "url": "https://pixelrush.example/play.html?game=juice-jam",
+            "inLanguage": "en",
+            "description": "Swap, splash, and cascade into longer chains of glowing fruit.",
+            "genre": "Casual",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT3M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.2,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 16,
+          "url": "https://pixelrush.example/play.html?game=stack-tower#game",
+          "name": "Stack Tower",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=stack-tower#game",
+            "name": "Stack Tower",
+            "url": "https://pixelrush.example/play.html?game=stack-tower",
+            "inLanguage": "en",
+            "description": "Drop blocks dead-centre or watch the whole tower lean into the void.",
+            "genre": "Casual",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT2M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.4,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 17,
+          "url": "https://pixelrush.example/play.html?game=neon-bubbles#game",
+          "name": "Neon Bubbles",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=neon-bubbles#game",
+            "name": "Neon Bubbles",
+            "url": "https://pixelrush.example/play.html?game=neon-bubbles",
+            "inLanguage": "en",
+            "description": "Bounce the shot off the walls and pop every cluster before it drifts away.",
+            "genre": "Casual",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT3M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.1,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 18,
+          "url": "https://pixelrush.example/play.html?game=lucky-claw#game",
+          "name": "Lucky Claw",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=lucky-claw#game",
+            "name": "Lucky Claw",
+            "url": "https://pixelrush.example/play.html?game=lucky-claw",
+            "inLanguage": "en",
+            "description": "Time the drop, snag a prize, and try to beat the crane that cheats.",
+            "genre": "Casual",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT2M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 3.8,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 19,
+          "url": "https://pixelrush.example/play.html?game=penalty-kick#game",
+          "name": "Penalty Kick",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=penalty-kick#game",
+            "name": "Penalty Kick",
+            "url": "https://pixelrush.example/play.html?game=penalty-kick",
+            "inLanguage": "en",
+            "description": "Five kicks, one keeper who reads you. Place it in the corner and take the cup.",
+            "genre": "Sports",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT3M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.3,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 20,
+          "url": "https://pixelrush.example/play.html?game=swish#game",
+          "name": "Swish!",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=swish#game",
+            "name": "Swish!",
+            "url": "https://pixelrush.example/play.html?game=swish",
+            "inLanguage": "en",
+            "description": "Bank it off the backboard, swish it clean, and own the arcade court.",
+            "genre": "Sports",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT3M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.2,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 21,
+          "url": "https://pixelrush.example/play.html?game=bullseye#game",
+          "name": "Bullseye Dash",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=bullseye#game",
+            "name": "Bullseye Dash",
+            "url": "https://pixelrush.example/play.html?game=bullseye",
+            "inLanguage": "en",
+            "description": "Ninety, sixty, thirty. Land the bullseye for a perfect nine-dart finish.",
+            "genre": "Sports",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT4M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.4,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 22,
+          "url": "https://pixelrush.example/play.html?game=neon-golf#game",
+          "name": "Neon Golf",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=neon-golf#game",
+            "name": "Neon Golf",
+            "url": "https://pixelrush.example/play.html?game=neon-golf",
+            "inLanguage": "en",
+            "description": "Bank the walls, read the slopes, and sink it in as few taps as you can.",
+            "genre": "Sports",
+            "gamePlatform": "Web browser",
+            "playMode": "1-2 Players",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT6M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.5,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 23,
+          "url": "https://pixelrush.example/play.html?game=rhythm-pulse#game",
+          "name": "Rhythm Pulse",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=rhythm-pulse#game",
+            "name": "Rhythm Pulse",
+            "url": "https://pixelrush.example/play.html?game=rhythm-pulse",
+            "inLanguage": "en",
+            "description": "Chase the beat, chain the hits, and never miss a single downbeat.",
+            "genre": "Arcade",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT4M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.6,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 24,
+          "url": "https://pixelrush.example/play.html?game=rogue-shift#game",
+          "name": "Rogue Shift",
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=rogue-shift#game",
+            "name": "Rogue Shift",
+            "url": "https://pixelrush.example/play.html?game=rogue-shift",
+            "inLanguage": "en",
+            "description": "Every run reshuffles the map. Spend your shifts wisely, descend once.",
+            "genre": "Strategy",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT10M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.7,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://pixelrush.example/games.html#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://pixelrush.example/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Games",
+          "item": "https://pixelrush.example/games.html"
+        }
+      ]
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=reaction#game",
+      "name": "Neon Reaction",
+      "url": "https://pixelrush.example/play.html?game=reaction",
+      "inLanguage": "en",
+      "description": "One tap. One reaction. One absurdly high score.",
+      "genre": "Arcade",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT1M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.7,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=snake#game",
+      "name": "Neon Snake",
+      "url": "https://pixelrush.example/play.html?game=snake",
+      "inLanguage": "en",
+      "description": "Grow a light-streak through the grid. Wall yourself and it is over.",
+      "genre": "Arcade",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT3M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.8,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=neon-paddle#game",
+      "name": "Neon Paddle",
+      "url": "https://pixelrush.example/play.html?game=neon-paddle",
+      "inLanguage": "en",
+      "description": "Volley against a wall or a friend. First to eleven takes the grid.",
+      "genre": "Arcade",
+      "gamePlatform": "Web browser",
+      "playMode": "1-2 Players",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT2M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.6,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=turbo-drift#game",
+      "name": "Turbo Drift",
+      "url": "https://pixelrush.example/play.html?game=turbo-drift",
+      "inLanguage": "en",
+      "description": "Hold the slide, stack the score, survive the neon highway.",
+      "genre": "Racing",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT4M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.5,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=blockfall#game",
+      "name": "Blockfall",
+      "url": "https://pixelrush.example/play.html?game=blockfall",
+      "inLanguage": "en",
+      "description": "Stack falling neon blocks and clear four lines before the grid fills.",
+      "genre": "Puzzle",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT5M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.6,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=minefield#game",
+      "name": "Minefield",
+      "url": "https://pixelrush.example/play.html?game=minefield",
+      "inLanguage": "en",
+      "description": "Clear the grid with logic, not luck. One wrong flag ends the run.",
+      "genre": "Strategy",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT6M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.4,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=hexmerge#game",
+      "name": "Hex Merge",
+      "url": "https://pixelrush.example/play.html?game=hexmerge",
+      "inLanguage": "en",
+      "description": "Drop hexes onto the board and merge equal ranks into bigger, richer ones.",
+      "genre": "Puzzle",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT4M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.3,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=circuit-flow#game",
+      "name": "Circuit Flow",
+      "url": "https://pixelrush.example/play.html?game=circuit-flow",
+      "inLanguage": "en",
+      "description": "Route power from core to every dead node before the timer burns out.",
+      "genre": "Puzzle",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT5M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.5,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=wordshift#game",
+      "name": "Word Shift",
+      "url": "https://pixelrush.example/play.html?game=wordshift",
+      "inLanguage": "en",
+      "description": "Shuffle the letters until the hidden word snaps into place.",
+      "genre": "Puzzle",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT3M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.1,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=apex-velocity#game",
+      "name": "Apex Velocity",
+      "url": "https://pixelrush.example/play.html?game=apex-velocity",
+      "inLanguage": "en",
+      "description": "Chase the ghost line through five apex-heavy circuits. Beat your own ghost.",
+      "genre": "Racing",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT5M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.4,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=night-rally#game",
+      "name": "Night Rally",
+      "url": "https://pixelrush.example/play.html?game=night-rally",
+      "inLanguage": "en",
+      "description": "Headlights, loose gravel, zero brakes. Hold the line through the dark.",
+      "genre": "Racing",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT6M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.2,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=speed-trap#game",
+      "name": "Speed Trap",
+      "url": "https://pixelrush.example/play.html?game=speed-trap",
+      "inLanguage": "en",
+      "description": "Ride the needle in the green. Too fast overheats, too slow disappoints.",
+      "genre": "Racing",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT2M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=tower-guard#game",
+      "name": "Tower Guard",
+      "url": "https://pixelrush.example/play.html?game=tower-guard",
+      "inLanguage": "en",
+      "description": "Spend credits, stack turrets, hold the lane through twelve escalating waves.",
+      "genre": "Strategy",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT8M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.5,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=base-builder#game",
+      "name": "Base Builder",
+      "url": "https://pixelrush.example/play.html?game=base-builder",
+      "inLanguage": "en",
+      "description": "Balance income, upkeep and expansion across a grid that never sleeps.",
+      "genre": "Strategy",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT7M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.3,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=juice-jam#game",
+      "name": "Juice Jam",
+      "url": "https://pixelrush.example/play.html?game=juice-jam",
+      "inLanguage": "en",
+      "description": "Swap, splash, and cascade into longer chains of glowing fruit.",
+      "genre": "Casual",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT3M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.2,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=stack-tower#game",
+      "name": "Stack Tower",
+      "url": "https://pixelrush.example/play.html?game=stack-tower",
+      "inLanguage": "en",
+      "description": "Drop blocks dead-centre or watch the whole tower lean into the void.",
+      "genre": "Casual",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT2M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.4,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=neon-bubbles#game",
+      "name": "Neon Bubbles",
+      "url": "https://pixelrush.example/play.html?game=neon-bubbles",
+      "inLanguage": "en",
+      "description": "Bounce the shot off the walls and pop every cluster before it drifts away.",
+      "genre": "Casual",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT3M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.1,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=lucky-claw#game",
+      "name": "Lucky Claw",
+      "url": "https://pixelrush.example/play.html?game=lucky-claw",
+      "inLanguage": "en",
+      "description": "Time the drop, snag a prize, and try to beat the crane that cheats.",
+      "genre": "Casual",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT2M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 3.8,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=penalty-kick#game",
+      "name": "Penalty Kick",
+      "url": "https://pixelrush.example/play.html?game=penalty-kick",
+      "inLanguage": "en",
+      "description": "Five kicks, one keeper who reads you. Place it in the corner and take the cup.",
+      "genre": "Sports",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT3M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.3,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=swish#game",
+      "name": "Swish!",
+      "url": "https://pixelrush.example/play.html?game=swish",
+      "inLanguage": "en",
+      "description": "Bank it off the backboard, swish it clean, and own the arcade court.",
+      "genre": "Sports",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT3M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.2,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=bullseye#game",
+      "name": "Bullseye Dash",
+      "url": "https://pixelrush.example/play.html?game=bullseye",
+      "inLanguage": "en",
+      "description": "Ninety, sixty, thirty. Land the bullseye for a perfect nine-dart finish.",
+      "genre": "Sports",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT4M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.4,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=neon-golf#game",
+      "name": "Neon Golf",
+      "url": "https://pixelrush.example/play.html?game=neon-golf",
+      "inLanguage": "en",
+      "description": "Bank the walls, read the slopes, and sink it in as few taps as you can.",
+      "genre": "Sports",
+      "gamePlatform": "Web browser",
+      "playMode": "1-2 Players",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT6M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.5,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=rhythm-pulse#game",
+      "name": "Rhythm Pulse",
+      "url": "https://pixelrush.example/play.html?game=rhythm-pulse",
+      "inLanguage": "en",
+      "description": "Chase the beat, chain the hits, and never miss a single downbeat.",
+      "genre": "Arcade",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT4M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.6,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://pixelrush.example/play.html?game=rogue-shift#game",
+      "name": "Rogue Shift",
+      "url": "https://pixelrush.example/play.html?game=rogue-shift",
+      "inLanguage": "en",
+      "description": "Every run reshuffles the map. Spend your shifts wisely, descend once.",
+      "genre": "Strategy",
+      "gamePlatform": "Web browser",
+      "playMode": "1 Player",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any (web browser)",
+      "timeRequired": "PT10M",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.7,
+        "bestRating": 5,
+        "worstRating": 1
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<!-- Set before first paint: css/base.css gates every reveal/parallax rule behind html.js-motion,
+     so this class is what makes motion opt-out work even if the stylesheet is still in flight. -->
+<script>document.documentElement.classList.add('js-motion')</script>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ============================ PRELOADER ============================ -->
+<div id="preloader">
+  <div class="preloader__inner">
+    <svg class="preloader__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="pl-g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#22e7ff"/>
+          <stop offset=".5" stop-color="#8b5cf6"/>
+          <stop offset="1" stop-color="#ff2fb9"/>
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="58" height="58" rx="15" fill="#0a0c1c" stroke="url(#pl-g)" stroke-width="3"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="url(#pl-g)"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="none" stroke="#c8ff2e" stroke-width="1" opacity=".5"/>
+    </svg>
+    <div class="preloader__bar"><span class="preloader__fill"></span></div>
+    <p class="preloader__label">Inserting credits — booting the arcade</p>
+  </div>
+</div>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+      <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+      <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+    </a>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Primary">
+      <a class="nav__link" href="games.html" aria-current="page">Games</a>
+      <a class="nav__link" href="#genres">Genres</a>
+      <a class="nav__link" href="#catalog">Top</a>
+      <a class="nav__link" href="#about-games">About</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="true" aria-label="Toggle motion and visual effects">
+        <span class="motion-toggle__dot" aria-hidden="true"></span>
+        <span class="motion-toggle__label" data-motion-label>ON</span>
+      </button>
+      
+      <!-- Settings: cursor size + native-pointer escape hatch. Owned by js/engine.js. -->
+      <div class="nav__setwrap" style="position:relative;display:inline-flex">
+        <button class="nav__set" id="nav-settings" type="button" aria-expanded="false" aria-controls="nav-settings-panel" aria-label="Display settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3.4 7h2.9M12.7 7h7.9M3.4 12h7.9M18.5 12h2.1M3.4 17h1.4M12.2 17h8.4"/><circle cx="10" cy="7" r="2.1"/><circle cx="15" cy="12" r="2.1"/><circle cx="8.5" cy="17" r="2.1"/></svg></button>
+        <div class="nav__panel" id="nav-settings-panel" role="dialog" aria-label="Display settings">
+          <p class="nav__panel-title">Display</p>
+          <button class="nav__switch" id="px-cursor-switch" type="button" role="switch" aria-checked="true">
+            <span>Neon cursor</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+          <p class="nav__hint">Turn this off to use your normal system pointer.</p>
+          <div class="nav__row">
+            <div class="nav__row-top"><span>Cursor size</span><span class="nav__row-val" id="px-size-val">MED</span></div>
+            <div class="nav__seg" id="px-size-seg" role="group" aria-label="Cursor size">
+              <button type="button" data-px-size="s" aria-checked="false">S</button>
+              <button type="button" data-px-size="m" aria-checked="true">M</button>
+              <button type="button" data-px-size="l" aria-checked="false">L</button>
+              <button type="button" data-px-size="xl" aria-checked="false">XL</button>
+            </div>
+          </div>
+          <button class="nav__switch" id="px-motion-switch" type="button" role="switch" aria-checked="true">
+            <span>Animations</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <a class="btn btn--primary nav__cta" href="#catalog">All games</a>
+      <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open the menu">
+        <span class="nav__burger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ============================ LITE HERO ============================
+       Every .scene on this page follows the same five-layer recipe: decorative .layer divs
+       (aria-hidden, no text, driven by js/engine.js via data-depth) sit under one .layer--flow
+       div that holds the real content. Never drop layer--flow — the section collapses without it. -->
+  <section class="scene" id="games-hero" aria-labelledby="games-hero-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--cyan" style="left:6%;top:8%;--x:6%;--y:8%"></span>
+      <span class="glow-blob glow-blob--magenta" style="left:74%;top:52%;--x:74%;--y:52%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-drift" style="--x:12%;--y:34%;--s:3px;--o:.9"></span>
+      <span class="particle float-loop" style="--x:84%;--y:26%;--s:4px;--o:.7"></span>
+    </div>
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <span class="particle" style="--p-left:6%;--p-top:68%;--p-size:3px;--p-dur:11s;--p-delay:0s"></span>
+      <span class="particle" style="--p-left:16%;--p-top:24%;--p-size:2px;--p-dur:14s;--p-delay:1.4s;--p-color:var(--magenta)"></span>
+      <span class="particle" style="--p-left:28%;--p-top:80%;--p-size:3px;--p-dur:12s;--p-delay:.7s"></span>
+      <span class="particle" style="--p-left:41%;--p-top:16%;--p-size:2px;--p-dur:16s;--p-delay:2.2s;--p-color:var(--acid)"></span>
+      <span class="particle" style="--p-left:55%;--p-top:70%;--p-size:3px;--p-dur:10s;--p-delay:3s"></span>
+      <span class="particle" style="--p-left:68%;--p-top:30%;--p-size:2px;--p-dur:13s;--p-delay:1.1s;--p-color:var(--violet)"></span>
+      <span class="particle" style="--p-left:79%;--p-top:74%;--p-size:3px;--p-dur:12.5s;--p-delay:2.6s"></span>
+      <span class="particle" style="--p-left:91%;--p-top:38%;--p-size:2px;--p-dur:15s;--p-delay:.4s;--p-color:var(--orange)"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">Games</span>
+        </nav>
+        <p class="eyebrow" data-animate="fade-up">24 cabinets · 6 aisles · instant play</p>
+        <h1 id="games-hero-title" data-animate="wipe-up">EVERY GAME IN THE ARCADE</h1>
+        <p class="lead" data-animate="fade-up">Twenty-four instant-play machines, sorted by genre and searchable by
+          name. Everything runs in this tab — no download, no account, no waiting. Pick a cabinet and press START.</p>
+        <p class="u-row u-row--center" data-animate="stagger-children">
+          <span class="chip">Free forever</span>
+          <span class="chip">No signup</span>
+          <span class="chip">Plays offline after load</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TICKER ============================
+       The items are real links, not hover text: the six genre names deep-link
+       into the filtered catalogue (?genre= is the same parameter the chips write)
+       and the three utility items point at the pages they describe. Only the first
+       .ticker__set is the accessible copy — the second exists only to close the
+       marquee loop, so it is aria-hidden and its links are pulled out of the tab
+       order too (aria-hidden alone would still leave nine phantom tab stops). -->
+  <nav class="ticker" aria-label="Jump to a genre or a games page">
+    <div class="ticker__track">
+      <span class="ticker__set">
+        <a class="ticker__item" href="games.html?genre=Arcade">Arcade</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="games.html?genre=Puzzle">Puzzle</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="games.html?genre=Racing">Racing</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="games.html?genre=Strategy">Strategy</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="games.html?genre=Casual">Casual</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="games.html?genre=Sports">Sports</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="games.html" data-ticker-total>24 games</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="index.html#how">No signup</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        <a class="ticker__item" href="games.html">High scores</a><span class="ticker__sep" aria-hidden="true">◆</span>
+        </span>
+      <span class="ticker__set" aria-hidden="true">
+        <a class="ticker__item" tabindex="-1" href="games.html?genre=Arcade">Arcade</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="games.html?genre=Puzzle">Puzzle</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="games.html?genre=Racing">Racing</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="games.html?genre=Strategy">Strategy</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="games.html?genre=Casual">Casual</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="games.html?genre=Sports">Sports</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="games.html" data-ticker-total>24 games</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="index.html#how">No signup</a><span class="ticker__sep">◆</span>
+        <a class="ticker__item" tabindex="-1" href="games.html">High scores</a><span class="ticker__sep">◆</span>
+        </span>
+    </div>
+  </nav>
+
+  <!-- ============================ CATALOG ============================ -->
+  <div class="u-pad-section" id="catalog" style="position:relative;isolation:isolate">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane" style="opacity:.45"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--violet" style="left:2%;top:6%;--x:2%;--y:6%"></span>
+      <span class="glow-blob glow-blob--cyan" style="left:80%;top:64%;--x:80%;--y:64%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-drift" style="--p-left:4%;--p-top:18%;--p-size:3px;--p-dur:13s"></span>
+      <span class="particle float-loop" style="--p-left:22%;--p-top:76%;--p-size:2px;--p-dur:17s;--p-delay:2s;--p-color:var(--magenta)"></span>
+      <span class="particle float-drift" style="--p-left:47%;--p-top:12%;--p-size:3px;--p-dur:12s;--p-delay:1.2s"></span>
+      <span class="particle float-loop" style="--p-left:71%;--p-top:58%;--p-size:2px;--p-dur:15s;--p-delay:3.1s;--p-color:var(--acid)"></span>
+      <span class="particle float-drift" style="--p-left:93%;--p-top:30%;--p-size:3px;--p-dur:11s;--p-delay:.6s"></span>
+    </div>
+
+    <div class="shell">
+      <h2 class="sr-only">Search and filter the game library</h2>
+
+      <!-- Search + genre chips + sort. All three write their state into the query string, which
+           is why the empty-state reset button below reloads the bare pathname. -->
+      <div class="catalog-bar">
+        <div class="search" id="search-wrap">
+          <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M20 20l-3.6-3.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <label class="sr-only" for="game-search">Search games by name, genre or tag</label>
+          <input id="game-search" type="search" name="q" autocomplete="off" spellcheck="false"
+                 placeholder="Search 24 games — try “snake”…"
+                 aria-describedby="result-count">
+          <button class="search__clear" id="search-clear" type="button" aria-label="Clear search">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="filters-row">
+          <!-- The chip cluster is its own flex row; the outer .filters-row is
+               the two-control row that holds it and the sort pill. These two
+               used to share one class, so a flex-wrap row sat inside another
+               flex-wrap row — which is why the sort pill kept stranding
+               itself on a line of its own. The id is what js/catalog.js
+               queries and it is unchanged. -->
+          <div class="chip-group" id="genre-filters" role="group" aria-label="Filter by genre">
+            <button class="chip" type="button" data-genre="All" aria-pressed="true">All<span class="chip__count">24</span></button>
+            <button class="chip" type="button" data-genre="Arcade" aria-pressed="false">Arcade<span class="chip__count">4</span></button>
+            <button class="chip" type="button" data-genre="Puzzle" aria-pressed="false">Puzzle<span class="chip__count">4</span></button>
+            <button class="chip" type="button" data-genre="Racing" aria-pressed="false">Racing<span class="chip__count">4</span></button>
+            <button class="chip" type="button" data-genre="Strategy" aria-pressed="false">Strategy<span class="chip__count">4</span></button>
+            <button class="chip" type="button" data-genre="Casual" aria-pressed="false">Casual<span class="chip__count">4</span></button>
+            <button class="chip" type="button" data-genre="Sports" aria-pressed="false">Sports<span class="chip__count">4</span></button>
+          </div>
+
+          <p class="sort">
+            <label for="game-sort">Sort</label>
+            <select id="game-sort" name="sort">
+              <option value="popular">Popular</option>
+              <option value="az">A–Z</option>
+              <option value="rating">Rating</option>
+            </select>
+          </p>
+        </div>
+      </div>
+
+      <div class="result-row">
+        <p id="result-count" aria-live="polite" role="status">24 games</p>
+        <p class="text-mute">Free · no signup · no download · <a href="#about-games">how it works</a></p>
+      </div>
+
+      <div id="game-grid" class="stagger">
+        <noscript>
+          <p class="lead">JavaScript is off, so the live catalogue can’t render. Every game still works —
+          the <a href="#about-games">genre sections below</a> list all 24 titles and link straight to them.</p>
+        </noscript>
+      </div>
+
+      <!-- Empty state for "no game matches". Shown/hidden by js/catalog.js; hidden means it must
+           stay out of the accessibility tree until a search genuinely returns nothing. -->
+      <div id="no-results" hidden>
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <rect x="6" y="14" width="52" height="36" rx="6" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M18 26h8M18 34h20M18 42h12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="46" cy="42" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M52 48l7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <h3>No cabinet matches that combo</h3>
+        <p>Nothing in the arcade matches your search and genre filter. Try a shorter word, or clear the
+          filters and browse all 24 games.</p>
+        <p class="u-row u-row--center">
+          <button class="btn btn--primary" type="button" id="reset-filters">Reset filters</button>
+          <a class="btn btn--ghost" href="#about-games">Browse by genre</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ SEO PROSE ============================ -->
+  <section class="scene" id="about-games" aria-labelledby="about-games-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="scanlines" style="opacity:.4"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--acid" style="left:10%;top:14%;--x:10%;--y:14%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-loop" style="--x:88%;--y:60%;--s:4px;--o:.8"></span>
+    </div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <article class="seo-block">
+          <p class="eyebrow" data-animate="fade-up">The full library</p>
+          <h2 id="about-games-title" data-animate="wipe-up">About our games on PixelRush</h2>
+
+          <p data-animate="fade-up">PixelRush is a free browser arcade with 24 instant-play games, split across six
+            genres: arcade, puzzle, racing, strategy, casual and sports. Every title is a self-contained HTML, CSS and
+            JavaScript game that loads inside your browser tab. There is nothing to install, no launcher, no account
+            to create. Advertising may appear on the page, but it never gates a game. Open a game and you are
+            playing within a second.</p>
+
+          <p data-animate="fade-up">The catalogue is designed for short sessions. Most games last between one and five
+            minutes and are built around a single mechanic that is instantly readable — time a jump, merge two tiles,
+            thread a car through traffic, or out-plan a greedy opponent. Scores are saved locally in your own browser,
+            so your personal best travels with you on the same device without any account or server round-trip.</p>
+
+          <h3 data-animate="fade-up">How the library is organised</h3>
+          <p data-animate="fade-up">Games are grouped by genre, and each genre has its own section further down this
+            page with a short description of what its four games have in common. Use the search box to look for a game
+            by name or tag, use the genre chips to narrow the grid, and sort by popularity, rating or alphabetically.
+            Your current filters are stored in the page address, so a filtered view can be bookmarked or shared and
+            will open exactly as you left it.</p>
+
+          <h3 data-animate="fade-up">What makes PixelRush different</h3>
+          <ul data-animate="stagger-children">
+            <li><strong>100% free, forever.</strong> No paywall, no trial timer, no “upgrade to remove ads” button.</li>
+            <li><strong>No signup, no account.</strong> High scores live in your browser’s local storage only, and are never sent to a server.</li>
+            <li><strong>No download.</strong> Games are plain web pages — they work on desktop, tablet and phone.</li>
+            <li><strong>Free, ads or not.</strong> Advertising may appear on the page. It never sits between you and a game, and it never unlocks anything.</li>
+            <li><strong>Keyboard, touch and mouse.</strong> Every cabinet is playable on a phone in portrait or a desktop with a keyboard.</li>
+          </ul>
+
+          <p data-animate="fade-up">Every one of the twenty-four cabinets is finished and playable, on a phone as well as a desktop.
+            Want something specific on the floor? Tell us at
+            <a href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a>.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ GENRE DIRECTORY (crawler content) ============================ -->
+  <section class="scene" id="genres" style="--g:var(--cyan)" aria-labelledby="genres-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane" style="opacity:.3"></div>
+      <div class="grain" style="opacity:.25"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--magenta" style="left:18%;top:20%;--x:18%;--y:20%"></span>
+      <span class="glow-blob glow-blob--cyan" style="left:70%;top:80%;--x:70%;--y:80%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-drift" style="--x:6%;--y:60%;--s:3px;--o:.7"></span>
+    </div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up">Six aisles</p>
+          <h2 class="section-head__title" id="genres-title" data-animate="wipe-up">EVERY GENRE, EXPLAINED</h2>
+          <p class="section-head__sub" data-animate="fade-up">Each aisle holds four games. Jump into a genre below, or
+            use the filters at the top of the page to mix and match.</p>
+        </div>
+
+        <nav class="u-row" aria-label="Jump to a genre">
+          <a class="chip" href="#genre-arcade">Arcade</a>
+          <a class="chip" href="#genre-puzzle">Puzzle</a>
+          <a class="chip" href="#genre-racing">Racing</a>
+          <a class="chip" href="#genre-strategy">Strategy</a>
+          <a class="chip" href="#genre-casual">Casual</a>
+          <a class="chip" href="#genre-sports">Sports</a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="genre-arcade" style="--g:var(--cyan)" aria-labelledby="genre-arcade-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true"><div class="scanlines" style="opacity:.35"></div></div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true"><span class="glow-blob glow-blob--cyan" style="left:8%;top:30%;--x:8%;--y:30%"></span></div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true"><span class="particle float-loop" style="--x:92%;--y:40%;--s:3px;--o:.8"></span></div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up" data-aisle="01" data-aisle-genre="Arcade">Aisle 01 · 4 games</p>
+          <h2 class="section-head__title" id="genre-arcade-title" data-animate="wipe-up">Arcade games</h2>
+          <p class="section-head__sub" data-animate="fade-up">Reflex first, thinking second. Arcade games on Pixel
+            PixelRush are built around hand-eye speed and a score you can see climbing: tap the moment a cue appears,
+            steer around obstacles, and chase a number that always feels one tap away.</p>
+        </div>
+        <ul class="u-grid u-grid--2">
+          <li><a href="play.html?game=reaction"><strong>Neon Reaction</strong></a> — one tap, one reaction window, one
+            absurdly high score. The shortest game in the arcade and the hardest to beat.</li>
+          <li><a href="play.html?game=snake"><strong>Neon Snake</strong></a> — the classic, rebuilt on a glowing grid
+            with wrap-around walls and a speed that climbs every fruit.</li>
+          <li><a href="play.html?game=neon-paddle"><strong>Neon Paddle</strong></a> — a two-button take on breakout
+            with a rally counter that punishes drifting.</li>
+          <li><a href="play.html?game=rhythm-pulse"><strong>Rhythm Pulse</strong></a> — hit the beat, stack the
+            combo, and survive the drop.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="genre-puzzle" style="--g:var(--violet)" aria-labelledby="genre-puzzle-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true"><div class="grid-plane" style="opacity:.25"></div></div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true"><span class="glow-blob glow-blob--violet" style="left:84%;top:26%;--x:84%;--y:26%"></span></div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true"><span class="particle float-drift" style="--x:10%;--y:66%;--s:3px;--o:.7"></span></div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up" data-aisle="02" data-aisle-genre="Puzzle">Aisle 02 · 4 games</p>
+          <h2 class="section-head__title" id="genre-puzzle-title" data-animate="wipe-up">Puzzle games</h2>
+          <p class="section-head__sub" data-animate="fade-up">No timer, no reflexes — just a rule set and the space to
+            see it. Puzzle games here are about finding the pattern: what falls, what merges, what is left when
+            everything else is taken away.</p>
+        </div>
+        <ul class="u-grid u-grid--2">
+          <li><a href="play.html?game=blockfall"><strong>Blockfall</strong></a> — stack falling pieces, clear full
+            lines, and decide when to hold or dump.</li>
+          <li><a href="play.html?game=hexmerge"><strong>Hex Merge</strong></a> — drag hexes together so same-coloured
+            clusters fuse and the whole board reorganises.</li>
+          <li><a href="play.html?game=circuit-flow"><strong>Circuit Flow</strong></a> — rotate the grid until every
+            circuit is powered and nothing is short-circuited.</li>
+          <li><a href="play.html?game=wordshift"><strong>Word Shift</strong></a> — slide letters into a real word
+            before the rack fills up.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="genre-racing" style="--g:var(--orange)" aria-labelledby="genre-racing-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true"><div class="scanlines" style="opacity:.3"></div></div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true"><span class="glow-blob glow-blob--orange" style="left:14%;top:22%;--x:14%;--y:22%"></span></div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true"><span class="particle float-loop" style="--x:88%;--y:70%;--s:4px;--o:.75"></span></div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up" data-aisle="03" data-aisle-genre="Racing">Aisle 03 · 4 games</p>
+          <h2 class="section-head__title" id="genre-racing-title" data-animate="wipe-up">Racing games</h2>
+          <p class="section-head__sub" data-animate="fade-up">Top-down, neon-lit and endlessly fast. Racing games here
+            are about a single lap of nerve: read the bend, commit to the gap, and keep the combo alive through
+            traffic that gets denser the longer you survive.</p>
+        </div>
+        <ul class="u-grid u-grid--2">
+          <li><a href="play.html?game=turbo-drift"><strong>Turbo Drift</strong></a> — hold the slide, bank the points,
+            straighten before the wall.</li>
+          <li><a href="play.html?game=apex-velocity"><strong>Apex Velocity</strong></a> — an endless night circuit
+            where speed is earned, not given.</li>
+          <li><a href="play.html?game=night-rally"><strong>Night Rally</strong></a> — gravel, hairpins and a
+            headlight that does not reach as far as you would like.</li>
+          <li><a href="play.html?game=speed-trap"><strong>Speed Trap</strong></a> — thread the checkpoint gates
+            before the clock catches you.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="genre-strategy" style="--g:var(--acid)" aria-labelledby="genre-strategy-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true"><div class="grid-plane" style="opacity:.22"></div></div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true"><span class="glow-blob glow-blob--acid" style="left:76%;top:18%;--x:76%;--y:18%"></span></div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true"><span class="particle float-drift" style="--x:16%;--y:50%;--s:3px;--o:.7"></span></div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up" data-aisle="04" data-aisle-genre="Strategy">Aisle 04 · 4 games</p>
+          <h2 class="section-head__title" id="genre-strategy-title" data-animate="wipe-up">Strategy games</h2>
+          <p class="section-head__sub" data-animate="fade-up">Slower, deeper and the ones people come back to.
+            Strategy games on PixelRush are all about planning two moves ahead while the board keeps moving —
+            which square to give up, which tower to finish, which risk to take once.</p>
+        </div>
+        <ul class="u-grid u-grid--2">
+          <li><a href="play.html?game=minefield"><strong>Minefield</strong></a> — clear the grid with logic, not luck,
+            and watch the numbers do the talking.</li>
+          <li><a href="play.html?game=tower-guard"><strong>Tower Guard</strong></a> — place, upgrade and re-aim before
+            the next wave arrives.</li>
+          <li><a href="play.html?game=base-builder"><strong>Base Builder</strong></a> — grow a grid one tile at a
+            time and keep the economy alive.</li>
+          <li><a href="play.html?game=rogue-shift"><strong>Rogue Shift</strong></a> — a turn-based run where every
+            corridor is a gamble.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="genre-casual" style="--g:var(--magenta)" aria-labelledby="genre-casual-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true"><div class="scanlines" style="opacity:.3"></div></div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true"><span class="glow-blob glow-blob--magenta" style="left:20%;top:70%;--x:20%;--y:70%"></span></div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true"><span class="particle float-loop" style="--x:90%;--y:24%;--s:3px;--o:.75"></span></div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up" data-aisle="05" data-aisle-genre="Casual">Aisle 05 · 4 games</p>
+          <h2 class="section-head__title" id="genre-casual-title" data-animate="wipe-up">Casual games</h2>
+          <p class="section-head__sub" data-animate="fade-up">One-thumb games for the queue, the bus stop and the
+            three minutes before a meeting. Casual games here have one input, instant feedback and a reason to try
+            the next run immediately.</p>
+        </div>
+        <ul class="u-grid u-grid--2">
+          <li><a href="play.html?game=juice-jam"><strong>Juice Jam</strong></a> — match, pour and keep the jars
+            flowing without a spill.</li>
+          <li><a href="play.html?game=stack-tower"><strong>Stack Tower</strong></a> — drop blocks on a moving base and
+            keep the tower standing.</li>
+          <li><a href="play.html?game=neon-bubbles"><strong>Neon Bubbles</strong></a> — pop clusters of three and let
+            the whole screen drop.</li>
+          <li><a href="play.html?game=lucky-claw"><strong>Lucky Claw</strong></a> — grab, time it, and hope the crane
+            is feeling generous.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="genre-sports" style="--g:var(--cyan)" aria-labelledby="genre-sports-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true"><div class="grid-plane" style="opacity:.22"></div></div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true"><span class="glow-blob glow-blob--cyan" style="left:80%;top:64%;--x:80%;--y:64%"></span></div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true"><span class="particle float-drift" style="--x:8%;--y:34%;--s:4px;--o:.7"></span></div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up" data-aisle="06" data-aisle-genre="Sports">Aisle 06 · 4 games</p>
+          <h2 class="section-head__title" id="genre-sports-title" data-animate="wipe-up">Sports games</h2>
+          <p class="section-head__sub" data-animate="fade-up">A stadium-sized scoreboard in a browser tab. Sports
+            games here take one skill — the strike, the shot, the swing — and make it feel like the whole match
+            depends on it.</p>
+        </div>
+        <ul class="u-grid u-grid--2">
+          <li><a href="play.html?game=penalty-kick"><strong>Penalty Kick</strong></a> — pick a corner, commit, and
+            dare the keeper to guess.</li>
+          <li><a href="play.html?game=swish"><strong>Swish!</strong></a> — pure net, from anywhere on the floor.</li>
+          <li><a href="play.html?game=bullseye"><strong>Bullseye Dash</strong></a> — shrinking rings, rising stakes,
+            one dart.</li>
+          <li><a href="play.html?game=neon-golf"><strong>Neon Golf</strong></a> — a nine-hole course that fits in a
+            single scroll.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FAQ ============================ -->
+  <section class="scene" id="faq" aria-labelledby="faq-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="scanlines" style="opacity:.35"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--violet" style="left:12%;top:16%;--x:12%;--y:16%"></span>
+      <span class="glow-blob glow-blob--cyan" style="left:78%;top:58%;--x:78%;--y:58%"></span>
+    </div>
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <span class="particle" style="--p-left:14%;--p-top:26%;--p-size:2px;--p-dur:12s"></span>
+      <span class="particle" style="--p-left:33%;--p-top:82%;--p-size:3px;--p-dur:15s;--p-delay:1.8s;--p-color:var(--magenta)"></span>
+      <span class="particle" style="--p-left:62%;--p-top:18%;--p-size:2px;--p-dur:13s;--p-delay:.9s"></span>
+      <span class="particle" style="--p-left:86%;--p-top:74%;--p-size:3px;--p-dur:16s;--p-delay:2.7s;--p-color:var(--acid)"></span>
+    </div>
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head section-head--center">
+          <p class="eyebrow" data-animate="fade-up">Before you press START</p>
+          <h2 class="section-head__title" id="faq-title" data-animate="wipe-up">FREQUENTLY ASKED</h2>
+          <p class="section-head__sub" data-animate="fade-up">Everything people ask about a free browser arcade,
+            answered without a support ticket.</p>
+        </div>
+
+        <div class="faq">
+          <details data-animate="fade-up" open>
+            <summary>Do I need to download or install anything?</summary>
+            <p>No. Every game on PixelRush is a web page built from HTML, CSS and JavaScript that runs inside your
+              browser. There is no installer, no app store, no launcher and no plugin. Click a game and it starts —
+              on Windows, macOS, Linux, Android or iOS.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>Is it really free? Are there ads or a paid tier?</summary>
+            <p>Yes, genuinely free. There is no paywall, no trial timer, no “remove ads” button, no premium
+              subscription and nothing to buy. The site carries advertising, which pays for the hosting; the games
+              themselves are never charged for, never trimmed and never interrupted. There is still no account
+              wall, because there is no account at all.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>Do I need an account or a login?</summary>
+            <p>No account exists. If you want your high scores to be there tomorrow, that is handled automatically:
+              scores are stored in your own browser’s local storage on your own device. Nothing is uploaded, and nobody
+              — including us — can see your scores.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>Will these games work on my phone?</summary>
+            <p>Yes. The site is built mobile-first: controls adapt to touch, the layout is a single column on small
+              screens, and the heavier parallax and particle effects are automatically reduced on touch devices so the
+              games stay smooth. Landscape gives you the best experience on very small screens.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>How do I find a specific game?</summary>
+            <p>Use the search box at the top of the page — it matches game titles, blurbs, genres and tags, so
+              “snake”, “merge” or “drift” all work. The genre chips narrow the grid to one aisle, and the sort menu
+              switches between most popular, A–Z and highest rated. Your filters are written into the page address, so
+              you can bookmark or share exactly the view you are looking at.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>Do I need an account, or do I have to install anything?</summary>
+            <p>No, and no. Every one of the twenty-four cabinets is a plain web page built from HTML, CSS and
+              JavaScript that runs in the tab you already have open. There is no signup, no download, no launcher and
+              no patch notes. Scores are kept in your own browser, which is also why they do not follow you between
+              devices.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>Does the site work offline?</summary>
+            <p>Once a page has loaded, the games keep running without an internet connection because everything runs
+              locally in your browser. If you reload while offline, your browser will serve the cached copy if it has
+              one — otherwise you will need a connection for the first visit of the session.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>Can I use the site on a shared or work computer?</summary>
+            <p>You can. There is no account and no profile of you, and we run no analytics scripts ourselves. Advertising on
+              the page is served by third parties who may set their own cookies and read your IP address — your browser’s
+              privacy settings and the ad provider’s own controls are where you turn that off. Your high scores are stored
+              locally in that browser, so they will not follow you to another machine — that is the trade-off for
+              having no server at all.</p>
+          </details>
+
+          <details data-animate="fade-up">
+            <summary>Something is broken — how do I report it?</summary>
+            <p>Email <a href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a> with the game name, your
+              browser and roughly what you did. If the game has a <strong>Motion</strong> toggle in the header, try
+              switching motion off and on once — that clears most animation glitches on low-powered machines.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer" id="about">
+  <div class="footer__grid">
+    <div class="footer__brand-col">
+      <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+        <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+        <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+      </a>
+      <p class="footer__blurb">A free browser arcade. No install, no account, no waiting — just press START and play.
+        Built for two-minute breaks and all-night grinds alike.</p>
+      <p class="footer__tagline">Free browser arcade. No install. No account. Just press START.</p>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Arcade</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html">All games</a></li>
+        <li><a class="footer__link" href="games.html?genre=Arcade">Arcade</a></li>
+        <li><a class="footer__link" href="games.html?genre=Puzzle">Puzzle</a></li>
+        <li><a class="footer__link" href="games.html?genre=Racing">Racing</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">More aisles</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html?genre=Strategy">Strategy</a></li>
+        <li><a class="footer__link" href="games.html?genre=Casual">Casual</a></li>
+        <li><a class="footer__link" href="games.html?genre=Sports">Sports</a></li>
+        <li><a class="footer__link" href="index.html#how">How it works</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Top cabinets</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="play.html?game=reaction">Neon Reaction</a></li>
+        <li><a class="footer__link" href="play.html?game=snake">Neon Snake</a></li>
+        <li><a class="footer__link" href="play.html?game=turbo-drift">Turbo Drift</a></li>
+        <li><a class="footer__link" href="play.html?game=blockfall">Blockfall</a></li>
+      </ul>
+      <ul class="footer__socials">
+        <li><a class="footer__social" href="mailto:Utkarsh6624@gmail.com">Email us</a></li>
+        <li><a class="footer__social" href="games.html">All games</a></li>
+        <li><a class="footer__social" href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h2 class="footer__title">The small print</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="about.html">About PixelRush</a></li>
+        <li><a class="footer__link" href="contact.html">Contact us</a></li>
+        <li><a class="footer__link" href="privacy.html">Privacy policy</a></li>
+        <li><a class="footer__link" href="terms.html">Terms of use</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__copy">&copy; <span id="year">2026</span> PixelRush. Free forever, on every screen.</p>
+    <p class="footer__note">Built with vanilla HTML/CSS/JS — nothing to install.</p>
+    <p class="footer__copy"><a class="footer__link" href="index.html">Home</a> · <a class="footer__link" href="games.html">Games</a> · <a class="footer__link" href="about.html">About</a> · <a class="footer__link" href="contact.html">Contact</a> · <a class="footer__link" href="privacy.html">Privacy</a> · <a class="footer__link" href="terms.html">Terms</a></p>
+  </div>
+</footer>
+
+<!-- ============================ SCRIPTS ============================
+       All deferred and in dependency order: engine.js defines window.PX and the shared loop,
+       games-data.js defines window.GAMES / window.PX_DATA, site.js wires chrome (nav, motion
+       toggle, reveal), catalog.js renders and filters the grid from games-data.js. The inline
+       script after them owns only the two page-local controls. Nothing here is required for the
+       no-JS fallback: the genre directory further up the page lists all 24 games as plain links. -->
+<script src="js/engine.js" defer></script>
+<script src="js/games-data.js" defer></script>
+<script src="js/site.js" defer></script>
+<script src="js/catalog.js" defer></script>
+<script>
+/* Page-local wiring for the controls css/games.css styles but js/catalog.js
+   does not own: the search clear button and the empty-state reset button.
+   It also recomputes every game count hardcoded on this page (the genre chip
+   counts, the "Aisle 0N - N games" eyebrows and the ticker's "N games" link)
+   from window.GAMES, so the numbers stay true when the catalogue changes.
+   The markup keeps a plausible number for the no-JS case; this pass is what
+   makes it correct. */
+(function () {
+  'use strict';
+  function ready(fn) {
+    if (window.PX && window.PX.onReady) { window.PX.onReady(fn); return; }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once: true });
+    else fn();
+  }
+
+  /* Per-genre tallies keyed lower-cased, to match the data-genre attributes. */
+  function tally() {
+    var games = (Array.isArray(window.GAMES) ? window.GAMES : [])
+      .filter(function (g) { return g && typeof g === 'object'; });
+    var byGenre = {};
+    games.forEach(function (g) {
+      var key = String(g.genre || '').trim().toLowerCase();
+      if (key) byGenre[key] = (byGenre[key] || 0) + 1;
+    });
+    return { games: games.length, byGenre: byGenre };
+  }
+
+  function paintCounts() {
+    var t = tally();
+    Array.prototype.forEach.call(document.querySelectorAll('#genre-filters .chip'), function (btn) {
+      var key = String(btn.getAttribute('data-genre') || '').trim().toLowerCase();
+      var isAll = !key || key === 'all' || key === 'any';
+      var n = isAll ? t.games : (t.byGenre[key] || 0);
+      var badge = btn.querySelector('.chip__count');
+      if (badge) badge.textContent = String(n);
+      /* A genre with nothing in it gets no chip at all: a "0" affordance is a
+         dead end. "All" is never hidden - an empty catalogue still needs it. */
+      if (!isAll && n === 0) btn.hidden = true;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-aisle-genre]'), function (el) {
+      var no = el.getAttribute('data-aisle') || '';
+      var n = t.byGenre[String(el.getAttribute('data-aisle-genre') || '').toLowerCase()] || 0;
+      el.textContent = 'Aisle ' + no + ' \u00b7 ' + n + (n === 1 ? ' game' : ' games');
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-ticker-total]'), function (el) {
+      el.textContent = t.games + (t.games === 1 ? ' game' : ' games');
+    });
+  }
+
+  ready(function () {
+    var input = document.getElementById('game-search');
+    var wrap = document.getElementById('search-wrap');
+    var clear = document.getElementById('search-clear');
+    var reset = document.getElementById('reset-filters');
+
+    function sync() { if (wrap) wrap.classList.toggle('has-value', !!(input && input.value)); }
+    if (input) {
+      input.addEventListener('input', sync, { passive: true });
+      input.addEventListener('search', sync, { passive: true });
+    }
+    if (clear && input) {
+      clear.addEventListener('click', function () {
+        input.value = '';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.focus();
+      });
+    }
+    if (reset) {
+      // catalog.js rebuilds its state from the query string on load, so the
+      // only reliable "clear everything" is to drop ?q / ?genre / ?sort.
+      reset.addEventListener('click', function () {
+        window.location.href = window.location.pathname;
+      });
+    }
+    paintCounts();
+    sync();
+  });
+})();
+</script>
+</body>
+</html>

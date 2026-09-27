@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<!--
+  PixelRush — Terms of Use.
+
+  A content page in the shared arcade shell. It owns no game code: js/site.js drives
+  the nav, the preloader, the reveal animations and the year stamp, and the long-form
+  copy below is the whole point of the file. Nothing here is user-specific — there is
+  no account system and no server — so this document is static and identical for every
+  visitor.
+
+  Structure, top to bottom:
+    head    meta + Open Graph + the JSON-LD graph
+    preloader  boot animation, removed by site.js once the engine is ready
+    nav     shared header (same markup on every page)
+    main    three .scene sections: LITE HERO, TERMS, CTA
+    footer  shared footer (same markup on every page)
+
+  Conventions worth knowing before editing this file:
+  - Each .scene is a stack of absolutely positioned .layer elements. Only the layer
+    carrying `layer--flow` holds readable content; the others are pure decoration and
+    must keep aria-hidden="true". Dropping layer--flow makes the section collapse and
+    clip its own text.
+  - data-depth drives the parallax translate; data-animate names the entrance effect
+    that site.js applies once the element scrolls into view.
+  - The banner comments below (HERO / TERMS / CTA) match the three sections in main.
+
+  Additive-only rule for this repo: add markup and comments, never remove or reorder
+  what is already here, and never change a class name, id, heading level or link.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<!-- ============================ HEAD META ============================ -->
+<!--
+  One source of truth for this page's identity. `canonical` and the `og:url` / JSON-LD
+  @id further down must all read https://pixelrush.example/terms.html — the owner
+  replaces that placeholder base URL at deploy time, and these are the strings that
+  have to move with it.
+-->
+<title>Terms of Use — PixelRush | Free Browser Arcade, As-Is</title>
+<meta name="description" content="The terms of use for PixelRush, the free browser arcade. Plain-English rules on playing the games, scores, intellectual property, acceptable use and liability. Free, as-is, no warranty.">
+<link rel="canonical" href="https://pixelrush.example/terms.html">
+<meta name="theme-color" content="#05060f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Terms of Use — PixelRush">
+<meta property="og:description" content="Plain-English terms for a free browser arcade: play for yourself, don't republish the games, no warranty, no liability. Last updated 2026.">
+<meta property="og:url" content="https://pixelrush.example/terms.html">
+<meta property="og:site_name" content="PixelRush">
+<meta property="og:image" content="https://pixelrush.example/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="keywords" content="PixelRush terms of use, free browser arcade terms, online game terms, no warranty browser games">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Reduced-motion guard: reveal states must never depend on a stylesheet that has not loaded yet. -->
+  <style id="rm-guard">@media (prefers-reduced-motion: reduce){html.js-motion [data-animate],html.js-motion .reveal,html.js-motion [data-depth]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}}</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/scenes.css">
+<link rel="stylesheet" href="css/games.css">
+
+  <!--
+    JSON-LD for this page. Keep it in sync with the head meta above by hand — the
+    canonical, og:url and the WebPage @id below are the same URL on purpose, so the
+    page, the Open Graph card and the schema node all describe one entity.
+    Nodes reference the shared WebSite by @id only; that entity is defined in full
+    on index.html and must not be duplicated here.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://pixelrush.example/#organization",
+        "name": "PixelRush",
+        "url": "https://pixelrush.example/",
+        "email": "mailto:Utkarsh6624@gmail.com",
+        "description": "PixelRush is a free browser arcade. Twenty-four instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2305060f'/><path d='M8 9h4v5h8V9h4v14h-4v-5h-8v5H8z' fill='%2322e7ff'/></svg>"
+        }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://pixelrush.example/terms.html#webpage",
+        "url": "https://pixelrush.example/terms.html",
+        "name": "Terms of Use — PixelRush | Free Browser Arcade, As-Is",
+        "description": "The terms of use for PixelRush, the free browser arcade. Plain-English rules on playing the games, scores, intellectual property, acceptable use and liability. Free, as-is, no warranty.",
+        "inLanguage": "en",
+        "isPartOf": { "@id": "https://pixelrush.example/#website" },
+        "about": { "@id": "https://pixelrush.example/#organization" },
+        "breadcrumb": { "@id": "https://pixelrush.example/terms.html#breadcrumb" },
+        "dateModified": "2026-09-01"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://pixelrush.example/terms.html#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://pixelrush.example/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Terms of use",
+            "item": "https://pixelrush.example/terms.html"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+<!--
+  Motion opt-in flag. Set before first paint so the reduced-motion guard in the head
+  and the parallax layers both know whether the visitor wants movement. js/site.js
+  reads and mirrors this on the .motion-toggle button and persists the choice.
+-->
+<script>document.documentElement.classList.add('js-motion')</script>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ============================ PRELOADER ============================ -->
+<!--
+  Boot curtain shared by every page. The two stacked <path> elements are the same
+  shape drawn twice: the second is a thin offset stroke that reads as a chromatic
+  fringe. aria-hidden because it is pure decoration, and focusable="false" so older
+  IE/Edge never puts it in the tab order. js/site.js removes #preloader once the
+  first paint is done.
+-->
+<div id="preloader">
+  <div class="preloader__inner">
+    <svg class="preloader__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="pl-g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#22e7ff"/>
+          <stop offset=".5" stop-color="#8b5cf6"/>
+          <stop offset="1" stop-color="#ff2fb9"/>
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="58" height="58" rx="15" fill="#0a0c1c" stroke="url(#pl-g)" stroke-width="3"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="url(#pl-g)"/>
+      <path d="M17 21h8v10h14V21h8v22h-8V39H25v4h-8z" fill="none" stroke="#c8ff2e" stroke-width="1" opacity=".5"/>
+    </svg>
+    <div class="preloader__bar"><span class="preloader__fill"></span></div>
+    <p class="preloader__label">Inserting credits — booting the arcade</p>
+  </div>
+</div>
+
+<!-- ============================ NAV ============================ -->
+<!--
+  Shared header, byte-identical on every page. #nav-toggle is the small-screen menu
+  button; it drives #nav-menu via aria-controls/aria-expanded, and js/site.js closes
+  the menu on Escape and on outside click. Do not add page-specific links here.
+-->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+      <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+      <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+    </a>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Primary">
+      <a class="nav__link" href="games.html">Games</a>
+      <a class="nav__link" href="index.html#genres">Genres</a>
+      <a class="nav__link" href="index.html#games">Top</a>
+      <a class="nav__link" href="about.html">About</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="true" aria-label="Toggle motion and visual effects">
+        <span class="motion-toggle__dot" aria-hidden="true"></span>
+        <span class="motion-toggle__label" data-motion-label>ON</span>
+      </button>
+      
+      <!-- Settings: cursor size + native-pointer escape hatch. Owned by js/engine.js. -->
+      <div class="nav__setwrap" style="position:relative;display:inline-flex">
+        <button class="nav__set" id="nav-settings" type="button" aria-expanded="false" aria-controls="nav-settings-panel" aria-label="Display settings"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M22.52 13.29 21.53 16.65 18.45 16.03 20.24 18.67 18.53 20.35 15.45 22.02 13.71 19.41 13.11 22.54 10.71 22.52 7.35 21.53 7.97 18.45 5.33 20.24 3.65 18.53 1.98 15.45 4.59 13.71 1.46 13.11 1.48 10.71 2.47 7.35 5.55 7.97 3.76 5.33 5.47 3.65 8.55 1.98 10.29 4.59 10.89 1.46 13.29 1.48 16.65 2.47 16.03 5.55 18.67 3.76 20.35 5.47 22.02 8.55 19.41 10.29 22.54 10.89Z M15.4 12a3.4 3.4 0 1 0-6.8 0 3.4 3.4 0 1 0 6.8 0Z"/></svg></button>
+        <div class="nav__panel" id="nav-settings-panel" role="dialog" aria-label="Display settings">
+          <p class="nav__panel-title">Display</p>
+          <button class="nav__switch" id="px-cursor-switch" type="button" role="switch" aria-checked="true">
+            <span>Neon cursor</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+          <p class="nav__hint">Turn this off to use your normal system pointer.</p>
+          <div class="nav__row">
+            <div class="nav__row-top"><span>Cursor size</span><span class="nav__row-val" id="px-size-val">MED</span></div>
+            <div class="nav__seg" id="px-size-seg" role="group" aria-label="Cursor size">
+              <button type="button" data-px-size="s" aria-checked="false">S</button>
+              <button type="button" data-px-size="m" aria-checked="true">M</button>
+              <button type="button" data-px-size="l" aria-checked="false">L</button>
+              <button type="button" data-px-size="xl" aria-checked="false">XL</button>
+            </div>
+          </div>
+          <button class="nav__switch" id="px-motion-switch" type="button" role="switch" aria-checked="true">
+            <span>Animations</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <a class="btn btn--primary nav__cta" href="games.html">All games</a>
+      <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open the menu">
+        <span class="nav__burger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ============================ LITE HERO ============================ -->
+  <!--
+    Lightweight hero. Every .scene on this site is a parallax stack of .layer divs:
+
+      depth-0  grid plane + vignette        farthest back
+      depth-1  glow blobs                  slow, wide drift
+      depth-2  foreground particles        mid motion
+      depth-5  particle field              nearest, fastest
+      depth-4  the ONLY layer with content — carries `layer--flow`
+
+    Every decorative layer is aria-hidden="true". The content layer is the one with
+    `layer--flow`; without that class the section collapses and clips its own text.
+    Particle positions are set per element through custom properties (--x/--y, or
+    --p-left/--p-top/--p-size/--p-dur/--p-delay/--p-color for the depth-5 field) so
+    the markup stays declarative and the motion lives in the stylesheet.
+
+    aria-labelledby points at the h1 below, so the section is announced by the page
+    title rather than by a separate, redundant label.
+  -->
+  <section class="scene" id="terms-hero" aria-labelledby="terms-hero-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--cyan" style="left:8%;top:10%;--x:8%;--y:10%"></span>
+      <span class="glow-blob glow-blob--violet" style="left:78%;top:56%;--x:78%;--y:56%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-drift" style="--x:14%;--y:38%;--s:3px;--o:.9"></span>
+      <span class="particle float-loop" style="--x:86%;--y:28%;--s:4px;--o:.7"></span>
+    </div>
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <span class="particle" style="--p-left:7%;--p-top:70%;--p-size:3px;--p-dur:11s;--p-delay:0s;--p-color:var(--cyan)"></span>
+      <span class="particle" style="--p-left:26%;--p-top:22%;--p-size:2px;--p-dur:14s;--p-delay:1.2s;--p-color:var(--magenta)"></span>
+      <span class="particle" style="--p-left:49%;--p-top:82%;--p-size:3px;--p-dur:12s;--p-delay:.6s"></span>
+      <span class="particle" style="--p-left:71%;--p-top:28%;--p-size:2px;--p-dur:15.5s;--p-delay:2s;--p-color:var(--acid)"></span>
+      <span class="particle" style="--p-left:90%;--p-top:60%;--p-size:3px;--p-dur:13s;--p-delay:1.5s;--p-color:var(--violet)"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <!--
+          Visible breadcrumb. Its two steps (Home / Terms of use) are mirrored by the
+          BreadcrumbList node in this page's JSON-LD, so the structured data and the
+          on-page trail cannot drift apart without it being visible here.
+        -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">Terms of use</span>
+        </nav>
+        <p class="eyebrow" data-animate="fade-up">The small print · plain English</p>
+        <!-- The page's only h1. Do not add a second one anywhere in this file. -->
+        <h1 id="terms-hero-title" data-animate="wipe-up">TERMS OF USE</h1>
+        <p class="lead" data-animate="fade-up">You can play every game on PixelRush without giving us an account, an
+          email address or a single coin. These terms exist so there is no confusion about that. Nothing here is
+          clever. If a sentence in here is unclear, email us and we will rewrite it.</p>
+        <p class="u-row u-row--center" data-animate="stagger-children">
+          <span class="chip">Free forever</span>
+          <span class="chip">No account</span>
+          <!--
+            The "last updated" chip. It is plain text, not a time element, and it is
+            the same date the JSON-LD WebPage node reports as dateModified
+            (2026-09-01) in this page's head. Change both together whenever the terms
+            are revised.
+          -->
+          <span class="chip">Last updated 1 September 2026</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TERMS ============================ -->
+  <!--
+    The actual document. Same layer-stack pattern as the hero, but the background is
+    a scanline pass instead of a grid plane. The content layer wraps a single
+    seo-block article; every heading below it is an h2 or h3 under the page's one h1,
+    so the outline never skips a level.
+
+    The id on each h2 (#not-advice, #as-is, #your-use, …) is the anchor target used
+    by the in-page jump nav directly after "The short version". The two lists must
+    stay in step: adding a section means adding both the h2 id and a chip.
+  -->
+  <section class="scene" id="terms" aria-labelledby="terms-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="scanlines" style="opacity:.4"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--acid" style="left:12%;top:16%;--x:12%;--y:16%"></span>
+      <span class="glow-blob glow-blob--magenta" style="left:82%;top:62%;--x:82%;--y:62%"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="particle float-loop" style="--x:90%;--y:58%;--s:4px;--o:.8"></span>
+    </div>
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <span class="particle" style="--p-left:12%;--p-top:24%;--p-size:2px;--p-dur:12s"></span>
+      <span class="particle" style="--p-left:38%;--p-top:80%;--p-size:3px;--p-dur:15s;--p-delay:1.8s;--p-color:var(--acid)"></span>
+      <span class="particle" style="--p-left:64%;--p-top:16%;--p-size:2px;--p-dur:13s;--p-delay:.9s;--p-color:var(--magenta)"></span>
+      <span class="particle" style="--p-left:88%;--p-top:70%;--p-size:3px;--p-dur:16s;--p-delay:2.7s;--p-color:var(--cyan)"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <article class="seo-block">
+
+          <h2 id="terms-title" data-animate="fade-up">The short version</h2>
+          <p data-animate="fade-up">PixelRush is a free browser arcade. It runs on plain HTML, CSS and JavaScript
+            in your tab. There is no account, no subscription, no in-game purchase and nothing to cancel. The site
+            carries advertising, which is the only reason it exists. In exchange, here is the deal in seven lines:</p>
+          <ul data-animate="stagger-children">
+            <li>The games are free, provided as they are, with no warranty of any kind.</li>
+            <li>Play them for yourself. Personal and non-commercial use only.</li>
+            <li>Ads may be shown alongside the games. They are never chosen or endorsed by us, and blocking them is
+              entirely your decision.</li>
+            <li>Games can be changed, balanced or switched off whenever the arcade decides.</li>
+            <li>Link to the site and share links freely. Do not republish the games themselves.</li>
+            <li>No account means your high scores live in your own browser and are nobody else's problem when they go.</li>
+            <li>Do not scrape the site, overload it with automation, or try to break the games. To your advantage or anyone else's.</li>
+          </ul>
+          <p data-animate="fade-up">The rest of this page unpacks each of those. Read it once, then forget about it and
+            go and beat your own score.</p>
+
+          <!--
+            In-page table of contents. This is a nav landmark, not a list of links
+            dropped into prose, because it navigates rather than describes. Each
+            chip's href is the id of the matching h2 further down this article — keep
+            them paired when a section is added, renamed or removed.
+          -->
+          <nav class="u-row" aria-label="Jump to a section of these terms" data-animate="fade-up">
+            <a class="chip" href="#not-advice">Not legal advice</a>
+            <a class="chip" href="#as-is">As-is, no warranty</a>
+            <a class="chip" href="#your-use">How you may use it</a>
+            <a class="chip" href="#changes">Changes and retirements</a>
+            <a class="chip" href="#scores">High scores</a>
+            <a class="chip" href="#advertising">Advertising</a>
+            <a class="chip" href="#ip">Intellectual property</a>
+            <a class="chip" href="#acceptable-use">Acceptable use</a>
+            <a class="chip" href="#liability">Limitation of liability</a>
+            <a class="chip" href="#contact">Questions</a>
+          </nav>
+
+          <h2 id="not-advice" data-animate="fade-up">These terms are not legal advice</h2>
+          <p data-animate="fade-up">Let us be blunt about this one. This page is written by the person who built the
+            arcade, in ordinary language, so that players know where they stand. It is not a contract drafted by a
+            solicitor, it has not been through legal review, and it is not a substitute for legal advice of any kind.
+            Nothing here creates obligations that the law of your country would not otherwise create, and nothing here
+            removes any rights you already have under consumer law, unfair-terms rules or any other legislation that
+            applies to you. Those protections override anything written here.</p>
+          <p data-animate="fade-up">If you are making a decision that genuinely needs legal input — embedding the games
+            in a product of your own, running the site commercially, or relying on these terms in a dispute — get an
+            actual lawyer. We can tell you what we intended. We cannot tell you what is enforceable in your
+            jurisdiction.</p>
+
+          <h2 id="as-is" data-animate="fade-up">The service is free, as-is, with no warranty</h2>
+          <p data-animate="fade-up">Every game, page and feature on PixelRush is provided free of charge and
+            &ldquo;as is&rdquo;, which is the legal way of saying: you get exactly what is there, and we have not
+            promised it will be anything more than that. No warranty of merchantability, no warranty of fitness for
+            any particular purpose, no warranty of accuracy, no warranty that it will be uninterrupted, and no
+            warranty that it will work on your device, your browser or your network.</p>
+          <p data-animate="fade-up">This is not a get-out clause we wrote to avoid supporting our own work. It is a
+            direct consequence of how the site is funded. Ad revenue pays for the hosting; nothing else does. There is
+            no subscription paying for a support team, no server farm paying for uptime guarantees, and no reason for
+            anyone to hold a queue for you. The games are given away, and they come with the bugs and rough edges that
+            free things come with. A game may freeze, a score may reset, a page may fail to load, or a cabinet may be
+            pulled. If any of that happens, we are sorry — but we have not promised it will not.</p>
+          <h3 data-animate="fade-up">What we will always try to do</h3>
+          <p data-animate="fade-up">We will try to keep the arcade up, keep the games fair, keep the catalogue honest
+            and keep your play data on your own machine. &ldquo;Try&rdquo; is doing honest work in that sentence. If
+            you find a broken game, tell us and we will look at it. We just do not promise a response time, a fix
+            date or a service level.</p>
+
+          <h2 id="your-use" data-animate="fade-up">Play it for yourself: personal, non-commercial use</h2>
+          <p data-animate="fade-up">The games on PixelRush are for your own enjoyment. That means playing them
+            yourself, on your own device, for your own amusement. It also means you may not use them, or the site, to
+            make money or to run somebody else's business.</p>
+          <p data-animate="fade-up">Concretely, the following are not permitted without asking us first:</p>
+          <ul data-animate="stagger-children">
+            <li><strong>Selling access.</strong> Charging people to play, or bundling the games into a paid product, a
+              subscription service, a paywalled newsletter or a membership.</li>
+            <li><strong>Rebranding and reselling.</strong> Putting the games on your own site or app under your own
+              name, with or without changes, for money or for traffic.</li>
+            <li><strong>Advertising against the site.</strong> Running ad campaigns, pop-unders or ad networks that
+              buy traffic to these pages and intercept the click.</li>
+            <li><strong>Commercial data work.</strong> Harvesting scores, player behaviour or site telemetry to feed
+              someone else's product, model or trading strategy.</li>
+            <li><strong>Embedding the games in a kiosk, stream overlay, classroom or venue product</strong> where
+              people watch or pay to watch other people play.</li>
+          </ul>
+          <p data-animate="fade-up">Playing on a shared computer, on a work machine, on a school lab PC or on a library
+            terminal is fine. So is letting a friend play the next round on your laptop. The line is at whether the
+            games have become your product rather than your pastime.</p>
+
+          <h2 id="changes" data-animate="fade-up">The site and the games can change at any time</h2>
+          <p data-animate="fade-up">PixelRush is a living arcade, not a frozen release. Games get balance changes.
+            Controls move. Difficulty shifts, new games land, and occasionally an old cabinet is quietly retired
+            because it is not as much fun as it used to be. We do this without asking permission and without warning,
+            and we may do it at any time, including removing a game entirely.</p>
+          <p data-animate="fade-up">That means a link you bookmarked to a specific game may stop working one morning,
+            a shortcut on your home screen may land somewhere else, and a page you wrote a guide about may describe
+            rules that have since changed. We are not obliged to keep a deprecated game alive for your convenience.
+            Where we can do it cheaply, we will leave a page explaining that a game has moved on rather than
+            deleting it silently.</p>
+          <p data-animate="fade-up">We may also change or remove any part of the site itself — the design, the
+            navigation, the filters, the ticker, the layout. Do not build anything that depends on the current shape of
+            these pages.</p>
+
+          <h2 id="scores" data-animate="fade-up">High scores live in your browser, not on a server</h2>
+          <p data-animate="fade-up">Because there is no account and no server, your scores and settings are stored
+            locally in your own browser. That part of the privacy story is a good one: we never see your scores, and we
+            cannot see them from here. It does not cover everything the page does, though — the advertising below is a
+            separate business.</p>
+          <p data-animate="fade-up">It also means the scores are entirely your problem to look after. They are
+            attached to one browser on one device, and they are erased when that browser data is erased. You will
+            lose them if you:</p>
+          <ul data-animate="stagger-children">
+            <li>clear your browsing data, cookies or site data, or use &ldquo;clear cookies on exit&rdquo;;</li>
+            <li>play in a private or incognito window, which forgets everything the moment you close it;</li>
+            <li>switch browser, device or operating system;</li>
+            <li>use a cleaning tool, a private browsing extension or a shared kiosk PC;</li>
+            <li>delete the game's local data from your browser's storage settings.</li>
+          </ul>
+          <p data-animate="fade-up">We cannot recover them for you. There is no backup, because there is nowhere for a
+            backup to live. If a score matters to you, write it down. Equally, no one else can take it from you: your
+            scores are not submitted anywhere, not uploaded anywhere, and not shared with anyone — including us.</p>
+
+          <h2 id="advertising" data-animate="fade-up">Advertising</h2>
+          <p data-animate="fade-up">The arcade is funded by advertising. Pages here may show ads, and ads may appear
+            before a game loads or around the play area. There is no paywall, no trial timer, no &ldquo;remove
+            ads&rdquo; button and no premium tier. Every game stays free to open and free to finish, and no ad will
+            ever sit between you and a game you have started.</p>
+          <p data-animate="fade-up">The ads are chosen and served by third parties, not by us. We do not select which
+            ads appear, we do not endorse them, and we do not control what they say or where they send you. We have not
+            chosen a specific ad provider, so rather than name one, here is the honest description of the category:
+            advertising on a site like this is normally delivered by a third-party ad network, which can set cookies or
+            similar storage in your browser, read the IP address your request arrives from, and use that to build a
+            profile and decide which ad to show you. When a provider is chosen, its name and its own privacy policy
+            will be listed here and on the <a href="privacy.html">privacy policy</a> page.</p>
+          <p data-animate="fade-up">We do not receive the profiling data they build, and we cannot see it, correct it
+            or delete it. If you would rather not be profiled, the opt-out lives in your own browser and privacy
+            settings and in the ad provider&rsquo;s own controls, not with us. Blocking ads is your call entirely: use
+            a content blocker, your browser&rsquo;s tracking protection, or your operating system&rsquo;s setting.
+            Please note that a blocker is a tool on your machine, not a promise from us.</p>
+          <p data-animate="fade-up">If an ad is offensive, misleading, broken, or sits over a game and stops you
+            playing, tell us at
+            <a href="mailto:Utkarsh6624@gmail.com?subject=Advertising%20complaint">Utkarsh6624@gmail.com</a> with
+            &ldquo;Advertising&rdquo; in the subject line and a note of which page it happened on. We will pass the
+            complaint to the provider where we can, but the ad is theirs, so the outcome is theirs too.</p>
+
+          <h2 id="ip" data-animate="fade-up">Who owns what</h2>
+          <p data-animate="fade-up">Everything on PixelRush is ours — well, mine, if we are being precise about it.
+            That includes the games and the code behind them, the artwork, the icons, the cabinet illustrations, the
+            neon styling, the sound-free design language, the written copy on these pages, the layout, the &ldquo;Pixel
+            PixelRush&rdquo; name, and the wordmark. All of it is protected by copyright and, where it applies, by
+            trade mark and design rights.</p>
+          <h3 data-animate="fade-up">What you can do with it</h3>
+          <p data-animate="fade-up">You can, and we would like you to:</p>
+          <ul data-animate="stagger-children">
+            <li>link to any page on the site from anywhere, including inside a comment, a forum post or a review;</li>
+            <li>share links to the site and to individual games in whatever way you like;</li>
+            <li>quote short extracts from these pages for review, news or commentary, with a link back;</li>
+            <li>screenshot the games and post the picture somewhere, for fun, as long as you are not passing the
+              screenshot off as a game you made or a website you run.</li>
+          </ul>
+          <h3 data-animate="fade-up">What you cannot do with it</h3>
+          <p data-animate="fade-up">You cannot republish the games. Not on a games site, not on a drive link, not in a
+            zip, not inside a &ldquo;free games bundle&rdquo;, not in a course, not on a stream overlay, not in a
+            printable activity pack. Copying a game's source wholesale and putting it back on the open web is exactly
+            what these terms are here to prevent. The same goes for lifting the artwork or the copy and using it to
+            build a look-alike site, and for using the PixelRush name or logo in a way that suggests we are
+            involved with, endorsing or approving whatever you are doing.</p>
+          <p data-animate="fade-up">If you want to build something genuinely collaborative — a tournament site that
+            embeds the games, a classroom project, a fan page with a bit of love on it — email us first. We are
+            usually saying yes. We just cannot say yes to something we have not seen.</p>
+
+          <h2 id="acceptable-use" data-animate="fade-up">Acceptable use</h2>
+          <p data-animate="fade-up">The arcade is free and there is very little you have to do. These are the few
+            things you must not do, mostly because they cost us money or make the site worse for everyone else.</p>
+          <ul data-animate="stagger-children">
+            <li><strong>No scraping.</strong> Do not crawl, harvest or bulk-copy the games, the artwork, the copy or
+              the game list. Reading pages by hand like a person is welcome; a crawler is not.</li>
+            <li><strong>No harmful automation.</strong> Do not point a bot, a load tester, a scraper or a headless
+              browser at the site. Do not run automated play loops, score-farming scripts or fake leaderboard entries.</li>
+            <li><strong>No attacking the site.</strong> Do not attempt to break, probe, overwhelm or gain unauthorised
+              access to the games, the hosting, the scripts or any connected service — including trying to get a game
+              to hand you a score you did not earn, or tampering with the code in your browser purely to break it for
+              yourself.</li>
+            <li><strong>No redistributing the games.</strong> Covered in the section above, and repeated here because
+              it is the rule people break by accident.</li>
+            <li><strong>No impersonation.</strong> Do not present yourself as PixelRush, do not register domains or
+              accounts that imply you are us, and do not collect anyone&rsquo;s details under our name.</li>
+            <li><strong>No abuse of the contact address.</strong> Please do not email us anything unlawful, unsolicited
+              at volume, or unrelated to the arcade.</li>
+          </ul>
+          <p data-animate="fade-up">If you break one of these, we may block you, throttle your access or take the
+            content down. We would much rather not — the point of a free arcade is that people use it — but we will if
+            we have to.</p>
+
+          <h2 id="liability" data-animate="fade-up">Limitation of liability</h2>
+          <p data-animate="fade-up">To the fullest extent the law allows, and to the fullest extent anyone can agree to
+            in a document nobody reads: we are not liable for anything that happens to you as a result of using
+            PixelRush. No loss of data, no loss of profit, no loss of scores, no lost business, no wasted evening,
+            no damaged hardware, no indirect or consequential loss of any kind.</p>
+          <p data-animate="fade-up">That covers the games breaking, the site being down, a save not being there when
+            you come back, a balance change ruining a run you were in the middle of, or a link you followed going
+            somewhere else. It also covers the ordinary realities of running a website whose running costs come from
+            ads: we cannot promise the site will be online at any particular time, available in any particular country,
+            or free of errors.</p>
+          <p data-animate="fade-up">None of this limits any liability that cannot lawfully be limited, and none of it
+            limits your statutory consumer rights. Where the law says something is our fault regardless of what we
+            have written, the law wins.</p>
+
+          <h2 id="contact" data-animate="fade-up">Questions, and changes to these terms</h2>
+          <p data-animate="fade-up">We may revise these terms from time to time. The date at the top of this page is
+            the one that counts: if a change is material, we will update that date. Continuing to use the site after a
+            change means you accept the updated version. Nothing here applies retroactively to something that happened
+            before the change was made.</p>
+          <p data-animate="fade-up">If anything here is unclear, or you want permission to do something these terms do
+            not clearly allow, or you just want to tell us a game is broken — email
+            <a href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a> and put &ldquo;Terms&rdquo; in the
+            subject line. You will also find the same address on our <a href="contact.html">contact page</a>. If you
+            would rather read how the site works before the legal bit, start with <a href="about.html">about Pixel
+            PixelRush</a>, the <a href="privacy.html">privacy policy</a>, or the <a href="games.html">full game
+            library</a>.</p>
+          <p data-animate="fade-up">Now stop reading the small print and go play something.</p>
+
+          <p class="text-mute" data-animate="fade-up">&copy; <span data-year>2026</span> PixelRush. All rights reserved.
+            Free forever, on every screen.</p>
+
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CTA ============================ -->
+  <!--
+    Closing call to action. Same layer stack, plus a `.curtain` on depth-2: two
+    panels that part to reveal the buttons, so the CTA plays as the credits roll.
+    The title is an h2 with one span per word, which is what data-animate
+    "split-text" staggers — keep the words as separate spans if you edit the copy.
+  -->
+  <section class="scene" id="terms-cta" aria-labelledby="terms-cta-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane" style="opacity:.3"></div>
+      <div class="grain" style="opacity:.25"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob glow-blob--cyan" style="left:22%;top:24%;--x:22%;--y:24%"></span>
+      <span class="glow-blob glow-blob--magenta" style="left:76%;top:70%;--x:76%;--y:70%"></span>
+    </div>
+    <div class="layer depth-2 curtain" data-depth="2" aria-hidden="true">
+      <span class="curtain__panel curtain__panel--l"></span>
+      <span class="curtain__panel curtain__panel--r"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="cta__inner">
+        <p class="eyebrow" data-animate="fade-up">Credits roll</p>
+        <h2 class="cta__title" id="terms-cta-title" data-animate="split-text"><span>Back</span> <span>to</span> <span>the</span> <span>floor</span></h2>
+        <p class="cta__sub" data-animate="wipe-up">Twenty-four cabinets, no account, no paywall, no small print you
+          have to decode. Pick one and press START.</p>
+        <div class="cta__actions" data-animate="scale-in">
+          <a class="btn btn--primary btn--lg" href="games.html">Enter the arcade</a>
+          <a class="btn btn--ghost btn--lg" href="mailto:Utkarsh6624@gmail.com?subject=Terms%20of%20use%20question">Ask a question</a>
+        </div>
+        <p class="cta__fine">No account · no download · plays in one tap</p>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <span class="particle" style="--p-left:18%;--p-top:52%;--p-size:3px;--p-dur:10s;--p-delay:0s;--p-color:var(--magenta)"></span>
+      <span class="particle" style="--p-left:44%;--p-top:28%;--p-size:2px;--p-dur:13s;--p-delay:-5s;--p-color:var(--cyan)"></span>
+      <span class="particle" style="--p-left:68%;--p-top:76%;--p-size:3px;--p-dur:11s;--p-delay:-2s;--p-color:var(--acid)"></span>
+      <span class="particle" style="--p-left:86%;--p-top:40%;--p-size:2px;--p-dur:14s;--p-delay:-8s;--p-color:var(--violet)"></span>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<!--
+  Shared footer, identical on every page. The column headings are h2 so the footer
+  outline continues the page outline rather than restarting the levels; each list
+  underneath is a plain ul of .footer__link anchors, and the genre/scoring links
+  carry query strings that games.html and play.html read on load.
+
+  The id="about" on the footer element is a copy-paste leftover from the about page
+  and matches no anchor on this page. It is harmless but misleading — it is left in
+  place because this repo's rule is that ids never change once shipped.
+-->
+<footer class="footer" id="about">
+  <div class="footer__grid">
+    <div class="footer__brand-col">
+      <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+        <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+        <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+      </a>
+      <p class="footer__blurb">A free browser arcade. No install, no account, no waiting — just press START and play.
+        Built for two-minute breaks and all-night grinds alike.</p>
+      <p class="footer__tagline">Free browser arcade. No install. No account. Just press START.</p>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Arcade</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html">All games</a></li>
+        <li><a class="footer__link" href="games.html?genre=Arcade">Arcade</a></li>
+        <li><a class="footer__link" href="games.html?genre=Puzzle">Puzzle</a></li>
+        <li><a class="footer__link" href="games.html?genre=Racing">Racing</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">More aisles</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html?genre=Strategy">Strategy</a></li>
+        <li><a class="footer__link" href="games.html?genre=Casual">Casual</a></li>
+        <li><a class="footer__link" href="games.html?genre=Sports">Sports</a></li>
+        <li><a class="footer__link" href="index.html#how">How it works</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Top cabinets</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="play.html?game=reaction">Neon Reaction</a></li>
+        <li><a class="footer__link" href="play.html?game=snake">Neon Snake</a></li>
+        <li><a class="footer__link" href="play.html?game=neon-paddle">Neon Paddle</a></li>
+        <li><a class="footer__link" href="play.html?game=blockfall">Blockfall</a></li>
+      </ul>
+      <ul class="footer__socials">
+        <li><a class="footer__social" href="mailto:Utkarsh6624@gmail.com">Email us</a></li>
+        <li><a class="footer__social" href="games.html">All games</a></li>
+        <li><a class="footer__social" href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h2 class="footer__title">The small print</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="about.html">About PixelRush</a></li>
+        <li><a class="footer__link" href="contact.html">Contact us</a></li>
+        <li><a class="footer__link" href="privacy.html">Privacy policy</a></li>
+        <li><a class="footer__link" href="terms.html">Terms of use</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <!-- #year is stamped with the current year by js/site.js; 2026 is the no-JS fallback. -->
+    <p class="footer__copy">&copy; <span id="year">2026</span> PixelRush. Free forever, on every screen.</p>
+    <p class="footer__note">Built with vanilla HTML/CSS/JS — nothing to install.</p>
+    <p class="footer__copy"><a class="footer__link" href="index.html">Home</a> · <a class="footer__link" href="games.html">Games</a> · <a class="footer__link" href="about.html">About</a> · <a class="footer__link" href="contact.html">Contact</a> · <a class="footer__link" href="privacy.html">Privacy</a> · <a class="footer__link" href="terms.html">Terms</a></p>
+  </div>
+</footer>
+
+<!--
+  Both scripts are deferred, so neither blocks the first paint. js/engine.js owns the
+  shared scene/parallax/reveal engine; js/site.js owns this page's chrome behaviour —
+  the preloader, the nav toggle, the motion toggle and the year stamp. No game code is
+  loaded here: a terms page has no canvas and no catalogue.
+-->
+<script src="js/engine.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

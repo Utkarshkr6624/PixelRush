@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<!-- ===========================================================================
+     404 — "Signal Lost"
+     The dead-end page. Served by the host whenever a path is not found, so it
+     is `noindex, follow` (see the robots meta below) — Google keeps crawling
+     through the links but never indexes the result itself.
+     Structure of this file: head (meta + inline stylesheet for the
+     .nf-* scene) → body → nav → main scene → footer → scripts.
+     =========================================================================== -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>404 — Signal Lost | PixelRush</title>
+<meta name="description" content="This PixelRush page does not exist. The signal dropped out of the arcade. Head back to the lobby, pick a game and press START.">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://pixelrush.example/404.html">
+<meta name="theme-color" content="#05060f">
+<!--
+  No JSON-LD block here on purpose. Per qa/SEO-GUIDE.md, 404.html is `noindex`
+  and the guide's schema table assigns it no node — structured data on a page
+  Google is told not to index buys nothing, so this head stays markup-only.
+-->
+<meta property="og:type" content="website">
+<meta property="og:title" content="404 — Signal Lost | PixelRush">
+<meta property="og:description" content="This screen is not on the map. Head back to the lobby and press START.">
+<meta property="og:url" content="https://pixelrush.example/404.html">
+<meta property="og:site_name" content="PixelRush">
+<meta property="og:image" content="https://pixelrush.example/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Reduced-motion guard: reveal states must never depend on a stylesheet that has not loaded yet. -->
+  <style id="rm-guard">@media (prefers-reduced-motion: reduce){html.js-motion [data-animate],html.js-motion .reveal,html.js-motion [data-depth]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}}</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/scenes.css">
+<link rel="stylesheet" href="css/games.css">
+<style>
+/* ────────────────────────────────────────────────────────────────────────────
+   404-only layer.
+   Everything here is prefixed .nf- so it cannot collide with the shared
+   base/scenes/games stylesheets, and the page still reads correctly if the
+   shared sheets are mid-edit. Uses only SPEC.md custom properties.
+   ──────────────────────────────────────────────────────────────────────────── */
+.nf{position:relative}
+
+/* depth-0 — perspective grid horizon, drawn with gradients only */
+.nf__backdrop{
+  background:
+    repeating-linear-gradient(to right,rgba(34,231,255,.14) 0 1px,transparent 1px 72px),
+    repeating-linear-gradient(to bottom,rgba(255,47,185,.10) 0 1px,transparent 1px 72px),
+    radial-gradient(120% 80% at 50% 118%,rgba(34,231,255,.24),transparent 62%),
+    linear-gradient(180deg,var(--bg),var(--bg-3) 62%,var(--bg));
+  transform-origin:50% 100%;
+}
+
+/* depth-2 — slow-drifting wire mesh */
+.nf__mesh{
+  background:
+    linear-gradient(rgba(139,92,246,.16),rgba(139,92,246,0)),
+    repeating-linear-gradient(115deg,rgba(255,255,255,.05) 0 1px,transparent 1px 26px);
+  opacity:.7;
+  -webkit-mask-image:radial-gradient(70% 60% at 50% 40%,#000,transparent 78%);
+  mask-image:radial-gradient(70% 60% at 50% 40%,#000,transparent 78%);
+}
+
+/* depth-5 — particles */
+.nf__particles i{
+  position:absolute;display:block;width:3px;height:3px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 10px 1px rgba(34,231,255,.8);opacity:.6;
+}
+.nf__particles i:nth-child(1) {left:6%;top:18%;animation-duration:11s}
+.nf__particles i:nth-child(2) {left:14%;top:62%;animation-duration:15s;animation-delay:-3s;background:var(--magenta);box-shadow:0 0 10px 1px rgba(255,47,185,.8)}
+.nf__particles i:nth-child(3) {left:22%;top:34%;animation-duration:13s;animation-delay:-6s}
+.nf__particles i:nth-child(4) {left:31%;top:78%;animation-duration:17s;animation-delay:-2s;background:var(--acid);box-shadow:0 0 10px 1px rgba(200,255,46,.8)}
+.nf__particles i:nth-child(5) {left:40%;top:12%;animation-duration:12s;animation-delay:-8s}
+.nf__particles i:nth-child(6) {left:48%;top:52%;animation-duration:16s;animation-delay:-5s;background:var(--orange);box-shadow:0 0 10px 1px rgba(255,138,61,.8)}
+.nf__particles i:nth-child(7) {left:57%;top:26%;animation-duration:14s;animation-delay:-9s}
+.nf__particles i:nth-child(8) {left:63%;top:70%;animation-duration:18s;animation-delay:-1s;background:var(--violet);box-shadow:0 0 10px 1px rgba(139,92,246,.8)}
+.nf__particles i:nth-child(9) {left:71%;top:44%;animation-duration:12s;animation-delay:-4s}
+.nf__particles i:nth-child(10){left:78%;top:82%;animation-duration:15s;animation-delay:-11s;background:var(--magenta);box-shadow:0 0 10px 1px rgba(255,47,185,.8)}
+.nf__particles i:nth-child(11){left:84%;top:22%;animation-duration:13s;animation-delay:-7s}
+.nf__particles i:nth-child(12){left:90%;top:58%;animation-duration:17s;animation-delay:-13s;background:var(--acid);box-shadow:0 0 10px 1px rgba(200,255,46,.8)}
+.nf__particles i:nth-child(13){left:95%;top:36%;animation-duration:11s;animation-delay:-10s}
+.nf__particles i:nth-child(14){left:52%;top:88%;animation-duration:16s;animation-delay:-2s;background:var(--orange);box-shadow:0 0 10px 1px rgba(255,138,61,.8)}
+html.js-motion .nf__particles i{animation-name:nf-rise}
+html.js-motion .nf__mesh{animation:nf-drift 24s var(--ease-in-out) infinite alternate}
+@keyframes nf-rise{
+  from{transform:translate3d(0,0,0);opacity:0}
+  20% {opacity:.7}
+  to  {transform:translate3d(14px,-70px,0);opacity:0}
+}
+@keyframes nf-drift{
+  from{transform:translate3d(-2%,0,0) rotate(0deg)}
+  to  {transform:translate3d(2%,1.5%,0) rotate(1.2deg)}
+}
+
+/* the headline */
+.nf__head{
+  font-family:var(--font-display);font-weight:900;
+  font-size:clamp(84px,20vw,240px);line-height:.82;letter-spacing:-.04em;
+  margin:0;color:var(--ink);
+  text-shadow:0 0 10px rgba(34,231,255,.55),0 0 34px rgba(34,231,255,.35),0 0 90px rgba(255,47,185,.30);
+}
+.nf__head span{display:inline-block}
+.nf__head::after{
+  content:attr(data-ghost);position:absolute;pointer-events:none;
+  color:var(--magenta);opacity:.4;transform:translate(5px,-4px);
+  clip-path:inset(0 0 56% 0);
+}
+/* Skew lives on the wrapper, not on the glyph spans — base.css animates
+   .glyph transform for the split-text entrance and would win the cascade. */
+.nf__wrap{position:relative;transform:skewX(-6deg)}
+html.js-motion .nf__head .glyph{animation:nf-blink 7s steps(1,end) infinite}
+@keyframes nf-blink{
+  0%,84%   {opacity:1;filter:none}
+  85%      {opacity:.2;filter:drop-shadow(-7px 3px 0 rgba(255,47,185,.7))}
+  87%      {opacity:1;filter:drop-shadow(6px -3px 0 rgba(200,255,46,.6))}
+  89%      {opacity:.35;filter:drop-shadow(-4px 2px 0 rgba(34,231,255,.8))}
+  91%,100% {opacity:1;filter:none}
+}
+
+/* depth-3 — an arcade die, six CSS faces */
+.nf__die{
+  width:clamp(88px,16vw,150px);aspect-ratio:1;position:relative;
+  transform-style:preserve-3d;transform:rotateX(-16deg) rotateY(28deg);
+  filter:drop-shadow(0 0 22px rgba(34,231,255,.45));
+}
+.nf__die i{
+  position:absolute;inset:0;border:1px solid rgba(34,231,255,.55);
+  background:linear-gradient(150deg,rgba(34,231,255,.14),rgba(255,47,185,.10));
+}
+.nf__die i::after{
+  content:"";position:absolute;inset:30%;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 18px 3px rgba(34,231,255,.8);
+}
+.nf__die i:nth-child(1){transform:translateZ(22px)}
+.nf__die i:nth-child(2){transform:rotateY(180deg) translateZ(22px)}
+.nf__die i:nth-child(3){transform:rotateY(90deg) translateZ(22px)}
+.nf__die i:nth-child(4){transform:rotateY(-90deg) translateZ(22px)}
+.nf__die i:nth-child(5){transform:rotateX(90deg) translateZ(22px)}
+.nf__die i:nth-child(6){transform:rotateX(-90deg) translateZ(22px)}
+html.js-motion .nf__die{animation:nf-spin 16s linear infinite}
+@keyframes nf-spin{to{transform:rotateX(-16deg) rotateY(388deg)}}
+
+/* crumb + quick-jump lists */
+.nf__crumbs{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;
+  list-style:none;margin:clamp(22px,4vw,38px) 0 0;padding:0}
+.nf__crumbs li{font-family:var(--font-display);font-size:.74rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim)}
+.nf__crumbs a,.nf__quick a{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-display);letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;color:var(--ink-dim);
+  border:1px solid var(--line);border-radius:999px;background:var(--glass);
+}
+.nf__crumbs a{padding:6px 12px;border-radius:var(--r-sm);color:var(--cyan)}
+.nf__crumbs a:hover{border-color:var(--cyan);box-shadow:0 0 18px rgba(34,231,255,.35)}
+.nf__quick{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:14px 0 0;padding:0}
+.nf__quick a{padding:8px 14px;font-size:.72rem;transition:transform .25s var(--ease-out),color .25s,border-color .25s}
+.nf__quick a:hover{color:var(--ink);border-color:var(--magenta);transform:translateY(-2px)}
+.nf__quick i{width:7px;height:7px;border-radius:2px;background:var(--acid);
+  box-shadow:0 0 10px var(--acid)}
+
+/* Nav + footer reuse the shared base.css components verbatim. The only
+   override: this page has no #nav-toggle, so the shared mobile drawer would
+   hide the two links behind a button that does not exist here. Keep them
+   inline instead — a 404 must never trap the visitor. */
+@media (max-width: 900px) {
+  .nf .nav__links {
+    position: static; flex-direction: row; gap: 1.1rem;
+    padding: 0; background: none; backdrop-filter: none;
+    -webkit-backdrop-filter: none; border-bottom: 0;
+    transform: none; opacity: 1; visibility: visible;
+  }
+  .nf .nav__links a { padding: .4em 0; font-size: .78rem; border-bottom: 0; }
+}
+.nf-foot{position:relative;z-index:4;background:var(--bg-2)}
+@media (prefers-reduced-motion:reduce){
+  html.js-motion .nf__head .glyph,
+  html.js-motion .nf__die,
+  html.js-motion .nf__particles i,
+  html.js-motion .nf__mesh{animation:none!important}
+  .nf__head::after{display:none}
+  .nf__mesh{display:none}
+}
+html.perf-lite .nf__head{text-shadow:0 0 18px rgba(34,231,255,.4)}
+html.perf-lite .nf__die{filter:none}
+html.perf-lite .nf__particles i{box-shadow:none}
+</style>
+</head>
+<body class="nf-page">
+<!-- Marks the document as JS-capable before first paint. Every entrance
+     animation and every parallax layer in this page is gated on .js-motion,
+     so without this class the scene renders in its final, static state. -->
+<script>document.documentElement.classList.add('js-motion')</script>
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+<!-- ============ NAV ============
+     Shared base.css component. It has no #nav-toggle on this page (see the
+     mobile override in the style block above), so the two links stay inline
+     at every width — a 404 must never hide its only way out. -->
+<header class="nav nf" data-nav>
+  <div class="shell nav__inner">
+    <a class="nav__logo" href="index.html" aria-label="PixelRush home">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect width="32" height="32" rx="7" fill="#0a0c1c" stroke="rgba(34,231,255,.55)"/>
+        <path d="M8 9h4v5h8V9h4v14h-4v-5h-8v5H8z" fill="#22e7ff"/>
+      </svg>
+      <span>PIXEL&nbsp;RUSH</span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="games.html">Games</a>
+    </nav>
+      <div class="nav__setwrap" style="position:relative;display:inline-flex">
+        <button class="nav__set" id="nav-settings" type="button" aria-expanded="false" aria-controls="nav-settings-panel" aria-label="Display settings"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M10.6 2h2.8l.5 2.2 1.6.9 2.1-1 2 2-1 2.1.9 1.6 2.2.5v2.8l-2.2.5-.9 1.6 1 2.1-2 2-2.1-1-1.6.9-.5 2.2h-2.8l-.5-2.2-1.6-.9-2.1 1-2-2 1-2.1-.9-1.6L2 13.6v-2.8l2.2-.5.9-1.6-1-2.1 2-2 2.1 1 1.6-.9zM12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"/></svg></button>
+        <div class="nav__panel" id="nav-settings-panel" role="dialog" aria-label="Display settings">
+          <p class="nav__panel-title">Display</p>
+          <button class="nav__switch" id="px-cursor-switch" type="button" role="switch" aria-checked="true">
+            <span>Neon cursor</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+          <p class="nav__hint">Turn this off to use your normal system pointer.</p>
+          <div class="nav__row">
+            <div class="nav__row-top"><span>Cursor size</span><span class="nav__row-val" id="px-size-val">MED</span></div>
+            <div class="nav__seg" id="px-size-seg" role="group" aria-label="Cursor size">
+              <button type="button" data-px-size="s" aria-checked="false">S</button>
+              <button type="button" data-px-size="m" aria-checked="true">M</button>
+              <button type="button" data-px-size="l" aria-checked="false">L</button>
+              <button type="button" data-px-size="xl" aria-checked="false">XL</button>
+            </div>
+          </div>
+          <button class="nav__switch" id="px-motion-switch" type="button" role="switch" aria-checked="true">
+            <span>Animations</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+  </div>
+</header>
+
+<!-- ============ HERO — the only content on the page ============
+     A .scene stack: parallax layers ordered depth-0 … depth-5, all but the
+     content layer marked aria-hidden because they are pure decoration. -->
+<main id="main-content">
+  <section class="scene nf" id="nf-hero">
+    <div class="layer depth-0 nf__backdrop" data-depth="0" aria-hidden="true"></div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob"></span>
+      <span class="glow-blob"></span>
+    </div>
+    <div class="layer depth-2 nf__mesh" data-depth="2" aria-hidden="true"></div>
+
+    <div class="layer depth-3 nf__die" data-depth="3" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+
+    <!-- Content plane: the only layer holding readable text, so the only one
+         without aria-hidden. Everything inside it is real copy — the skip link
+         above and the buttons below are the page's two ways back. -->
+    <div class="layer depth-4 scene__inner" data-depth="4">
+      <div style="display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,56px);align-items:center">
+        <div style="flex:1 1 320px;min-width:0">
+          <p class="eyebrow" data-animate="fade-up">Error 404 &middot; signal lost</p>
+          <div class="nf__wrap">
+            <h1 class="nf__head" data-ghost="404" data-animate="split-text">404</h1>
+          </div>
+          <p data-animate="fade-up"
+             style="max-width:56ch;color:var(--ink-dim);font-size:clamp(1rem,1.4vw,1.18rem);line-height:1.65;margin:clamp(14px,2vw,22px) 0 0">
+            This screen is not on the map. The cabinet you were looking for was
+            unplugged, moved, or never existed in the first place.
+          </p>
+
+          <p style="display:flex;flex-wrap:wrap;gap:14px;margin:clamp(24px,4vw,38px) 0 0">
+            <a class="btn btn--primary btn--lg" href="index.html">Back to the lobby</a>
+            <a class="btn btn--ghost btn--lg" href="games.html">Browse all games</a>
+          </p>
+
+          <ol class="nf__crumbs" data-animate="stagger-children">
+            <li><a href="index.html">Home</a></li>
+            <li aria-hidden="true">/</li>
+            <li><a href="games.html">Games</a></li>
+            <li aria-hidden="true">/</li>
+            <li>404</li>
+          </ol>
+
+          <div data-animate="fade-up">
+            <p style="margin:clamp(28px,5vw,48px) 0 0;font-family:var(--font-display);
+                      font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim)">
+              Or jump straight in
+            </p>
+            <!-- Deliberately empty in the HTML: the inline script at the foot of
+                 the body fills it with the first four live games from
+                 js/games-data.js, so it needs no markup of its own. -->
+            <ul class="nf__quick" id="nf-quick"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer depth-5 nf__particles" data-depth="5" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+  </section>
+</main>
+
+<!-- ============ FOOTER ============
+     Shared base.css footer. One override only: .nf-foot lifts it above the
+     clipped .scene so the legal links stay reachable. -->
+<footer class="footer nf-foot">
+  <div class="footer__bottom" style="border-top:0;margin-top:0;padding-top:0">
+    <p>Built with vanilla HTML/CSS/JS &mdash; no signup, no download, no waiting.</p>
+    <p>&copy; <span data-year>2026</span> PixelRush. Free browser arcade. · <a class="footer__link" href="about.html">About</a> · <a class="footer__link" href="contact.html">Contact</a> · <a class="footer__link" href="privacy.html">Privacy</a> · <a class="footer__link" href="terms.html">Terms</a></p>
+  </div>
+</footer>
+
+<!-- ============ SCRIPTS ============
+     engine.js drives the parallax/depth system, games-data.js publishes
+     window.GAMES. Both are deferred; the inline block below therefore has to
+     wait for DOMContentLoaded to read either of them. -->
+<script src="js/engine.js" defer></script>
+<script src="js/games-data.js" defer></script>
+<script>
+// Inline scripts ignore `defer`; deferred files run first, so wait for DOMContentLoaded.
+document.addEventListener('DOMContentLoaded', function () {
+  var y = document.querySelector('[data-year]');
+  if (y) y.textContent = String(new Date().getFullYear());
+
+  // base.css [data-animate="split-text"] expects one .glyph per character.
+  var h1 = document.querySelector('.nf__head');
+  if (h1 && !h1.querySelector('.glyph')) {
+    var chars = (h1.textContent || '').trim().split('');
+    h1.textContent = '';
+    chars.forEach(function (c, i) {
+      var s = document.createElement('span');
+      s.className = 'glyph';
+      s.style.setProperty('--gi', String(i));
+      s.textContent = c;
+      h1.appendChild(s);
+    });
+  }
+
+  var list = document.getElementById('nf-quick');
+  if (!list) return;
+  var games = (window.GAMES || []).filter(function (g) { return g && g.status === 'live'; });
+  games.slice(0, 4).forEach(function (g) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = 'play.html?game=' + encodeURIComponent(g.slug);
+    a.textContent = g.title;
+    a.appendChild(document.createElement('i'));
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+});
+</script>
+</body>
+</html>

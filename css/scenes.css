@@ -1,0 +1,1408 @@
+/* ==========================================================================
+   PIXEL RUSH — css/scenes.css
+   Owner: depth system + EVERY index.html section + all @keyframes.
+   Depends on tokens declared in css/base.css (--bg, --ink, --cyan, ...).
+   Hard rules honoured here: no frameworks, no images, no extra webfonts.
+   Only transform / opacity / filter / clip-path are ever animated.
+
+   LOAD ORDER (site-wide stylesheets only — game canvases load none of these):
+     1. css/base.css   design tokens, resets, .btn, .layer/.depth-*, the
+                       [data-animate] entrance vocabulary
+     2. css/games.css  game-card + play-page chrome
+     3. css/scenes.css THIS FILE — home-page scene composition, on top of both
+   base.css is the source of truth for anything it already declares; sections
+   1 and 11 below say explicitly which parts are deliberately NOT re-declared.
+
+   Scope note: this is a stylesheet. It carries no <head>, no <title> and no
+   meta tags — SEO/JSON-LD work for each page belongs in that page's .html.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. DEPTH SYSTEM  (.layer.depth-0 … .depth-5)
+   --------------------------------------------------------------------------
+   NOTE FOR THE HTML AGENT: css/base.css (section "depth layers") already
+   implements the full spec ladder, and it is the source of truth:
+     .depth-0  z0  blur(8px)  scale .70  factor .10
+     .depth-1  z1  blur(4px)  scale .85  factor .25  + mix-blend-mode:screen
+     .depth-2  z2  —          scale 1    factor .50
+     .depth-3  z3  —          scale 1.05 factor .80  + drop-shadow
+     .depth-4  z4  —          scale 1    factor 1.00 (translate only)
+     .depth-5  z5  —          scale 1.10 factor 1.20 + strongest drop-shadow
+     .scene__inner z4 = the readable content plane
+   It is NOT re-declared here, to avoid two competing definitions.
+
+   The ladder base.css ships puts .depth-4 and .scene__inner both at z-index 4,
+   so the ordering falls to DOM order. For the hero we need the near-foreground
+   copy plane to sit ABOVE the mid-ground, so the hero overrides depth-4/5 up
+   one rung. Everything else uses the base ladder as-is.
+
+   --scroll-y : UNITLESS number written by js/engine.js on <html> each rAF.
+   --rail-x   : LENGTH (px) written by js/site.js for the horizontal rail.
+   ========================================================================== */
+
+/* Hero-only z-index rung shift: copy plane (depth-4) and foreground (depth-5)
+   rise above .scene__inner so nothing collides with the h1 or the cabinet. */
+#hero .depth-4{ z-index:5; }
+#hero .depth-5{ z-index:6; }
+#hero .depth-3{ z-index:3; }
+
+/* The hero's readable plane is `.hero__copy` (position:relative; z-index:5). */
+#hero .layer{ transform-origin:50% 42%; backface-visibility:hidden; }
+
+
+
+/* ==========================================================================
+   2. AMBIENT ATMOSPHERE PRIMITIVES  (canvas-free)
+   ========================================================================== */
+
+/* 2.1 glow blobs. base.css owns the look (size, blur, radial fill driven by
+   --g, plus the .glow-blob--magenta/--acid/--orange/--violet modifiers).
+   We only ADD placement + the drift motion, using our own custom props:
+   --x --y  (percent anchor, default centre)  --dur --delay  (drift timing). */
+.glow-blob{
+  left:var(--x,50%);
+  top:var(--y,50%);
+  translate:-50% -50%;              /* separate from `transform` so the
+                                       float-drift keyframe can own transform */
+  animation:float-drift var(--dur,22s) var(--ease-in-out) infinite;
+  animation-delay:var(--delay,0s);
+}
+/* hero blobs may also be tinted with --c instead of base's --g */
+#hero .glow-blob{
+  background:radial-gradient(circle at 50% 50%,
+    color-mix(in srgb, var(--c,var(--g,var(--cyan))) 72%, transparent) 0%,
+    color-mix(in srgb, var(--c,var(--g,var(--cyan))) 26%, transparent) 40%,
+    transparent 70%);
+}
+
+
+/* 2.2 neon grid plane. The skew/perspective lives on the wrapper, the endless
+   scroll lives on the oversized plane → transform-only, no background-position. */
+.grid-plane{
+  position:absolute;
+  left:-25%; right:-25%;
+  top:0; bottom:-40%;
+  background-image:
+    linear-gradient(to right, rgba(34,231,255,.34) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139,92,246,.30) 1px, transparent 1px);
+  background-size:clamp(38px,4vw,62px) clamp(38px,4vw,62px);
+  transform:perspective(360px) rotateX(74deg) translate3d(0,0,0);
+  transform-origin:50% 0%;
+  animation:grid-scroll 3.2s linear infinite;
+  will-change:transform;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 45%,transparent 88%);
+          mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.55) 45%,transparent 88%);
+}
+
+/* 2.3 CRT scanlines — static texture, no paint cost, sits above everything. */
+.scanlines{
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom,
+    rgba(0,0,0,.00) 0px, rgba(0,0,0,.00) 2px,
+    rgba(0,0,0,.26) 3px, rgba(0,0,0,.26) 4px);
+  mix-blend-mode:multiply;
+  opacity:.5;
+}
+/* the travelling bright sweep bar */
+.scanlines::after{
+  content:"";
+  position:absolute; left:0; right:0; top:0; height:22%;
+  background:linear-gradient(to bottom, transparent, rgba(34,231,255,.055) 45%, transparent);
+  animation:scan 7.5s linear infinite;
+  will-change:transform;
+}
+
+/* 2.4 vignette + film grain (SVG-free: grain is a repeating gradient) */
+.vignette{
+  position:absolute; inset:0;
+  background:radial-gradient(120% 90% at 50% 40%, transparent 40%, rgba(5,6,15,.72) 100%);
+}
+.grain{
+  position:absolute; inset:-50%;
+  background-image:repeating-conic-gradient(rgba(255,255,255,.035) 0% 25%, transparent 0% 50%);
+  background-size:4px 4px;
+  opacity:.5;
+  animation:grain-shift 1.2s steps(3) infinite;
+  will-change:transform;
+}
+
+/* 2.5 particle field. base.css owns the `.particle` element itself
+   (--p-size, --p-color, --p-dur, --p-delay, --p-top, --p-left, and its own
+   orbit keyframe), so it is NOT redefined here. We only supply the
+   containing layer and an orbit variant for hero particles.
+   Markup: <div class="hero__particles layer depth-5">
+             <i class="particle" style="--p-left:12%;--p-top:30%;--p-size:3px;--p-dur:9s;--p-delay:-2s"></i> ... */
+.hero__particles{ overflow:hidden; }
+.hero__particles .particle{
+  animation:float-orbit var(--p-dur,11s) linear infinite;
+  animation-delay:var(--p-delay,0s);
+}
+
+/* 2.6 generic sheen sweep utility — add to any element to get a light bar
+   that wipes across on hover. Uses ::after, so the element needs no pseudo.
+   Named .sheen-sweep because base.css already owns `.sheen` (gradient text). */
+.sheen-sweep{ position:relative; overflow:hidden; isolation:isolate; }
+.sheen-sweep::after{
+  content:"";
+  position:absolute; inset:-30% -60%;
+  background:linear-gradient(100deg, transparent 42%, rgba(255,255,255,.30) 50%, transparent 58%);
+  transform:translate3d(-70%,0,0) rotate(8deg);
+  opacity:0;
+  pointer-events:none;
+  transition:transform .75s var(--ease-out), opacity .2s linear;
+  z-index:6;
+}
+.sheen-sweep:hover::after,
+.sheen-sweep:focus-visible::after,
+.sheen-sweep.is-sweeping::after{ transform:translate3d(70%,0,0) rotate(8deg); opacity:1; }
+
+
+/* ==========================================================================
+   3. PRELOADER  (#preloader)
+   Markup: #preloader > .preloader__inner > .preloader__logo / .preloader__bar
+   > .preloader__fill  (+ .preloader__pct / .preloader__label text)
+   engine.js hides it on window.load via one of:
+   #preloader.is-done | body.is-loaded #preloader | #preloader.is-hidden
+   ========================================================================== */
+
+#preloader{
+  position:fixed; inset:0; z-index:9999;
+  display:grid; place-items:center;
+  background:
+    radial-gradient(60% 50% at 50% 45%, rgba(139,92,246,.22), transparent 70%),
+    var(--bg);
+  transition:opacity .7s var(--ease-out), clip-path .9s var(--ease-out), visibility 0s linear .9s;
+}
+#preloader .preloader__inner{
+  position:relative;
+  display:grid; justify-items:center; gap:22px;
+  padding:24px;
+}
+.preloader__logo{
+  width:min(190px,44vw);
+  filter:drop-shadow(0 0 22px rgba(34,231,255,.55));
+  animation:float-breathe 2.6s var(--ease-in-out) infinite;
+  will-change:transform;
+}
+.preloader__logo svg{ display:block; width:100%; height:auto; }
+.preloader__bar{
+  position:relative;
+  width:min(320px,72vw); height:4px;
+  border-radius:99px;
+  background:var(--glass);
+  box-shadow:inset 0 0 0 1px var(--line);
+  overflow:hidden;
+}
+.preloader__fill{
+  position:absolute; inset:0;
+  transform-origin:0 50%;
+  transform:scaleX(var(--p,0));
+  background:linear-gradient(90deg,var(--cyan),var(--violet) 55%,var(--magenta));
+  box-shadow:0 0 16px rgba(34,231,255,.7);
+  transition:transform .25s linear;
+  will-change:transform;
+}
+.preloader__pct,
+.preloader__label{
+  font-family:var(--font-display);
+  font-weight:700; font-size:.72rem; letter-spacing:.32em;
+  text-transform:uppercase; color:var(--ink-dim);
+  margin:0;
+}
+.preloader__pct{ color:var(--cyan); }
+
+body.is-loaded #preloader,
+#preloader.is-done,
+#preloader.is-hidden{
+  opacity:0;
+  clip-path:inset(0 0 100% 0);
+  pointer-events:none;
+  visibility:hidden;
+}
+
+
+/* ==========================================================================
+   4. HERO  (section.scene#hero)
+   ========================================================================== */
+
+#hero{
+  min-height:100svh;
+  min-height:640px;
+  display:grid;
+  align-items:center;
+  padding-block:calc(var(--nav-h) + 24px) 96px;
+  background:
+    radial-gradient(90% 60% at 50% 118%, rgba(255,47,185,.20), transparent 62%),
+    linear-gradient(180deg, var(--bg) 0%, #070a18 58%, var(--bg) 100%);
+}
+
+/* --- depth-0 : grid horizon + synth sun + noise + vignette -------------- */
+.hero__grid{
+  position:absolute; left:50%; top:52%;
+  width:240%; height:150%;
+  margin-left:-120%;
+  perspective:520px;
+  perspective-origin:50% 0%;
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 60%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 60%,transparent 100%);
+}
+.hero__sun{
+  position:absolute;
+  left:50%; top:14%;
+  width:min(52vmin,520px); aspect-ratio:1;
+  margin-left:min(-26vmin,-260px);
+  border-radius:50%;
+  background:
+    repeating-linear-gradient(to bottom,
+      rgba(255,47,185,.0) 0 6px,
+      rgba(255,138,61,.30) 6px 12px),
+    linear-gradient(180deg, var(--acid) 0%, var(--orange) 42%, var(--magenta) 100%);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 58%, transparent 59%);
+          mask-image:radial-gradient(circle at 50% 50%, #000 58%, transparent 59%);
+  opacity:.85;
+  animation:float-breathe 9s var(--ease-in-out) infinite;
+  will-change:transform,opacity;
+}
+.hero__stars{
+  position:absolute; inset:0;
+  background-image:
+    radial-gradient(1.4px 1.4px at 18% 22%, rgba(242,245,255,.85), transparent),
+    radial-gradient(1.2px 1.2px at 72% 12%, rgba(34,231,255,.9), transparent),
+    radial-gradient(1.6px 1.6px at 41% 34%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1.2px 1.2px at 86% 40%, rgba(255,47,185,.8), transparent),
+    radial-gradient(1.2px 1.2px at 8% 52%, rgba(200,255,46,.7), transparent),
+    radial-gradient(1.4px 1.4px at 60% 58%, rgba(242,245,255,.6), transparent);
+  opacity:.75;
+  animation:flicker 5.5s var(--ease-in-out) infinite;
+  will-change:opacity;
+}
+
+/* --- depth-2 : floating shards (SVG) ----------------------------------- */
+.shard{
+  position:absolute;
+  left:var(--x,50%); top:var(--y,50%);
+  width:var(--s,54px); height:var(--s,54px);
+  margin:calc(var(--s,54px) / -2) 0 0 calc(var(--s,54px) / -2);
+  color:var(--c,var(--cyan));
+  opacity:var(--o,.75);
+  filter:drop-shadow(0 0 14px currentColor);
+  animation:float-y var(--dur,7s) var(--ease-in-out) infinite;
+  animation-delay:var(--delay,0s);
+  will-change:transform;
+}
+.shard svg{ display:block; width:100%; height:100%; }
+.shard--coin{ animation-name:float-orbit; }
+.shard--joy { animation-name:float-breathe; }
+.shard--gem { animation-name:float-drift; }
+
+/* --- depth-3 : the hero arcade cabinet (pure inline SVG) --------------- */
+.cabinet{
+  position:absolute;
+  right:clamp(2vw,7vw,140px);
+  top:50%;
+  translate:0 -50%;
+  width:min(38vw,420px);
+  min-width:210px;
+  color:var(--cyan);
+  filter:drop-shadow(0 0 40px rgba(34,231,255,.30))
+         drop-shadow(0 46px 70px rgba(0,0,0,.6));
+  animation:float-y 8s var(--ease-in-out) infinite;
+  will-change:transform;
+  pointer-events:none;
+}
+.cabinet svg{ display:block; width:100%; height:auto; overflow:visible; }
+/* emissive bits inside the cabinet SVG opt in with class="cab-glow" */
+.cab-glow{ animation:pulse-glow 3.4s var(--ease-in-out) infinite; transform-origin:50% 50%; }
+.cab-scan{ animation:scan 4.6s linear infinite; transform-box:fill-box; }
+.cabinet__floor{
+  position:absolute; left:6%; right:6%; bottom:-14%;
+  height:24px;
+  background:radial-gradient(50% 100% at 50% 0%, rgba(34,231,255,.42), transparent 72%);
+  filter:blur(10px);
+  animation:float-breathe 4.2s var(--ease-in-out) infinite;
+}
+
+/* --- depth-4 : the copy plane ------------------------------------------ */
+/* .hero__copy is also a .layer, so it must opt out of the -12%/-6% bleed that
+   the layer inset applies — otherwise the copy is nudged off the left edge. */
+.hero__copy{
+  position:relative;
+  inset:auto;
+  z-index:5;
+  width:min(var(--maxw),92vw);
+  margin-inline:auto;
+  display:grid;
+  gap:clamp(14px,2.2vh,26px);
+  justify-items:start;
+  max-width:min(760px,92vw);
+}
+.hero__eyebrow{ max-width:100%; }
+
+.hero__title{
+  margin:0;
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(2.9rem,9vw,9rem);
+  line-height:.88;
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+  color:transparent;
+  background:linear-gradient(175deg,
+    #ffffff 0%, var(--ink) 34%, #a9ecff 58%, var(--cyan) 78%, #ffffff 100%);
+  -webkit-background-clip:text;
+          background-clip:text;
+  background-size:100% 220%;
+  background-position:0 0;
+  position:relative;
+  /* text-shadow is invisible under background-clip:text → use drop-shadow */
+  filter:drop-shadow(0 0 14px rgba(34,231,255,.45))
+         drop-shadow(0 0 44px rgba(255,47,185,.30))
+         drop-shadow(0 6px 2px rgba(5,6,15,.9));
+  will-change:transform,opacity;
+}
+.hero__title .accent{
+  color:transparent;
+  background:linear-gradient(175deg,#fff 0%, var(--magenta) 52%, var(--orange) 100%);
+  -webkit-background-clip:text;
+          background-clip:text;
+}
+/* animated light band wiping across the glyphs */
+.hero__title::after{
+  content:"";
+  position:absolute;
+  top:-6%; left:0; height:112%; width:34%;
+  background:linear-gradient(100deg,
+    transparent 0%, rgba(255,255,255,.10) 30%, rgba(255,255,255,.85) 50%,
+    rgba(255,255,255,.10) 70%, transparent 100%);
+  mix-blend-mode:color-dodge;
+  pointer-events:none;
+  transform:translate3d(-130%,0,0) rotate(6deg);
+  animation:sheen 6.5s var(--ease-in-out) infinite;
+  animation-delay:1.2s;
+  will-change:transform;
+}
+/* optional glitch — add class "glitch" + data-text="PLAY. NOW." to the h1 */
+.glitch{ position:relative; }
+.glitch::before,
+.glitch::after{
+  content:attr(data-text);
+  position:absolute; inset:0;
+  color:var(--cyan);
+  -webkit-background-clip:border-box;
+          background-clip:border-box;
+  pointer-events:none;
+  opacity:0;
+  z-index:-1;
+}
+.glitch::before{ animation:glitch 6.5s steps(1) infinite; }
+.glitch::after { animation:glitch 6.5s steps(1) infinite .12s; }
+
+.hero__sub{
+  max-width:56ch;
+  margin:0;
+  font-size:clamp(1.02rem,1.35vw,1.24rem);
+  line-height:1.55;
+  color:var(--ink-dim);
+}
+
+.hero__cta{
+  display:flex; flex-wrap:wrap; gap:14px;
+  margin-top:6px;
+}
+/* Arcade-button feel. base.css already owns .btn, including the ::before
+   light sweep on hover — we do NOT redeclare it, or the sweep fires twice.
+   Here we only add the hero's extra outer glow ring and the lift on hover. */
+.hero__cta .btn--primary{
+  box-shadow:0 0 0 1px rgba(34,231,255,.55),
+             0 0 26px rgba(34,231,255,.34),
+             0 0 70px rgba(34,231,255,.16),
+             0 14px 30px rgba(0,0,0,.45);
+}
+.hero__cta .btn:hover,
+.hero__cta .btn:focus-visible{
+  transform:translateY(-3px) scale(1.03);
+  filter:brightness(1.12);
+}
+.hero__cta .btn:active{ transform:translateY(0) scale(.99); }
+
+/* live mini stat row */
+.hero__stats{
+  display:flex; flex-wrap:wrap; align-items:center;
+  gap:clamp(14px,2.4vw,32px);
+  margin:10px 0 0; padding:0;
+  list-style:none;
+}
+.hero__stat{
+  display:flex; align-items:baseline; gap:8px;
+  padding:8px 14px;
+  border-radius:var(--r-sm);
+  background:var(--glass);
+  box-shadow:inset 0 0 0 1px var(--line);
+  backdrop-filter:blur(6px);
+}
+.hero__stat-num{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(1rem,1.5vw,1.3rem);
+  color:var(--acid);
+  text-shadow:0 0 18px rgba(200,255,46,.5);
+}
+.hero__stat-label{
+  font-size:.82rem; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-dim);
+}
+.pulse-dot{
+  display:inline-block;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--acid);
+  box-shadow:0 0 0 0 rgba(200,255,46,.6);
+  animation:pulse-glow 2.1s var(--ease-in-out) infinite;
+}
+
+/* --- depth-5 : scroll cue ------------------------------------------------ */
+.scroll-cue{
+  position:absolute;
+  left:50%; bottom:26px;
+  translate:-50% 0;
+  display:grid; justify-items:center; gap:10px;
+  color:var(--ink-dim);
+  font-family:var(--font-display);
+  font-weight:700; font-size:.66rem;
+  letter-spacing:.34em; text-transform:uppercase;
+}
+.scroll-cue__line{
+  position:relative;
+  width:1px; height:54px;
+  background:linear-gradient(to bottom, transparent, var(--cyan));
+  overflow:hidden;
+}
+.scroll-cue__line::after{
+  content:"";
+  position:absolute; left:-2px; width:5px; height:14px; border-radius:2px;
+  background:var(--cyan);
+  box-shadow:0 0 12px var(--cyan);
+  transform:translate3d(0,-16px,0);
+  animation:cue 1.9s var(--ease-in-out) infinite;
+  will-change:transform;
+}
+.scroll-cue__label{
+  opacity:.75;
+  animation:bob 2.8s var(--ease-in-out) infinite;
+  will-change:transform;
+}
+@keyframes cue{
+  0%   { transform:translate3d(0,-16px,0); opacity:0; }
+  25%  { opacity:1; }
+  100% { transform:translate3d(0,56px,0); opacity:0; }
+}
+
+
+/* ==========================================================================
+   5. TICKER  (the infinite genre marquee)
+   Markup: .ticker > .ticker__track > ( .ticker__set × 2, second aria-hidden )
+   ========================================================================== */
+
+.ticker{
+  position:relative;
+  z-index:2;
+  padding-block:18px;
+  border-block:1px solid var(--line);
+  background:
+    linear-gradient(90deg, rgba(34,231,255,.10), transparent 22%, transparent 78%, rgba(255,47,185,.10)),
+    var(--bg-2);
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+          mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.ticker__track{
+  display:flex; width:max-content;
+  will-change:transform;
+  animation:marquee var(--marquee-duration,34s) linear infinite;
+}
+.ticker:hover .ticker__track{ animation-play-state:paused; }
+.ticker__set{
+  display:flex; align-items:center; flex:none;
+  gap:clamp(20px,3vw,44px);
+  padding-inline:clamp(10px,1.5vw,22px);
+}
+.ticker__item{
+  display:inline-flex; align-items:center; gap:14px;
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(.95rem,2.1vw,1.7rem);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:transparent;
+  background:linear-gradient(180deg, var(--ink) 0%, var(--cyan) 78%);
+  -webkit-background-clip:text; background-clip:text;
+  white-space:nowrap;
+  transition:filter .3s var(--ease-out), transform .3s var(--ease-out);
+}
+.ticker__item:nth-child(3n+2){
+  background:linear-gradient(180deg, var(--ink) 0%, var(--magenta) 78%);
+  -webkit-background-clip:text; background-clip:text;
+}
+.ticker__item:nth-child(3n+3){
+  background:linear-gradient(180deg, var(--ink) 0%, var(--acid) 78%);
+  -webkit-background-clip:text; background-clip:text;
+}
+.ticker__item:hover{ filter:brightness(1.3) drop-shadow(0 0 14px rgba(34,231,255,.6)); transform:translateY(-2px); }
+.ticker__sep{
+  color:var(--magenta);
+  font-size:.8em;
+  text-shadow:0 0 12px currentColor;
+  animation:ticker 1.6s var(--ease-in-out) infinite;
+}
+
+
+/* ==========================================================================
+   6. #games — PINNED HORIZONTAL GAME RAIL
+   .rail__track is driven by --rail-x (a px LENGTH) from js/site.js.
+   Touch devices fall back to native overflow-x scroll (no JS transform).
+   ========================================================================== */
+
+#games{ background:linear-gradient(180deg, var(--bg) 0%, #070a1a 50%, var(--bg) 100%); }
+
+#games .scene__inner{ display:grid; gap:clamp(24px,4vh,46px); }
+#games .section-head__sub{ max-width:60ch; }
+
+.rail-hint{
+  display:flex; align-items:center; gap:12px;
+  font-family:var(--font-display);
+  font-size:.66rem; font-weight:700;
+  letter-spacing:.3em; text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.rail-hint__keys{ display:inline-flex; gap:6px; }
+.rail-hint__key{
+  display:grid; place-items:center;
+  min-width:22px; height:22px; padding-inline:5px;
+  border-radius:6px;
+  background:var(--glass);
+  box-shadow:inset 0 0 0 1px var(--line);
+  color:var(--cyan);
+}
+
+.rail{
+  position:relative;
+  z-index:3;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;
+  padding-block:26px 34px;
+  perspective:1400px;
+  -webkit-overflow-scrolling:touch;
+}
+.rail::-webkit-scrollbar{ display:none; }
+.rail__track{
+  display:flex;
+  align-items:stretch;
+  gap:clamp(16px,2vw,28px);
+  width:max-content;
+  padding-inline:max(4vw,(100vw - var(--maxw)) / 2);
+  transform:translate3d(var(--rail-x,0px),0,0);
+  will-change:transform;
+  transition:transform .18s linear;
+}
+.rail__item{ flex:0 0 auto; scroll-snap-align:center; }
+.rail__item .gcard{
+  width:clamp(232px,74vw,320px);
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+}
+.rail__item:hover .gcard,
+.rail__item:focus-within .gcard{
+  transform:translateY(-10px) rotateX(6deg) scale(1.03);
+  box-shadow:0 30px 60px rgba(0,0,0,.6), 0 0 44px rgba(34,231,255,.28);
+}
+/* edge fades so cards dissolve instead of clipping hard */
+.rail::before,
+.rail::after{
+  content:"";
+  position:absolute; top:0; bottom:0; width:clamp(24px,6vw,90px);
+  pointer-events:none; z-index:4;
+}
+.rail::before{ left:0;  background:linear-gradient(90deg, var(--bg), transparent); }
+.rail::after { right:0; background:linear-gradient(270deg, var(--bg), transparent); }
+
+/* thin progress rail driven by an optional normalised var --rail-p (0..1) */
+.rail-progress{
+  position:relative;
+  height:3px; border-radius:99px;
+  background:var(--glass);
+  box-shadow:inset 0 0 0 1px var(--line);
+  overflow:hidden;
+}
+.rail-progress__fill{
+  position:absolute; inset:0;
+  transform-origin:0 50%;
+  transform:scaleX(var(--rail-p,0));
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta));
+  box-shadow:0 0 14px rgba(34,231,255,.6);
+  transition:transform .18s linear;
+  will-change:transform;
+}
+
+.rail__cta{
+  display:grid; justify-items:center; gap:14px;
+  padding-top:8px;
+}
+
+
+/* ==========================================================================
+   7. #genres — stagger grid, 3D hover tilt
+   Markup: .genre-grid > ( .genre[style*=--i] > .genre__inner >
+            .genre__glyph / .genre__name / .genre__count / .genre__link )
+   Tilt vars --rx / --ry / --tz are written by window.PX.registerPointerTilt.
+   ========================================================================== */
+
+#genres{ background:var(--bg); }
+
+.genre-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:clamp(14px,1.8vw,24px);
+  perspective:1200px;
+}
+.genre{
+  --i:0;
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  transform:translate3d(0,0,0);
+  transition:transform .55s var(--ease-out), filter .55s var(--ease-out);
+  will-change:transform;
+}
+.genre__inner{
+  position:relative;
+  height:100%;
+  display:grid;
+  gap:12px;
+  align-content:start;
+  padding:clamp(18px,2.2vw,28px);
+  border-radius:var(--r-lg);
+  background:linear-gradient(165deg, rgba(255,255,255,.075), rgba(255,255,255,.02));
+  box-shadow:inset 0 0 0 1px var(--line), 0 20px 44px rgba(0,0,0,.42);
+  overflow:hidden;
+  transform-style:preserve-3d;
+  transform:
+    rotateX(calc(var(--rx,0) * 1deg))
+    rotateY(calc(var(--ry,0) * 1deg))
+    translate3d(0,calc(var(--ty,0) * 1px),calc(var(--tz,0) * 1px));
+  transition:transform .35s var(--ease-out), box-shadow .45s var(--ease-out);
+  will-change:transform;
+}
+/* the neon edge that ignites on hover */
+.genre__inner::before{
+  content:"";
+  position:absolute; inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:conic-gradient(from 180deg at 50% 50%,
+    transparent 0%, var(--c,var(--cyan)) 22%, transparent 44%,
+    transparent 56%, var(--c,var(--cyan)) 78%, transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  opacity:0;
+  transition:opacity .4s var(--ease-out);
+}
+.genre:hover .genre__inner::before,
+.genre:focus-visible .genre__inner::before{ opacity:1; }
+.genre:hover .genre__inner,
+.genre:focus-visible .genre__inner{
+  box-shadow:0 34px 66px rgba(0,0,0,.6),
+             0 0 46px color-mix(in srgb, var(--c,var(--cyan)) 34%, transparent);
+}
+.genre__glyph{
+  display:grid; place-items:center;
+  width:64px; height:64px;
+  border-radius:18px;
+  color:var(--c,var(--cyan));
+  background:color-mix(in srgb, var(--c,var(--cyan)) 12%, transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c,var(--cyan)) 40%, transparent);
+  transform:translate3d(0,0,32px) rotate(-4deg);
+  transition:transform .5s var(--ease-out);
+}
+.genre__glyph svg{ width:36px; height:36px; display:block; }
+.genre:hover .genre__glyph{ transform:translate3d(0,0,54px) rotate(6deg) scale(1.06); }
+.genre__name{
+  margin:0;
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(1rem,1.5vw,1.24rem);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--ink);
+  transform:translate3d(0,0,18px);
+}
+.genre__count{
+  margin:0;
+  font-size:.86rem; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-dim);
+  transform:translate3d(0,0,10px);
+}
+.genre__link{
+  margin-top:auto;
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-display);
+  font-size:.7rem; font-weight:700;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:var(--c,var(--cyan));
+  transform:translate3d(0,0,10px);
+}
+.genre__link svg{ width:14px; height:14px; transition:transform .35s var(--ease-out); }
+.genre:hover .genre__link svg{ transform:translateX(6px); }
+
+
+/* ==========================================================================
+   8. #stats — animated counters + scrolling word-light headline
+   Markup: .stats__grid > .stat[style*=--i] > .stat__num[data-count-to] + .stat__label
+           .wordlight > .wordlight__w  (staggered flicker)
+   ========================================================================== */
+
+#stats{
+  background:
+    radial-gradient(70% 60% at 50% 0%, rgba(34,231,255,.10), transparent 70%),
+    var(--bg-2);
+  border-block:1px solid var(--line);
+  overflow:hidden;
+}
+.stats__inner{ display:grid; gap:clamp(30px,5vh,60px); justify-items:center; text-align:center; }
+
+.wordlight{
+  display:flex; flex-wrap:wrap; justify-content:center;
+  gap:clamp(10px,1.6vw,26px);
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(1.4rem,4.2vw,3.4rem);
+  line-height:1.05;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+  max-width:22ch;
+}
+.wordlight__w{
+  position:relative;
+  display:inline-block;
+  color:var(--ink);
+  text-shadow:0 0 26px rgba(34,231,255,.35);
+  animation:flicker 3.4s var(--ease-in-out) infinite;
+  animation-delay:calc(var(--i,0) * 220ms);
+  will-change:opacity,filter,transform;
+}
+.wordlight__w:nth-child(3n+2){ color:var(--magenta); text-shadow:0 0 26px rgba(255,47,185,.4); }
+.wordlight__w:nth-child(3n+3){ color:var(--acid);     text-shadow:0 0 26px rgba(200,255,46,.35); }
+.wordlight__w::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:-.14em; height:2px;
+  background:linear-gradient(90deg,transparent,currentColor,transparent);
+  transform:scaleX(0);
+  transform-origin:0 50%;
+  transition:transform .6s var(--ease-out);
+  transition-delay:calc(var(--i,0) * 120ms);
+}
+.wordlight.is-in .wordlight__w::after{ transform:scaleX(1); }
+
+.stats__grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:clamp(12px,2vw,24px);
+  width:min(var(--maxw),92vw);
+  margin-inline:auto;
+}
+.stat{
+  --i:0;
+  position:relative;
+  display:grid; gap:8px; justify-items:center;
+  padding:clamp(18px,2.4vw,30px) clamp(10px,1.4vw,18px);
+  border-radius:var(--r-lg);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
+  box-shadow:inset 0 0 0 1px var(--line);
+  overflow:hidden;
+  transition:transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+  will-change:transform;
+}
+.stat::before{
+  content:"";
+  position:absolute; inset:auto 0 0 0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--c,var(--cyan)),transparent);
+  transform:scaleX(0);
+  transform-origin:50% 50%;
+  transition:transform .7s var(--ease-out);
+  transition-delay:calc(var(--i,0) * 90ms);
+}
+.stats__grid.is-in .stat::before{ transform:scaleX(1); }
+.stat:hover{
+  transform:translateY(-8px) scale(1.02);
+  box-shadow:0 26px 50px rgba(0,0,0,.5), 0 0 38px color-mix(in srgb, var(--c,var(--cyan)) 26%, transparent);
+}
+.stat__num{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(1.9rem,4.4vw,3.4rem);
+  line-height:1;
+  letter-spacing:-.01em;
+  color:var(--c,var(--cyan));
+  text-shadow:0 0 30px color-mix(in srgb, var(--c,var(--cyan)) 45%, transparent);
+  font-variant-numeric:tabular-nums;
+}
+.stat__label{
+  font-size:.78rem; font-weight:700;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-dim);
+}
+.stat__sub{ font-size:.8rem; color:var(--ink-mute); margin:0; }
+
+
+/* ==========================================================================
+   9. #how — 3 steps with clip-path reveal
+   Markup: .how__grid > .step[style*=--i] > .step__num / .step__title / .step__text
+   ========================================================================== */
+
+#how{ background:var(--bg); }
+.how__grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(16px,2.4vw,32px);
+  position:relative;
+}
+/* the connecting circuit line behind the numbered nodes */
+.how__grid::before{
+  content:"";
+  position:absolute; left:12%; right:12%; top:38px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(34,231,255,.55),rgba(255,47,185,.55),transparent);
+  transform:scaleX(0);
+  transform-origin:50% 50%;
+  transition:transform 1.1s var(--ease-out) .2s;
+}
+.how__grid.is-in::before{ transform:scaleX(1); }
+
+.step{
+  --i:0;
+  position:relative;
+  display:grid; gap:12px; align-content:start;
+  padding:clamp(20px,2.6vw,32px);
+  border-radius:var(--r-lg);
+  background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.012));
+  box-shadow:inset 0 0 0 1px var(--line);
+  -webkit-clip-path:inset(0 0 100% 0 round var(--r-lg));
+          clip-path:inset(0 0 100% 0 round var(--r-lg));
+  transform:translate3d(0,calc(var(--i) * 26px),0);
+  transition:
+    clip-path .95s var(--ease-out),
+    transform .95s var(--ease-out),
+    box-shadow .5s var(--ease-out);
+  transition-delay:calc(var(--i) * 150ms);
+  will-change:clip-path,transform;
+}
+.how__grid.is-in .step,
+.step.is-in{
+  -webkit-clip-path:inset(0 0 0 0 round var(--r-lg));
+          clip-path:inset(0 0 0 0 round var(--r-lg));
+  transform:translate3d(0,0,0);
+}
+.step:hover{
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c,var(--cyan)) 45%, transparent),
+             0 26px 54px rgba(0,0,0,.5);
+}
+.step__num{
+  display:grid; place-items:center;
+  width:54px; height:54px;
+  border-radius:16px;
+  font-family:var(--font-display);
+  font-weight:900; font-size:1.35rem;
+  color:var(--bg);
+  background:linear-gradient(140deg, var(--c,var(--cyan)), color-mix(in srgb, var(--c,var(--cyan)) 45%, #ffffff));
+  box-shadow:0 0 28px color-mix(in srgb, var(--c,var(--cyan)) 45%, transparent);
+  transition:transform .5s var(--ease-out);
+}
+.step:hover .step__num{ transform:translateY(-4px) rotate(-6deg) scale(1.06); }
+.step__title{
+  margin:0;
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(1.02rem,1.5vw,1.32rem);
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  color:var(--ink);
+}
+.step__text{ margin:0; color:var(--ink-dim); line-height:1.6; }
+.step__kbd{
+  display:inline-block;
+  margin-top:4px;
+  padding:3px 9px;
+  border-radius:7px;
+  font-family:var(--font-display);
+  font-size:.68rem; font-weight:700; letter-spacing:.14em;
+  color:var(--acid);
+  background:rgba(200,255,46,.09);
+  box-shadow:inset 0 0 0 1px rgba(200,255,46,.3);
+}
+
+
+/* ==========================================================================
+   10. #cta — curtain-reveal finale
+   Markup: .curtain > .curtain__panel--l + .curtain__panel--r  (decorative)
+           then .cta__title / .cta__sub / .cta__actions
+   Add .is-in to #cta (or .cta) to split the curtain.
+   ========================================================================== */
+
+#cta{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(80% 70% at 50% 110%, rgba(255,47,185,.22), transparent 66%),
+    linear-gradient(180deg, var(--bg) 0%, #0a0618 100%);
+  padding-block:clamp(110px,16vh,200px);
+}
+.curtain{ position:absolute; inset:0; z-index:6; pointer-events:none; }
+.curtain__panel{
+  position:absolute; top:0; bottom:0; width:52%;
+  background:linear-gradient(180deg, #05060f, #120826 60%, #05060f);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+  transform:translate3d(0,0,0);
+  transition:transform 1.15s var(--ease-out);
+  will-change:transform;
+}
+.curtain__panel::after{
+  content:"";
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom, rgba(0,0,0,.5) 0 2px, transparent 2px 5px);
+  opacity:.35;
+}
+.curtain__panel--l{ left:0;  transform:translate3d(-101%,0,0); }
+.curtain__panel--r{ right:0; transform:translate3d(101%,0,0); transition-delay:.10s; }
+/* start closed, open on .is-in (also supports no-JS: default state is open) */
+.js-motion #cta:not(.is-in) .curtain__panel--l{ transform:translate3d(0,0,0); }
+.js-motion #cta:not(.is-in) .curtain__panel--r{ transform:translate3d(0,0,0); }
+.js-motion #cta.is-in .curtain__panel--l{ transform:translate3d(-101%,0,0); }
+.js-motion #cta.is-in .curtain__panel--r{ transform:translate3d(101%,0,0); }
+/* no-JS fallback: the panels lift away on their own with the `curtain` keyframe */
+html:not(.js-motion) #cta .curtain__panel{ animation:curtain 1.15s var(--ease-out) both; }
+html:not(.js-motion) #cta .curtain__panel--l{ transform:translate3d(0,0,0); }
+html:not(.js-motion) #cta .curtain__panel--r{ transform:translate3d(0,0,0); animation-delay:.12s; }
+
+.cta__inner{
+  position:relative; z-index:4;
+  width:min(var(--maxw),92vw);
+  margin-inline:auto;
+  display:grid; justify-items:center; gap:clamp(16px,2.4vh,26px);
+  text-align:center;
+}
+.cta__title{
+  margin:0;
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(2.1rem,6.4vw,5.6rem);
+  line-height:.95;
+  letter-spacing:-.015em;
+  text-transform:uppercase;
+  color:transparent;
+  background:linear-gradient(170deg,#fff 0%, var(--cyan) 46%, var(--magenta) 88%);
+  -webkit-background-clip:text; background-clip:text;
+  filter:drop-shadow(0 0 22px rgba(34,231,255,.4)) drop-shadow(0 0 60px rgba(255,47,185,.28));
+  position:relative; overflow:hidden;
+}
+.cta__title::after{
+  content:"";
+  position:absolute; top:-10%; left:0; height:120%; width:30%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);
+  mix-blend-mode:color-dodge;
+  transform:translate3d(-140%,0,0) rotate(6deg);
+  animation:sheen 7.5s var(--ease-in-out) infinite;
+  animation-delay:.6s;
+  will-change:transform;
+}
+.cta__sub{ margin:0; max-width:58ch; color:var(--ink-dim); font-size:clamp(1rem,1.4vw,1.2rem); line-height:1.6; }
+.cta__actions{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
+/* base.css owns .btn (glow, ::before sweep, hover lift) — glow ring only. */
+.cta__actions .btn--primary{
+  box-shadow:0 0 0 1px rgba(34,231,255,.5), 0 0 30px rgba(34,231,255,.35), 0 16px 34px rgba(0,0,0,.5);
+}
+.cta__actions .btn:hover,
+.cta__actions .btn:focus-visible{ transform:translateY(-3px) scale(1.03); filter:brightness(1.12); }
+.cta__fine{
+  margin:0;
+  font-size:.8rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.cta__fine a{ color:var(--ink-dim); }
+
+
+/* ==========================================================================
+   11. ENTRANCE VOCABULARY — [data-animate]
+   --------------------------------------------------------------------------
+   NOT re-declared here. css/base.css already implements the full set
+   (fade-up, fade-in, scale-in, converge, wipe-up, clip-reveal, split-text,
+   stagger-children) against html.js-motion + the .is-in class that
+   js/engine.js adds, and its split-text works on .glyph children. Declaring
+   it a second time would double-apply the transform and break the reveal.
+
+   What this file adds on top:
+     .stagger  — CSS-only transition-delay ladder for any container.
+                 Children are delayed by --i (auto-assigned by nth-child,
+                 so no JS is needed). Pair with data-animate="stagger-children".
+     .hero__stagger — same ladder for the hero copy plane, where the
+                 elements are not direct children of the [data-animate] node.
+   ========================================================================== */
+
+/* CSS-only stagger ladder: --i assigned by position, so nothing to wire up. */
+.stagger > *{ transition-delay:calc(var(--i,0) * 80ms); }
+.stagger > *:nth-child(1){ --i:0; }
+.stagger > *:nth-child(2){ --i:1; }
+.stagger > *:nth-child(3){ --i:2; }
+.stagger > *:nth-child(4){ --i:3; }
+.stagger > *:nth-child(5){ --i:4; }
+.stagger > *:nth-child(6){ --i:5; }
+.stagger > *:nth-child(7){ --i:6; }
+.stagger > *:nth-child(8){ --i:7; }
+.hero__stagger > *{ transition-delay:calc(var(--i,0) * 90ms); }
+
+
+/* ==========================================================================
+   12. RESPONSIVE — 360px → 2560px
+   ========================================================================== */
+
+/* Each breakpoint below is annotated with what it changes and WHY, so a cold
+   reader knows which ones are cosmetic tuning and which one is a fix.
+   Breakpoints are additive only — every rule here overrides a base rule, and
+   none of them remove markup or change a class name. */
+
+/* 1800px+ — very wide desktop. Widen the content measure and let the hero
+   title and the cabinet grow, otherwise everything floats in a sea of
+   background at 2560px. */
+@media (min-width:1800px){
+  :root{ --maxw:1400px; }
+  .hero__title{ font-size:clamp(6rem,7.4vw,9rem); }
+  .cabinet{ width:min(34vw,520px); }
+  .rail__item .gcard{ width:340px; }
+}
+
+/* 1100px and below — the cabinet starts colliding with the hero copy, so it
+   drops behind (opacity .55) and narrows while the copy keeps the full column. */
+@media (max-width:1100px){
+  .cabinet{
+    right:-4vw; top:34%;
+    width:min(46vw,340px);
+    opacity:.55;
+  }
+  #hero{ padding-block:calc(var(--nav-h) + 20px) 110px; }
+  .hero__copy{ max-width:min(620px,92vw); }
+}
+
+/* 860px and below — tablet. Also the boundary for the pinned game rail: at or
+   under this width the sticky-pin block in section 6b no longer applies and the
+   rail falls back to native overflow-x scrolling. The cabinet is dropped
+   entirely rather than shrunk, because it competes with the h1 at this width. */
+@media (max-width:860px){
+  #hero{ min-height:640px; }
+  .cabinet{ display:none; }
+  .how__grid{ grid-template-columns:1fr; }
+  .how__grid::before{ display:none; }
+  .step{ transform:none; }
+  .stats__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .genre-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hero__stats{ gap:10px; }
+  .hero__stat{ padding:6px 11px; }
+  .scanlines{ opacity:.34; }
+}
+
+/* 640px and below — phone. CTAs go full-width and stack; the genre grid
+   collapses to one column. Card widths go percentage-based so a single card
+   fills most of the screen instead of leaving a sliver beside it. */
+@media (max-width:640px){
+  .hero__title{ font-size:clamp(2.6rem,12.5vw,4.4rem); }
+  .hero__cta{ width:100%; }
+  .hero__cta .btn{ flex:1 1 100%; justify-content:center; }
+  .rail__item .gcard{ width:min(78vw,280px); }
+  .ticker__track{ animation-duration:24s; }
+  .genre-grid{ grid-template-columns:1fr; }
+  .stats__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .stat{ padding:16px 8px; }
+  .wordlight{ max-width:14ch; }
+  .cta__actions .btn{ flex:1 1 100%; justify-content:center; }
+  .curtain__panel{ width:50.4%; }
+}
+
+/* 420px and below — small phones. The hero stat row stops wrapping raggedly
+   and becomes a 2×2 grid, and tracking is loosened so uppercase labels such as
+   "INSTANT PLAY" do not overflow their pills. */
+@media (max-width:420px){
+  .hero__stats{ display:grid; grid-template-columns:1fr 1fr; width:100%; }
+  .hero__stat{ justify-content:flex-start; }
+  .stat__label{ font-size:.68rem; letter-spacing:.14em; }
+  .rail__item .gcard{ width:80vw; }
+  .cta__title{ font-size:clamp(1.9rem,10vw,3rem); }
+}
+
+/* Coarse pointers. Touch devices get no :hover at all, so anything that only
+   appears on hover would simply never be seen. The neon edge is therefore
+   pinned ON, and the lift/3D transforms are neutralised so a tap does not
+   leave a card stuck in a hovered state. */
+@media (hover:none){
+  /* no hover on touch: keep the neon edge on, drop the lift */
+  .genre__inner::before{ opacity:.5; }
+  .genre:hover .genre__inner{ transform:none; }
+  .stat:hover{ transform:none; }
+  .rail__item:hover .gcard{ transform:none; }
+}
+
+
+/* ==========================================================================
+   13. TOUCH / PERF-LITE  (engine.js sets html.perf-lite on coarse pointers)
+   ========================================================================== */
+
+/* base.css owns the .depth-0..5 / .layer / .particle perf-lite reductions.
+   Everything below is scoped to the atmosphere + section classes in THIS file. */
+html.perf-lite .grain,
+html.perf-lite .scanlines::after,
+html.perf-lite .hero__stars{ animation:none; }
+html.perf-lite .grid-plane{ animation-duration:6s; }
+html.perf-lite .hero__particles{ display:none; }
+html.perf-lite .hero__title::after,
+html.perf-lite .cta__title::after{ animation:none; opacity:0; }
+html.perf-lite .ticker__sep{ animation:none; }
+html.perf-lite .scroll-cue__line::after{ animation:none; }
+html.perf-lite .cabinet,
+html.perf-lite .shard{ animation-duration:14s; }
+html.perf-lite .grain,
+html.perf-lite .scanlines::after,
+html.perf-lite .hero__stars,
+html.perf-lite .ticker__track,
+html.perf-lite .grid-plane,
+html.perf-lite .hero__particles .particle{ will-change:auto; }
+
+
+/* ==========================================================================
+   14. REDUCED MOTION  (mirrors the base.css block; scoped to scene classes)
+   engine.js also sets html.motion-off when the visitor uses #motion-toggle.
+   ========================================================================== */
+
+@media (prefers-reduced-motion:reduce){
+  html *, html *::before, html *::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .depth-0,.depth-1,.depth-2,.depth-3,.depth-4,.depth-5{
+    transform:none !important; filter:none !important; will-change:auto !important;
+  }
+  .rail__track{ transform:none !important; }
+  .rail{ overflow-x:auto !important; }
+}
+
+/* The visitor-facing motion toggle. When motion is OFF, freeze the whole
+   parallax/ambient system but KEEP the reveals readable (opacity only). */
+html.motion-off{ --scroll-y:0 !important; }
+html.motion-off .depth-0,
+html.motion-off .depth-1,
+html.motion-off .depth-2,
+html.motion-off .depth-3,
+html.motion-off .depth-4,
+html.motion-off .depth-5{ transform:none !important; filter:none !important; will-change:auto !important; }
+html.motion-off .grain,
+html.motion-off .scanlines::after,
+html.motion-off .hero__stars,
+html.motion-off .hero__particles .particle,
+html.motion-off .shard,
+html.motion-off .glow-blob,
+html.motion-off .cabinet,
+html.motion-off .ticker__track,
+html.motion-off .grid-plane,
+html.motion-off .hero__title::after,
+html.motion-off .cta__title::after,
+html.motion-off .scroll-cue__line::after,
+html.motion-off .pulse-dot,
+html.motion-off .cab-glow{ animation:none !important; }
+/* keep the page functional: reveals become instant opacity, rail stays scrollable */
+html.motion-off [data-animate]{ opacity:1 !important; }
+html.motion-off [data-animate="wipe-up"],
+html.motion-off [data-animate="clip-reveal"]{ clip-path:none !important; }
+html.motion-off [data-animate="split-text"] > *,
+html.motion-off [data-animate="stagger-children"] > *,
+html.motion-off [data-animate="converge"] > *{ opacity:1 !important; transform:none !important; }
+html.motion-off .step{ clip-path:none !important; transform:none !important; }
+html.motion-off .curtain__panel--l{ transform:translate3d(-101%,0,0) !important; }
+html.motion-off .curtain__panel--r{ transform:translate3d(101%,0,0) !important; }
+html.motion-off .rail__track{ transform:translate3d(0,0,0) !important; }
+html.motion-off .rail{ overflow-x:auto !important; }
+html.motion-off .ticker__track{ width:max-content; }
+
+
+/* ==========================================================================
+   15. KEYFRAMES
+   ========================================================================== */
+
+/* slow vertical bob — cabinet, shards */
+@keyframes float-y{
+  0%,100%{ transform:translate3d(0,calc(var(--fy,0px) - 10px),0) rotate(-.6deg); }
+  50%    { transform:translate3d(0,calc(var(--fy,0px) + 12px),0) rotate(.8deg); }
+}
+
+/* breathing pulse — glow, sun, blob cores */
+@keyframes float-breathe{
+  0%,100%{ transform:scale(1)    translate3d(0,0,0);     opacity:var(--o0,1); }
+  50%    { transform:scale(1.09) translate3d(0,-10px,0); opacity:.78; }
+}
+
+/* long slow wandering — blobs, orbs */
+@keyframes float-drift{
+  0%   { transform:translate3d(0,0,0)        scale(1);    }
+  25%  { transform:translate3d(6%,-5%,0)     scale(1.12); }
+  50%  { transform:translate3d(-4%,6%,0)     scale(.94);  }
+  75%  { transform:translate3d(5%,4%,0)      scale(1.07); }
+  100% { transform:translate3d(0,0,0)        scale(1);    }
+}
+
+/* orbit — coin spin + particles */
+@keyframes float-orbit{
+  0%  { transform:translate3d(0,0,0)              rotate(0deg)   scale(1); }
+  25% { transform:translate3d(10px,-14px,0)       rotate(90deg)  scale(1.12);}
+  50% { transform:translate3d(-8px,10px,0)       rotate(180deg) scale(.92);}
+  75% { transform:translate3d(-12px,-8px,0)       rotate(270deg) scale(1.06);}
+  100%{ transform:translate3d(0,0,0)              rotate(360deg) scale(1);  }
+}
+
+/* light band sweeping across type / surfaces */
+@keyframes sheen{
+  0%  { transform:translate3d(-130%,0,0) rotate(6deg); }
+  38% { transform:translate3d(130%,0,0)  rotate(6deg); }
+  100%{ transform:translate3d(130%,0,0)  rotate(6deg); }
+}
+
+/* CRT scan bar travel (top → bottom) */
+@keyframes scan{
+  0%  { transform:translate3d(0,-30%,0); opacity:0; }
+  8%  { opacity:1; }
+  92% { opacity:1; }
+  100%{ transform:translate3d(0,520%,0); opacity:0; }
+}
+
+/* title glitch slices */
+@keyframes glitch{
+  0%,86%,100%{ opacity:0; transform:translate3d(0,0,0); }
+  87%{ opacity:.85; transform:translate3d(-5px,2px,0) skewX(-6deg); }
+  89%{ opacity:.55; transform:translate3d(6px,-3px,0) skewX(5deg); }
+  91%{ opacity:.8;  transform:translate3d(-3px,-1px,0); }
+  93%{ opacity:.4;  transform:translate3d(4px,1px,0); }
+  95%{ opacity:0;   transform:translate3d(0,0,0); }
+}
+
+/* neon pulse ring / glow breathing */
+@keyframes pulse-glow{
+  0%,100%{
+    box-shadow:0 0 0 0 rgba(34,231,255,.00), 0 0 20px rgba(34,231,255,.28);
+    filter:brightness(1);
+  }
+  50%{
+    box-shadow:0 0 0 10px rgba(34,231,255,.00), 0 0 34px rgba(34,231,255,.55);
+    filter:brightness(1.18);
+  }
+}
+
+/* horizontal marquee travel. Requires exactly 2 identical .ticker__set */
+@keyframes marquee{
+  0%  { transform:translate3d(0,0,0); }
+  100%{ transform:translate3d(-50%,0,0); }
+}
+
+/* curtain panels parting */
+@keyframes curtain{
+  0%  { transform:translate3d(0,0,0); filter:brightness(1); }
+  40% { filter:brightness(1.5); }
+  100%{ transform:translate3d(0,-101%,0); filter:brightness(1); }
+}
+
+/* ticker separator heartbeat */
+@keyframes ticker{
+  0%,100%{ opacity:.35; transform:scale(.82); filter:drop-shadow(0 0 0 currentColor); }
+  50%    { opacity:1;   transform:scale(1.18); filter:drop-shadow(0 0 12px currentColor); }
+}
+
+/* infinite neon grid scroll (plane travels up) */
+@keyframes grid-scroll{
+  0%  { transform:perspective(360px) rotateX(74deg) translate3d(0,0,0); }
+  100%{ transform:perspective(360px) rotateX(74deg) translate3d(0,-62.5%,0); }
+}
+
+/* film-grain jitter */
+@keyframes grain-shift{
+  0%  { transform:translate3d(0,0,0); }
+  25% { transform:translate3d(-2%,1%,0); }
+  50% { transform:translate3d(1%,-2%,0); }
+  75% { transform:translate3d(2%,2%,0); }
+  100%{ transform:translate3d(0,0,0); }
+}
+
+/* dying-CRT word light */
+@keyframes flicker{
+  0%,100%{ opacity:1;   filter:brightness(1);   transform:translate3d(0,0,0); }
+  8%    { opacity:.72; filter:brightness(1.35); }
+  10%   { opacity:1;   filter:brightness(.92); }
+  42%   { opacity:.88; filter:brightness(1.2);  transform:translate3d(0,-2px,0); }
+  44%   { opacity:1;   filter:brightness(1);    transform:translate3d(0,0,0); }
+  72%   { opacity:.8;  filter:brightness(1.15); }
+  74%   { opacity:1;   filter:brightness(1);    }
+}
+
+/* idle bob for small chrome (scroll cue, badges) */
+@keyframes bob{
+  0%,100%{ transform:translate3d(0,0,0); }
+  50%    { transform:translate3d(0,-8px,0); }
+}
+
+
+/* ==========================================================================
+   6b. #games — the featured rail.
+
+   This USED to pin the section and pan the card strip horizontally as you
+   scrolled down. The page itself never moved sideways, but vertical scrolling
+   made the cards slide left, which read as the page drifting sideways and was
+   genuinely confusing to play with. The rail is now a plain horizontal
+   carousel: vertical scroll is only ever vertical, and the strip moves when
+   you drag it, use a trackpad, or tap the arrows. The scroll-linked code in
+   js/site.js detects a non-pinned section and parks --rail-x at 0, so the
+   transform stays out of the way and the native overflow-x scroller drives it.
+   ========================================================================== */
+/* Arrows: hidden on touch (a phone just swipes the strip), shown on a
+   pointer device where there is no drag affordance to discover. The base rule
+   must come FIRST — same specificity, so a later rule would always win. */
+#games .rail-nav {
+  display: none;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-block-start: 10px;
+  /* the .layer bleed makes this row 112% of the viewport, which pushed the
+     right-aligned buttons off the right edge; pin it back to the shell */
+  inline-size: min(100%, var(--maxw));
+  margin-inline: auto;
+  padding-inline: max(4vw, (100vw - var(--maxw)) / 2);
+}
+#games .rail-nav button {
+  inline-size: 38px;
+  block-size: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  color: var(--ink-dim);
+  font: 700 15px/1 var(--font-body);
+  cursor: pointer;
+  transition: color .3s var(--ease-out), border-color .3s var(--ease-out), background-color .3s var(--ease-out);
+}
+#games .rail-nav button:hover:not(:disabled) {
+  color: var(--cyan);
+  border-color: color-mix(in srgb, var(--cyan) 50%, transparent);
+}
+#games .rail-nav button:disabled { opacity: .3; cursor: default; }
+@media (min-width: 860px) and (pointer: fine) {
+  #games .rail { scroll-snap-type: x proximity; }
+  #games .rail__track { transform: none; }
+  #games .rail-nav { display: flex; }
+}

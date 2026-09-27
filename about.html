@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  about.html — the "who is behind this" page.
+
+  Head order matters and is deliberate:
+    1. charset + viewport   (must be first; viewport-fit=cover for notched phones)
+    2. SEO identity         (title, description, canonical, Open Graph, Twitter, robots)
+    3. theme-color + icon + manifest + font preconnects
+    4. inline reduced-motion guard (must precede the stylesheets it overrides)
+    5. stylesheets in cascade order: base -> scenes (page furniture) -> games
+    6. JSON-LD @graph (see qa/SEO-GUIDE.md for the entity contract)
+
+  Body below is a sequence of full-bleed <section class="scene"> blocks, each
+  built from the shared depth/parallax layer system.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>About PixelRush — The Hobby Project Behind the Free Browser Arcade</title>
+<meta name="description" content="PixelRush is an independent hobby project: a free browser arcade built with vanilla HTML, CSS and JavaScript. No signup, no download, plays in one tap. Here is who builds it, how it works and what is next.">
+<link rel="canonical" href="https://pixelrush.example/about.html">
+<meta name="theme-color" content="#05060f">
+<meta name="og:type" content="website">
+<meta name="og:title" content="About PixelRush — An Independent Hobby Arcade">
+<meta name="og:description" content="Who builds PixelRush, why it is free forever, how the canvas games and the depth/parallax layer system work, and what is live, what is still being built, and how the canvas games and the depth layer system work.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="About PixelRush — The Hobby Project Behind the Arcade">
+<meta property="og:description" content="PixelRush is an independent hobby project: a free browser arcade built with vanilla HTML, CSS and JavaScript. No signup, no download, plays in one tap. Here is who builds it, how it works and what is next.">
+<meta property="og:url" content="https://pixelrush.example/about.html">
+<meta property="og:site_name" content="PixelRush">
+<meta property="og:image" content="https://pixelrush.example/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="keywords" content="about pixel rush, free browser arcade, indie game project, no signup games, accessible browser games">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Reduced-motion guard: reveal states must never depend on a stylesheet that has not loaded yet. -->
+  <style id="rm-guard">@media (prefers-reduced-motion: reduce){html.js-motion [data-animate],html.js-motion .reveal,html.js-motion [data-depth]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;animation:none!important}}</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/scenes.css">
+<link rel="stylesheet" href="css/games.css">
+
+<!-- ==========================================================================
+     Structured data — one @graph so this page joins the site's entity graph.
+     about.html is the AboutPage node. It references the shared #website and
+     #organization entities by @id only (they are declared in full on
+     index.html) and declares its own #webpage node, per qa/SEO-GUIDE.md.
+     Values below are the canonical site identity; game-level VideoGame nodes
+     live on games.html / play.html and are not repeated here.
+     ========================================================================== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://pixelrush.example/#website",
+      "url": "https://pixelrush.example/",
+      "name": "PixelRush",
+      "inLanguage": "en",
+      "description": "PixelRush is a free browser arcade. Twenty-four instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
+      "publisher": { "@id": "https://pixelrush.example/#organization" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://pixelrush.example/#organization",
+      "name": "PixelRush",
+      "url": "https://pixelrush.example/",
+      "description": "PixelRush is a free browser arcade. Twenty-four instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
+      "email": "mailto:Utkarsh6624@gmail.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2305060f'/><path d='M8 9h4v5h8V9h4v14h-4v-5h-8v5H8z' fill='%2322e7ff'/></svg>"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://pixelrush.example/about.html#webpage",
+      "url": "https://pixelrush.example/about.html",
+      "name": "About PixelRush — The Hobby Project Behind the Free Browser Arcade",
+      "description": "PixelRush is an independent hobby project: a free browser arcade built with vanilla HTML, CSS and JavaScript. No signup, no download, plays in one tap. Here is who builds it, how it works and what is next.",
+      "inLanguage": "en",
+      "isPartOf": { "@id": "https://pixelrush.example/#website" },
+      "about": { "@id": "https://pixelrush.example/#organization" }
+    },
+    {
+      "@type": "AboutPage",
+      "@id": "https://pixelrush.example/about.html#aboutpage",
+      "url": "https://pixelrush.example/about.html",
+      "name": "About PixelRush — The Hobby Project Behind the Free Browser Arcade",
+      "description": "PixelRush is an independent hobby project: a free browser arcade built with vanilla HTML, CSS and JavaScript. No signup, no download, plays in one tap. Here is who builds it, how it works and what is next.",
+      "inLanguage": "en",
+      "isPartOf": { "@id": "https://pixelrush.example/#website" },
+      "mainEntity": { "@id": "https://pixelrush.example/about.html#webpage" },
+      "about": { "@id": "https://pixelrush.example/#organization" }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<!-- Set the motion class before first paint so the reveal animations and the
+     reduced-motion guard in the head agree on the initial state. -->
+<script>document.documentElement.classList.add('js-motion')</script>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+      <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+      <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+    </a>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Primary">
+      <a class="nav__link" href="games.html">Games</a>
+      <a class="nav__link" href="index.html#genres">Genres</a>
+      <a class="nav__link" href="index.html#games">Top</a>
+      <a class="nav__link" href="about.html">About</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="true" aria-label="Toggle motion and visual effects">
+        <span class="motion-toggle__dot" aria-hidden="true"></span>
+        <span class="motion-toggle__label" data-motion-label>ON</span>
+      </button>
+      
+      <!-- Settings: cursor size + native-pointer escape hatch. Owned by js/engine.js. -->
+      <div class="nav__setwrap" style="position:relative;display:inline-flex">
+        <button class="nav__set" id="nav-settings" type="button" aria-expanded="false" aria-controls="nav-settings-panel" aria-label="Display settings"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M22.52 13.29 21.53 16.65 18.45 16.03 20.24 18.67 18.53 20.35 15.45 22.02 13.71 19.41 13.11 22.54 10.71 22.52 7.35 21.53 7.97 18.45 5.33 20.24 3.65 18.53 1.98 15.45 4.59 13.71 1.46 13.11 1.48 10.71 2.47 7.35 5.55 7.97 3.76 5.33 5.47 3.65 8.55 1.98 10.29 4.59 10.89 1.46 13.29 1.48 16.65 2.47 16.03 5.55 18.67 3.76 20.35 5.47 22.02 8.55 19.41 10.29 22.54 10.89Z M15.4 12a3.4 3.4 0 1 0-6.8 0 3.4 3.4 0 1 0 6.8 0Z"/></svg></button>
+        <div class="nav__panel" id="nav-settings-panel" role="dialog" aria-label="Display settings">
+          <p class="nav__panel-title">Display</p>
+          <button class="nav__switch" id="px-cursor-switch" type="button" role="switch" aria-checked="true">
+            <span>Neon cursor</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+          <p class="nav__hint">Turn this off to use your normal system pointer.</p>
+          <div class="nav__row">
+            <div class="nav__row-top"><span>Cursor size</span><span class="nav__row-val" id="px-size-val">MED</span></div>
+            <div class="nav__seg" id="px-size-seg" role="group" aria-label="Cursor size">
+              <button type="button" data-px-size="s" aria-checked="false">S</button>
+              <button type="button" data-px-size="m" aria-checked="true">M</button>
+              <button type="button" data-px-size="l" aria-checked="false">L</button>
+              <button type="button" data-px-size="xl" aria-checked="false">XL</button>
+            </div>
+          </div>
+          <button class="nav__switch" id="px-motion-switch" type="button" role="switch" aria-checked="true">
+            <span>Animations</span><span class="nav__switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <a class="btn btn--primary nav__cta" href="games.html">All games</a>
+      <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Open the menu">
+        <span class="nav__burger" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!--
+    HOW THE SCENE LAYER SYSTEM WORKS (repeated in every section below)
+      .scene         a full-bleed section that owns its own background stack
+      .layer         one plane, depth-0 (grid/scanlines, furthest) to
+                     depth-5 (foreground particles, nearest). data-depth is the
+                     parallax rate; one scroll value drives every plane.
+      aria-hidden    every decorative plane is hidden from assistive tech.
+      .layer--flow   REQUIRED on the plane that carries text. It cancels the
+                     bleed inset the decorative planes need; without it the
+                     section collapses and clips its own copy.
+      data-animate   reveal state driven by js/site.js, never by a load-order
+                     assumption about the stylesheet.
+  -->
+
+  <!-- ============================ HERO ============================ -->
+  <section class="scene" id="about-hero" aria-labelledby="about-hero-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:8%;--y:22%;--c:var(--cyan);--dur:27s"></span>
+      <span class="glow-blob" style="--x:84%;--y:64%;--c:var(--magenta);--dur:33s;--delay:-12s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:12%;--y:70%;--s:54px;--c:var(--violet);--dur:9s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><rect x="10" y="18" width="44" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><path d="M10 28h44" stroke="currentColor" stroke-width="2.5"/><circle cx="20" cy="37" r="2.6" fill="currentColor"/><circle cx="32" cy="37" r="2.6" fill="currentColor"/></svg>
+      </span>
+      <span class="shard" style="--x:90%;--y:26%;--s:60px;--c:var(--acid);--dur:11s;--delay:-4s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="3.5" stroke-dasharray="12 9"/><path d="M32 20v14l10 6" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
+      </span>
+    </div>
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:7%;--p-top:64%;--p-size:3px;--p-dur:11s;--p-delay:0s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:23%;--p-top:22%;--p-size:2px;--p-dur:14s;--p-delay:-3s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:41%;--p-top:80%;--p-size:4px;--p-dur:10s;--p-delay:-6s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:62%;--p-top:28%;--p-size:2px;--p-dur:13s;--p-delay:-2s;--p-color:var(--violet)"></i>
+      <i class="particle" style="--p-left:78%;--p-top:70%;--p-size:3px;--p-dur:12.5s;--p-delay:-7s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:92%;--p-top:36%;--p-size:2px;--p-dur:15s;--p-delay:-4s;--p-color:var(--orange)"></i>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <!-- Mirrors the page hierarchy expressed in the JSON-LD @graph. -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">About</span>
+        </nav>
+        <p class="eyebrow" data-animate="fade-up">One person · evenings and weekends · since 2024</p>
+        <h1 id="about-hero-title" data-animate="wipe-up">ABOUT PIXEL RUSH</h1>
+        <p class="lead" data-animate="fade-up">PixelRush is a free browser arcade built by one person in the margins of a
+          day job. It holds 24 instant-play games, it runs on a stack of plain HTML, CSS and JavaScript, and it will
+          never ask you for an account, a card or a download. This page explains who is behind it, what it believes,
+          and how the thing actually works under the neon.</p>
+        <p class="u-row u-row--center" data-animate="stagger-children">
+          <span class="chip">Free forever</span>
+          <span class="chip">No signup</span>
+          <span class="chip">No account, ever</span>
+          <span class="chip">Vanilla HTML/CSS/JS</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TICKER ============================ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span class="ticker__set">
+        <span class="ticker__item">24 games</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No signup</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No download</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No signup</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Free forever</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Vanilla JS</span><span class="ticker__sep">◆</span>
+      </span>
+      <span class="ticker__set">
+        <span class="ticker__item">24 games</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No signup</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No download</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">No signup</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Free forever</span><span class="ticker__sep">◆</span>
+        <span class="ticker__item">Vanilla JS</span><span class="ticker__sep">◆</span>
+      </span>
+    </div>
+  </div>
+  <!-- The ticker is decorative (aria-hidden), so the same promise is restated
+       here for screen-reader users in prose form. -->
+  <p class="sr-only">PixelRush is free forever, with no signup, no download and no paywall. The games are
+    never paywalled and there is no premium tier, but the site now carries advertising.</p>
+
+  <!-- ============================ WHO IS BEHIND IT ============================ -->
+  <section class="scene" id="who" aria-labelledby="who-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:18%;--y:28%;--c:var(--acid);--dur:30s"></span>
+      <span class="glow-blob" style="--x:88%;--y:72%;--c:var(--cyan);--dur:26s;--delay:-9s"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <article class="seo-block">
+          <p class="eyebrow" data-animate="fade-up">Who is behind it</p>
+          <h2 id="who-title" data-animate="wipe-up">One developer, one garage, no publisher</h2>
+
+          <p data-animate="fade-up">PixelRush is maintained by a single developer, Utkarsh, who builds it in the
+            evenings and at weekends alongside a day job. There is no studio, no art department and no publishing
+            deal. The cabinets, the artwork, the sound and the words on this site were all made in the same handful of
+            files, in the same editor, by the same person.</p>
+
+          <p data-animate="fade-up">That is worth saying plainly, because it explains almost everything else you will
+            read here. There is no growth target, no conversion funnel and nobody whose job it is to make you play
+            longer. When a cabinet is finished, it goes live — and if one ever is not finished, it says
+            so on the card rather than pretending. When a page is too slow on a mid-range phone, it gets smaller.</p>
+
+          <h3 data-animate="fade-up">What the project is not</h3>
+          <ul data-animate="stagger-children">
+            <li><strong>Not a company.</strong> There is no legal entity behind the site, no support desk and no service
+              level agreement. The full <a href="terms.html">terms of use</a> spell out what that means in practice.</li>
+            <li><strong>Not a paywall.</strong> No game here is locked, timed or trimmed. There is no trial clock, no
+              "remove ads" button, no premium tier and nothing to buy. Advertising pays for the hosting; it never
+              touches the games.</li>
+            <li><strong>Not a content farm.</strong> The pages exist to explain the games, not to rank for a keyword.
+              The <a href="privacy.html">privacy policy</a> is short because we hold almost nothing ourselves — see
+              the advertising section there for what the ad providers do see.</li>
+            <li><strong>Not a storefront for anyone else's games.</strong> Every title here was written for this site.</li>
+          </ul>
+
+          <p data-animate="fade-up">If something on the site is broken, wrong or quietly embarrassing, the fastest way to
+            get it fixed is an email to <a href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a>. Real bugs get
+            fixed in the next sitting. Feature requests get argued about honestly, which is often more useful than a
+            quiet no.</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:11%;--p-top:26%;--p-size:2px;--p-dur:12s;--p-delay:-4s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:66%;--p-top:74%;--p-size:3px;--p-dur:10s;--p-delay:-8s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:89%;--p-top:30%;--p-size:2px;--p-dur:14s;--p-delay:-1s;--p-color:var(--violet)"></i>
+    </div>
+  </section>
+
+  <!-- ============================ PHILOSOPHY ============================ -->
+  <section class="scene" id="philosophy" aria-labelledby="philosophy-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:12%;--c:var(--magenta);--dur:32s"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <article class="seo-block">
+          <p class="eyebrow" data-animate="fade-up">The philosophy</p>
+          <h2 id="philosophy-title" data-animate="wipe-up">Free forever, because the maths is trivial</h2>
+
+          <p data-animate="fade-up">A static site costs almost nothing to host, and a canvas game is a few kilobytes of
+            JavaScript with no server round-trip at all. There is no cost centre here to pass on, so there is nothing
+            to charge you for. The price is zero, permanently, and that is not a trial period — it is the whole
+            arrangement.</p>
+
+          <h3 data-animate="fade-up">No signup, because there is nothing to sign in to</h3>
+          <p data-animate="fade-up">An account would mean an email address, a password, a server, a database and a
+            privacy policy about both. Instead, your scores and preferences live in your own browser's local storage,
+            on your own device. Nothing is uploaded, so there is nothing for us to lose, leak or hand over. Clearing
+            your browser data clears your high scores, and that is a trade this site makes on purpose.</p>
+
+          <h3 data-animate="fade-up">No account, no analytics — but yes, ads</h3>
+          <p data-animate="fade-up">Two different things get lumped together as "tracking", so here they are apart. We
+            run no analytics script of our own and we build no profile of you: there is no server holding your
+            scores, your visits or your email address, because there is no server. Your high scores and preferences
+            never leave your browser.</p>
+          <p data-animate="fade-up">The site does carry advertising, and that is a different arrangement. Ads are
+            served by third parties, and that normally means they can set cookies or similar storage, see your IP
+            address and build a profile from it. We do not control that, we do not get handed the data, and we have
+            not chosen a provider yet, so no name is listed in the
+            <a href="privacy.html">privacy policy</a> — it describes the category instead. The games stay exactly as
+            they were: free, whole, no timer, nothing unlocked by paying.</p>
+
+          <h3 data-animate="fade-up">No download, because a download is a tax</h3>
+          <p data-animate="fade-up">A download means a decision, and a decision is where most people leave. Here a game is
+            a web page: one URL, one tab, playable within a second of clicking. It works on a locked-down library
+            machine, on a school Chromebook and on a phone with half a bar of signal, because the same files serve all
+            three.</p>
+
+          <h3 data-animate="fade-up">Short sessions, on purpose</h3>
+          <p data-animate="fade-up">Most titles here last between one and eight minutes and restarts take a single key.
+            They are built for the gap between two meetings, the queue at the shop, the five minutes before a train
+            arrives. A game you cannot start in one click, or finish before your stop, is the wrong game for this
+            site — so the whole catalogue is designed around short runs and instant retries.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TECHNICAL APPROACH ============================ -->
+  <section class="scene" id="tech" aria-labelledby="tech-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:14%;--y:34%;--c:var(--cyan);--dur:28s"></span>
+      <span class="glow-blob" style="--x:80%;--y:70%;--c:var(--violet);--dur:34s;--delay:-15s"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <article class="seo-block">
+          <p class="eyebrow" data-animate="fade-up">Under the neon</p>
+          <h2 id="tech-title" data-animate="wipe-up">How the arcade is actually built</h2>
+
+          <p data-animate="fade-up">No framework, no bundler, no build step. If you clone the repository and open
+            <code>index.html</code> in a text editor, what you read is what the browser gets. There is no compiler to
+            install, no dependency tree to audit and no toolchain that can break on a new release. The whole site is
+            HTML documents, three stylesheets and two scripts.</p>
+
+          <h3 data-animate="fade-up">Static files, served as-is</h3>
+          <p data-animate="fade-up">Every page is a plain <code>.html</code> file with its own title, description and
+            canonical URL, so each one can be linked, bookmarked and indexed on its own. There is no server rendering,
+            no client-side router and no single-page-app shell. A page is either served or it is not, and it is
+            readable with JavaScript switched off.</p>
+
+          <h3 data-animate="fade-up">Canvas games with a shared player shell</h3>
+          <p data-animate="fade-up">The games themselves are drawn on an HTML canvas and driven by a
+            <code>requestAnimationFrame</code> loop with a fixed logical resolution, so they scale cleanly from a
+            360&nbsp;px phone to a large monitor without blurring. The page they live on, <a href="play.html">play.html</a>,
+            is a shared shell: it reads the game name from the address, loads that one game file, and adds the frame
+            chrome, the pause behaviour and the score readout. New games plug into the shell rather than shipping
+            their own page.</p>
+
+          <h3 data-animate="fade-up">Scores live in localStorage</h3>
+          <p data-animate="fade-up">Personal bests, the games you have played and your motion preference are stored
+            under namespaced keys in your browser's local storage. Nothing is sent anywhere. The upside is instant
+            load and zero latency; the trade-off is that scores follow the device, not the person, and a private
+            window or a cleared cache wipes them. That trade is the price of having no account and no server.</p>
+
+          <h3 data-animate="fade-up">The depth and parallax layer system</h3>
+          <p data-animate="fade-up">Each full-bleed section is a <code>.scene</code> containing stacked
+            <code>.layer</code> elements, numbered <code>depth-0</code> to <code>depth-5</code>. On scroll, one
+            transform per layer is written from a single value, so the grid horizon, the glow blobs, the floating
+            shards, the copy plane and the foreground particles move at different rates over one shared number. It is
+            a fake third dimension made of about forty lines of JavaScript, and it costs no images: the artwork is
+            CSS gradients and inline SVG.</p>
+
+          <p data-animate="fade-up">The layers that carry text are marked <code>layer--flow</code>. That single class
+            opts them out of the bleed inset the decorative layers need, and it is the reason the prose on this page is
+            positioned normally instead of being dragged off-screen.</p>
+        </article>
+
+        <!-- Counted on scroll to data-count-to; the "0" is the pre-animation
+             value, and the sr-only paragraph below carries the same figures
+             as prose so the numbers are not motion- or screen-reader-only. -->
+        <ul class="stats__grid" data-animate="stagger-children">
+          <li class="stat" style="--c:var(--cyan)">
+            <span class="stat__num" data-count-to="0">0</span>
+            <span class="stat__label">Analytics scripts we run</span>
+          </li>
+          <li class="stat" style="--c:var(--magenta)">
+            <span class="stat__num" data-count-to="3">0</span>
+            <span class="stat__label">Stylesheets, total</span>
+          </li>
+          <li class="stat" style="--c:var(--acid)">
+            <span class="stat__num" data-count-to="6">0</span>
+            <span class="stat__label">Parallax depth layers</span>
+          </li>
+          <li class="stat" style="--c:var(--orange)">
+            <span class="stat__num" data-count-to="0">0</span>
+            <span class="stat__label">Build steps before deploy</span>
+          </li>
+        </ul>
+        <p class="sr-only">The whole site is three stylesheets and two scripts, with six parallax depth layers, zero
+          analytics scripts of our own and zero build steps. Advertising is served by third parties, as set out in
+          the privacy policy.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ACCESSIBILITY ============================ -->
+  <section class="scene" id="accessibility" aria-labelledby="accessibility-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:20%;--y:70%;--c:var(--acid);--dur:29s"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <article class="seo-block">
+          <p class="eyebrow" data-animate="fade-up">Accessibility</p>
+          <h2 id="accessibility-title" data-animate="wipe-up">What we promise, and how it is enforced</h2>
+
+          <p data-animate="fade-up">A neon arcade is exactly the kind of site that gets built with motion everywhere,
+            low contrast and zero keyboard support. These are the commitments that stop that happening, and the
+            mechanism behind each one.</p>
+
+          <h3 data-animate="fade-up">Reduced motion is respected, and testable</h3>
+          <p data-animate="fade-up">Every decorative animation — parallax, drifting shards, floating particles, the
+            scrolling ticker — is switched off when the operating system asks for reduced motion. Reveal animations
+            resolve to their final state immediately, so nothing is ever left invisible. There is also a motion toggle
+            in the header, so you can switch the whole thing off yourself; your choice is remembered on this device.</p>
+
+          <h3 data-animate="fade-up">Keyboard first, on every cabinet</h3>
+          <p data-animate="fade-up">Every game is playable with a keyboard alone: arrows or WASD to move, space to act,
+            R to restart, P to pause. No action is mouse-only, and focus order follows the visual order, so tabbing
+            through a page reads it top to bottom. Focus rings are visible by default and are never removed in favour
+            of a custom effect.</p>
+
+          <h3 data-animate="fade-up">Screen readers get the real content</h3>
+          <p data-animate="fade-up">Decorative layers are hidden from assistive technology, so a screen reader hears
+            headings and paragraphs rather than a pile of empty divs. Each page has one <code>h1</code>, heading levels
+            never skip, every link describes its destination out loud — "Play Neon Snake", not "click here" — and every
+            icon-only control carries a label. A skip link is the first thing in the document, so the navigation is
+            one keypress away.</p>
+
+          <h3 data-animate="fade-up">Contrast that survives the glow</h3>
+          <p data-animate="fade-up">Neon on near-black looks better at low contrast, so the type scale is tuned until
+            body copy and the dimmer labels clear the contrast thresholds rather than stopping at what looks moody.
+            Colour is never the only signal: genre, difficulty and run length are all written out in text, and the
+            state of a cabinet is always written out, never signalled by colour alone.</p>
+
+          <h3 data-animate="fade-up">Mobile-first and honest about it</h3>
+          <p data-animate="fade-up">The layout is built for a 360&nbsp;px phone first and widened from there, so nothing
+            scrolls sideways on a small screen. Touch targets are large enough for a thumb in a moving queue, pointer
+            actions never depend on hover, and the games accept touch, mouse and keyboard without a mode switch.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ HOW IT GOT HERE ============================ -->
+  <section class="scene" id="history" aria-labelledby="history-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:84%;--c:var(--cyan);--dur:31s"></span>
+      <span class="glow-blob" style="--x:16%;--y:20%;--c:var(--magenta);--dur:27s;--delay:-11s"></span>
+    </div>
+    <div class="layer depth-2" data-depth="2" aria-hidden="true">
+      <span class="shard" style="--x:9%;--y:44%;--s:50px;--c:var(--acid);--dur:8.5s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M14 8h36v48H14z" fill="none" stroke="currentColor" stroke-width="3"/><path d="M22 20h20M22 32h20M22 44h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+      </span>
+      <span class="shard" style="--x:92%;--y:56%;--s:56px;--c:var(--orange);--dur:10.5s;--delay:-6s">
+        <svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M8 46 24 20l10 16 8-10 14 20z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      </span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up">How it got here</p>
+          <h2 class="section-head__title" id="history-title" data-animate="wipe-up"><span>Four years,</span> <span class="accent">one file at a time</span></h2>
+          <p class="section-head__sub" data-animate="fade-up">No launch date, no marketing push. The site grew the way a
+            collection does: one cabinet finished, published, then the next one.</p>
+        </div>
+
+        <ol class="how__grid" data-animate="stagger-children">
+          <li class="step" data-animate="clip-reveal" style="--c:var(--cyan)">
+            <span class="step__num" aria-hidden="true">01</span>
+            <h3 class="step__title">One HTML file and a grid</h3>
+            <p class="step__text">The first cabinet was a single hand-written file with a moving square on a grid. It
+              was playable on a laptop, unplayable on a phone, and it proved the whole idea: if a game is one file, the
+              hosting is free and the page is fast.</p>
+            <span class="step__kbd">2024 · the first prototype</span>
+          </li>
+          <li class="step" data-animate="clip-reveal" style="--c:var(--magenta)">
+            <span class="step__num" aria-hidden="true">02</span>
+            <h3 class="step__title">Neon, layers and the depth system</h3>
+            <p class="step__text">The visual language came next: a synth horizon, glow blobs, floating shards and
+              six parallax depth planes driven from a single scroll value. It looked like an arcade rather than a
+              spreadsheet, and it cost nothing to serve because none of it is an image.</p>
+            <span class="step__kbd">Late 2024 · the look</span>
+          </li>
+          <li class="step" data-animate="clip-reveal" style="--c:var(--acid)">
+            <span class="step__num" aria-hidden="true">03</span>
+            <h3 class="step__title">A shared player shell and a catalogue</h3>
+            <p class="step__text">Rebuilding the same pause button, score readout and restart key for every game was
+              the obvious waste, so all games moved into one shell and the library became a grid you could filter. The
+              catalogue passed a dozen games and started behaving like an arcade floor.</p>
+            <span class="step__kbd">2025 · the arcade</span>
+          </li>
+          <li class="step" data-animate="clip-reveal" style="--c:var(--orange)">
+            <span class="step__num" aria-hidden="true">04</span>
+            <h3 class="step__title">Accessibility and the small print</h3>
+            <p class="step__text">Motion toggles, real focus rings, honest link text, a skip link and a privacy policy
+              written in plain English. The site got quieter, faster and smaller, and it did not lose
+              any of its character doing it.</p>
+            <span class="step__kbd">2026 · today</span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ROADMAP ============================ -->
+  <section class="scene" id="roadmap" aria-labelledby="roadmap-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:22%;--y:18%;--c:var(--violet);--dur:30s"></span>
+      <span class="glow-blob" style="--x:86%;--y:76%;--c:var(--cyan);--dur:26s;--delay:-8s"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <div class="section-head">
+          <p class="eyebrow" data-animate="fade-up">The roadmap</p>
+          <h2 class="section-head__title" id="roadmap-title" data-animate="wipe-up"><span>Every cabinet is live</span> <span class="accent">— and every one is phone-playable</span></h2>
+          <p class="section-head__sub" data-animate="fade-up">All twenty-four cabinets are built, tested and clickable.
+            Each one was played on a 390px touch screen as well as a desktop keyboard, so nothing here needs a mouse.</p>
+        </div>
+
+        <div class="u-grid u-grid--2" data-animate="stagger-children">
+          <div class="card">
+            <div class="seo-block">
+              <h3>Live and playable — all twenty-four</h3>
+              <p>Every game in the library is finished. Open it and play without an account. A few to start on:</p>
+              <ul>
+                <li><a href="play.html?game=reaction">Neon Reaction</a> — a reflex drill that measures the gap between
+                  seeing the signal and pressing the key.</li>
+                <li><a href="play.html?game=snake">Neon Snake</a> — grow a light-streak through the grid until you
+                  box yourself in.</li>
+                <li><a href="play.html?game=blockfall">Blockfall</a> — stack falling blocks and clear four lines before
+                  the grid fills.</li>
+                <li><a href="play.html?game=penalty-kick">Penalty Kick</a> — five kicks against a keeper who reads your
+                  body line, so the corner is safe only if you commit to it.</li>
+                <li><a href="play.html?game=rogue-shift">Rogue Shift</a> — a small turn-based roguelike where the map
+                  reshuffles and you descend exactly once.</li>
+                <li><a href="games.html">The full library</a> — 24 cabinets across arcade, puzzle, racing, strategy,
+                  casual and sports, each with its own length and difficulty.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="seo-block">
+              <h3>What is genuinely still to come</h3>
+              <p>The cabinet shelf is full. These are the things the site still does not do, listed so you are not
+                left guessing:</p>
+              <ul>
+                <li><strong>Shared high-score boards</strong> — still being argued about, because they need a server,
+                  and a server is a cost and a privacy question.</li>
+                <li><strong>More genres</strong> — the six aisles are covered, but each of them has room for two or
+                  three more cabinets.</li>
+                <li><strong>Sound</strong> — every game is deliberately silent so it works anywhere without a mute
+                  button. A good synth soundtrack is a real project of its own.</li>
+                <li><strong>Daily challenges</strong> — possible without a server if the seed is derived from the
+                  date, and that is the obvious next idea.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <p data-animate="fade-up" class="text-dim">If a cabinet is a bit thin, gets in the way on your phone, or you
+          simply want a twenty-fifth, email
+          <a href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a> and say so — that is genuinely the most
+          useful thing you can send.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ HONEST NOTE ============================ -->
+  <section class="scene" id="honest" aria-labelledby="honest-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:20%;--c:var(--magenta);--dur:29s"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="scene__inner shell">
+        <article class="seo-block">
+          <p class="eyebrow" data-animate="fade-up">The honest bit</p>
+          <h2 id="honest-title" data-animate="wipe-up">A hobby project, not a business</h2>
+
+          <p data-animate="fade-up">PixelRush is not a company, not a startup and not a product with a roadmap that
+            ends in an acquisition. It is one person's spare hours. It has no investors, no employees, no support
+            contract and no guarantee that any individual cabinet will be updated on any particular date. The
+            <a href="games.html">games page</a> is the library, and the library is the product; if a suggestion does not
+            fit the short-session idea, the honest answer will probably be no.</p>
+
+          <p data-animate="fade-up">You should also know what the site deliberately does not do. There is no
+            multiplayer, no cloud saves, no in-app purchases, no paywall and no premium tier. High scores are
+            per-device, so switching phones leaves your best behind. Games are meant to
+            be finished, forgotten and replayed, not accumulated. What the site does carry is advertising, which pays
+            for the hosting and is served by other people — you can read exactly what that means in the
+            <a href="privacy.html">privacy policy</a>.</p>
+
+          <p data-animate="fade-up">The site is maintained as it stands, with the same promise as on day one: free,
+            no account, no download, on any screen. &copy; <span data-year>2026</span> PixelRush.
+            The <a href="privacy.html">privacy policy</a> and the <a href="terms.html">terms of use</a> say the same
+            thing in the legal register.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CTA FINALE ============================ -->
+  <section class="scene" id="cta" data-animate="fade-in" aria-labelledby="cta-title">
+    <div class="layer depth-0" data-depth="0" aria-hidden="true">
+      <div class="grid-plane"></div>
+      <div class="scanlines"></div>
+    </div>
+    <div class="layer depth-1" data-depth="1" aria-hidden="true">
+      <span class="glow-blob" style="--x:50%;--y:88%;--c:var(--magenta);--dur:31s"></span>
+      <span class="glow-blob" style="--x:50%;--y:8%;--c:var(--cyan);--dur:27s;--delay:-13s"></span>
+    </div>
+    <div class="layer depth-2 curtain" data-depth="2" aria-hidden="true">
+      <span class="curtain__panel curtain__panel--l"></span>
+      <span class="curtain__panel curtain__panel--r"></span>
+    </div>
+
+    <div class="layer layer--flow depth-4" data-depth="4">
+      <div class="cta__inner">
+        <p class="eyebrow" data-animate="fade-up">Got a game in mind?</p>
+        <h2 class="cta__title" id="cta-title" data-animate="split-text"><span>Put</span> <span>It</span> <span>On</span> <span>The</span> <span>Floor</span></h2>
+        <p class="cta__sub" data-animate="wipe-up">There is a long list of games I keep thinking about and no
+          commercial reason to build any of them. Tell me which one you would open first and it has a much better
+          chance of being real than anything else on the list.</p>
+        <div class="cta__actions" data-animate="scale-in">
+          <a class="btn btn--primary btn--lg" href="contact.html">Suggest a game on the contact page</a>
+          <a class="btn btn--ghost btn--lg" href="mailto:Utkarsh6624@gmail.com?subject=Suggest%20a%20game">Email a suggestion instead</a>
+        </div>
+        <p class="cta__fine">No account · no download · plays in one tap</p>
+      </div>
+    </div>
+
+    <div class="layer depth-5" data-depth="5" aria-hidden="true">
+      <i class="particle" style="--p-left:16%;--p-top:50%;--p-size:3px;--p-dur:10s;--p-delay:0s;--p-color:var(--magenta)"></i>
+      <i class="particle" style="--p-left:38%;--p-top:24%;--p-size:2px;--p-dur:13s;--p-delay:-5s;--p-color:var(--acid)"></i>
+      <i class="particle" style="--p-left:60%;--p-top:72%;--p-size:3px;--p-dur:11s;--p-delay:-2s;--p-color:var(--cyan)"></i>
+      <i class="particle" style="--p-left:84%;--p-top:36%;--p-size:2px;--p-dur:14s;--p-delay:-8s;--p-color:var(--violet)"></i>
+    </div>
+  </section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer" id="about">
+  <!-- Brand column, then the four link columns, then a bottom bar. -->
+  <div class="footer__grid">
+    <div class="footer__brand-col">
+      <a class="nav__brand" href="index.html" aria-label="PixelRush — back to the home screen">
+        <svg class="nav__logo" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><path fill="#22e7ff" fill-rule="evenodd" d="M22,8 54,8 62.4,18 61.1,26 49.2,38 31.2,38 25.2,38 22,58 10,58 7.3,50 12.7,16ZM28.7,16 45.7,16 51.6,23 50.3,31 26.3,31Z"/><path fill="#ff2fb9" d="M29.2,38 49.2,38 61.3,50 54,58 43,58Z"/></svg>
+        <span class="nav__logo-text">PIXEL<b>RUSH</b></span>
+      </a>
+      <p class="footer__blurb">A free browser arcade. No install, no account, no waiting — just press START and play.
+        Built for two-minute breaks and all-night grinds alike.</p>
+      <p class="footer__tagline">Free browser arcade. No install. No account. Just press START.</p>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Arcade</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html">All games</a></li>
+        <li><a class="footer__link" href="games.html?genre=Arcade">Arcade</a></li>
+        <li><a class="footer__link" href="games.html?genre=Puzzle">Puzzle</a></li>
+        <li><a class="footer__link" href="games.html?genre=Racing">Racing</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">More aisles</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="games.html?genre=Strategy">Strategy</a></li>
+        <li><a class="footer__link" href="games.html?genre=Casual">Casual</a></li>
+        <li><a class="footer__link" href="games.html?genre=Sports">Sports</a></li>
+        <li><a class="footer__link" href="index.html#how">How it works</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Top cabinets</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="play.html?game=reaction">Neon Reaction</a></li>
+        <li><a class="footer__link" href="play.html?game=snake">Neon Snake</a></li>
+        <li><a class="footer__link" href="play.html?game=neon-paddle">Neon Paddle</a></li>
+        <li><a class="footer__link" href="play.html?game=blockfall">Blockfall</a></li>
+      </ul>
+      <ul class="footer__socials">
+        <li><a class="footer__social" href="mailto:Utkarsh6624@gmail.com">Email us</a></li>
+        <li><a class="footer__social" href="games.html">All games</a></li>
+        <li><a class="footer__social" href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h2 class="footer__title">The small print</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link" href="about.html">About PixelRush</a></li>
+        <li><a class="footer__link" href="contact.html">Contact us</a></li>
+        <li><a class="footer__link" href="privacy.html">Privacy policy</a></li>
+        <li><a class="footer__link" href="terms.html">Terms of use</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__copy">&copy; <span id="year">2026</span> PixelRush. Free forever, on every screen.</p>
+    <p class="footer__note">Built with vanilla HTML/CSS/JS — nothing to install.</p>
+    <p class="footer__copy"><a class="footer__link" href="index.html">Home</a> · <a class="footer__link" href="games.html">Games</a> · <a class="footer__link" href="about.html">About</a> · <a class="footer__link" href="contact.html">Contact</a> · <a class="footer__link" href="privacy.html">Privacy</a> · <a class="footer__link" href="terms.html">Terms</a></p>
+  </div>
+</footer>
+
+<!-- engine.js (window.PX) owns motion state, the reveal observer and the
+     parallax scroll driver; site.js picks up the page furniture that is
+     present here — the marquee duplication and the [data-count-to] stat
+     counters. Both are deferred so neither blocks first paint. -->
+<script src="js/engine.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

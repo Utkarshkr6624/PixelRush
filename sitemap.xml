@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Home — cinematic landing page. Highest priority, changes most often. -->
+  <url>
+    <loc>https://pixelrush.example/</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Games library — the real catalog. Frequent additions, so weekly. -->
+  <url>
+    <loc>https://pixelrush.example/games.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- About PixelRush — who we are and why the arcade is free. -->
+  <url>
+    <loc>https://pixelrush.example/about.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Contact — suggest a game, report a bug, say hello. -->
+  <url>
+    <loc>https://pixelrush.example/contact.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Privacy policy — what we collect, which is close to nothing. -->
+  <url>
+    <loc>https://pixelrush.example/privacy.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Terms of use — the rules for using the arcade. -->
+  <url>
+    <loc>https://pixelrush.example/terms.html</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

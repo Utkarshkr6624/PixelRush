@@ -1,0 +1,62 @@
+{
+  "name": "PixelRush — Free Browser Arcade",
+  "short_name": "PixelRush",
+  "description": "PixelRush is a free browser arcade with 24 instant-play games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "any",
+  "theme_color": "#05060f",
+  "background_color": "#05060f",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "games",
+    "entertainment",
+    "arcade"
+  ],
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse all games",
+      "short_name": "Games",
+      "url": "/games.html?source=pwa"
+    },
+    {
+      "name": "Play Neon Reaction",
+      "short_name": "Reaction",
+      "url": "/play.html?game=reaction&source=pwa"
+    }
+  ]
+}

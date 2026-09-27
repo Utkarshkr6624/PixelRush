@@ -1,0 +1,25 @@
+# PixelRush — https://pixelrush.example/
+# Free browser arcade. Static site, no auth, no gated content.
+
+User-agent: *
+Allow: /
+
+# /play.html is a thin shell: every ?game=slug variant renders the same
+# layout with a canvas mount point and no indexable unique prose. Letting
+# crawlers walk it burns crawl budget on near-duplicate URLs, so the player
+# is kept out of the index. Links to it still pass link equity to the game
+# files, and the game pages themselves are reachable from games.html.
+Disallow: /play.html
+Disallow: /play.html?
+
+# Build/deploy leftovers, should never be public.
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /*.map
+
+# Internal QA notes and test reports — useful to keep, not for indexing.
+Disallow: /qa/
+
+# No crawl-delay, no rate limiting: the site is all static and cheap to serve.
+
+Sitemap: https://pixelrush.example/sitemap.xml
