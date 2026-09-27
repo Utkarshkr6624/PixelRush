@@ -750,7 +750,32 @@
   /* Ordered deliberately: the motion toggle must be live before anything can
      switch motion off, and the preloader is started early so it can record
      the load timestamp the rest of the boot measures against. */
+
+  /* ------------------------------------------------------------- reload
+     A refresh must land on the home page. Navigation Timing reports how the
+     current document was entered, so a genuine reload (F5, the reload button,
+     or re-entering the same URL) reports type "reload" — a fresh link click or a
+     back/forward step does not, so normal navigation is left untouched.
+
+     location.replace() is used rather than assign(): it must not push a
+     history entry, otherwise Back would walk straight into the pre-reload page
+     and refresh again, looping forever. */
+  function landOnReload() {
+    try {
+      var entry = (window.performance && performance.getEntriesByType)
+        ? performance.getEntriesByType('navigation')[0] : null;
+      var type = entry ? entry.type
+        : (window.performance && performance.navigation ? performance.navigation.type : 0);
+      if (type !== 'reload') return;
+      var here = (location.pathname.split('/').pop() || 'index.html');
+      if (here === 'index.html' || here === '') return;   /* already home */
+      location.replace('index.html');
+    } catch (e) { /* never block the page */ }
+  }
+
+
   function boot() {
+    landOnReload();
     initMotionToggle();
     initPreloader();
     initCursor();
