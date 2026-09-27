@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<!DOCTYPE htm,
+        ,
+        ,
+        l>
 <html lang="en">
 <!-- ============================ HEAD: identity + SEO ============================
      One canonical URL for this page — https://pixelrush.example/games.html — is declared in
@@ -34,8 +37,7 @@
   <!-- Structured data for this page: CollectionPage + ItemList of the 24 games, WebPage and
        BreadcrumbList. Values are generated from js/games-data.js — see qa/SEO-GUIDE.md. The shared
        WebSite and Organization are referenced by @id only; they are declared on index.html. -->
-  <script type="application/ld+json">
-{
+  <script type="application/ld+json">{
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -72,7 +74,7 @@
       "@type": "ItemList",
       "@id": "https://pixelrush.example/games.html#gamelist",
       "name": "All PixelRush games",
-      "numberOfItems": 24,
+      "numberOfItems": 27,
       "itemListElement": [
         {
           "@type": "ListItem",
@@ -697,6 +699,78 @@
               "worstRating": 1
             }
           }
+        },
+        {
+          "@type": "ListItem",
+          "position": 25,
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=pacman#game",
+            "name": "Neon Pac",
+            "url": "https://pixelrush.example/play.html?game=pacman",
+            "inLanguage": "en",
+            "description": "Clear the maze. Four ghosts hunt you, and only one of them is really paying attention.",
+            "genre": "Arcade",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT5M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.8,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 26,
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=flappy#game",
+            "name": "Flappy Rush",
+            "url": "https://pixelrush.example/play.html?game=flappy",
+            "inLanguage": "en",
+            "description": "One button, one gap, three lives. The pipes only get closer.",
+            "genre": "Arcade",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT2M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.6,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 27,
+          "item": {
+            "@type": "VideoGame",
+            "@id": "https://pixelrush.example/play.html?game=dino#game",
+            "name": "Dino Dash",
+            "url": "https://pixelrush.example/play.html?game=dino",
+            "inLanguage": "en",
+            "description": "Run, jump, duck, and grab an acid orb for a one-hit shield. The road only speeds up.",
+            "genre": "Arcade",
+            "gamePlatform": "Web browser",
+            "playMode": "1 Player",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any (web browser)",
+            "timeRequired": "PT2M",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.7,
+              "bestRating": 5,
+              "worstRating": 1
+            }
+          }
         }
       ]
     },
@@ -1199,8 +1273,7 @@
       }
     }
   ]
-}
-  </script>
+}</script>
 </head>
 <body>
 <!-- Set before first paint: css/base.css gates every reveal/parallax rule behind html.js-motion,

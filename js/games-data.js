@@ -501,6 +501,58 @@
       file: 'rogue-shift.js',
       status: 'live'
     }
+,
+    {
+      slug: 'pacman',
+      title: 'Neon Pac',
+      genre: 'Arcade',
+      tags: ['maze', 'ghosts', 'pellets', 'classic'],
+      difficulty: 'Medium',
+      players: '1 Player',
+      duration: '5 min',
+      rating: 4.8,
+      plays: 27310,
+      blurb: 'Clear the maze. Four ghosts hunt you, and only one of them is really paying attention.',
+      glyph: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M33 9 51 32 33 55a23 23 0 1 1 0-46z" fill="currentColor"/><circle cx="55" cy="32" r="4" fill="currentColor"/></svg>',
+      color: 'acid',
+      engine: 'js',
+      file: 'pacman.js',
+      status: 'live'
+    },
+    {
+      slug: 'flappy',
+      title: 'Flappy Rush',
+      genre: 'Arcade',
+      tags: ['one button', 'endless', 'precision'],
+      difficulty: 'Easy',
+      players: '1 Player',
+      duration: '2 min',
+      rating: 4.6,
+      plays: 31870,
+      blurb: 'One button, one gap, three lives. The pipes only get closer.',
+      glyph: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 44c0-11 9-20 20-20h6V12l14 14-14 14V30h-6a9 9 0 0 0-9 9v5z" fill="currentColor"/><circle cx="47" cy="26" r="3" fill="currentColor"/></svg>',
+      color: 'cyan',
+      engine: 'js',
+      file: 'flappy.js',
+      status: 'live'
+    },
+    {
+      slug: 'dino',
+      title: 'Dino Dash',
+      genre: 'Arcade',
+      tags: ['endless', 'jump', 'runner'],
+      difficulty: 'Easy',
+      players: '1 Player',
+      duration: '2 min',
+      rating: 4.7,
+      plays: 29540,
+      blurb: 'Run, jump, duck, and grab an acid orb for a one-hit shield. The road only speeds up.',
+      glyph: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 54V32h7V18h11v9h8l6 7h8v6H41v14h-5V40h-8v14h-5V32h-7z" fill="currentColor"/></svg>',
+      color: 'orange',
+      engine: 'js',
+      file: 'dino.js',
+      status: 'live'
+    }
   ];
 
   /* ==========================================================================
