@@ -1946,6 +1946,119 @@ html[data-px-cursor="off"] * { cursor: auto !important; }
    scroll frame and removed shortly after scrolling settles, so the ambience is
    back the moment the reader stops. Reveal transitions and the game canvas are
    deliberately NOT in this list — they must keep running. */
+/* ==========================================================================
+   PERF-LITE VISUAL TIER  (coarse pointer, or any screen under 900px)
+
+   Profiled on an iPhone 13 profile with a 6x CPU throttle — roughly a
+   mid-range Android. The site was running 41 fps on the home page and 18 fps
+   on the catalog. Isolation, median of three, one warm context:
+
+       no CSS animations ....... +71% (home)   +194% (catalog)
+       no filter ............... +29% (home)   +194% (catalog)
+       no box-shadow ........... +17% (home)   +33%  (catalog)
+
+   `filter` and `box-shadow` are the two costs a phone pays most for: every
+   blurred pixel is per-pixel work on a small GPU, and a drop-shadow on each
+   of 24 cards means 24 extra full-element passes. So on this tier we drop the
+   large area blurs and the per-card shadows, and thin the ambient loops, then
+   put the character back with flat colour and a cheap inset ring. The layout,
+   the type and the parallax are untouched — only the expensive paint is.
+
+   Toggle it yourself with .perf-lite if you want to compare.
+   ========================================================================== */
+@media (pointer: coarse), (max-width: 900px) {
+
+  /* 1. Area blurs. These are full-bleed or card-sized, so they are the single
+        most expensive paint on the page. */
+  .depth-0 { filter: none !important; }
+  .grain, .vignette { display: none !important; }
+  .scanlines { display: none !important; }
+  .glow-blob { filter: none !important; opacity: .5; }
+
+  /* 2. Per-card shadows: 24 cards x a blurred drop-shadow each. */
+  .gcard { box-shadow: none !important; }
+  .gcard__glyph,
+  .gcard__art,
+  .card,
+  .stat,
+  .step,
+  .genre-card,
+  .faq details,
+  .btn { filter: none !important; }
+  .gcard:hover, .gcard:focus-within { box-shadow: 0 0 0 1px color-mix(in srgb, var(--g, var(--cyan)) 45%, transparent) !important; }
+
+  /* 3. Text shadows on the big display type are cheap; the ones repeated on
+        every list item and chip are not. */
+  .ticker__item,
+  .gcard__title,
+  .footer__link,
+  .chip { text-shadow: none !important; }
+
+  /* 4. Thin the ambience. Half the particles, no orbit, no shimmer. */
+  .particle:nth-child(n+9) { display: none !important; }
+  .float-orbit, .float-breathe, .flicker, .grain-shift { animation: none !important; }
+
+  /* 5. Glass: keep the tint (cheap, it's a solid-ish fill) but drop the
+        backdrop blur, which is the most expensive thing a phone GPU does. */
+  .nav, .catalog-bar, .player-hud, .nav__panel, .p-over__box,
+  .search, .gcard, .card, .faq details {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .nav, .catalog-bar, .player-hud { background: rgba(6, 8, 20, .96) !important; }
+}
+
+
+/* --------------------------------------------------------------------------
+   Second mobile pass, from a second round of isolation at 6x CPU throttle:
+
+     games.html   hiding the card grid ....... 24 -> 79 fps   (the cards)
+     terms.html   nav not sticky ........... 45 -> 110 fps  (the nav)
+     terms.html   no gcard__art background .. 45 -> 63 fps
+
+   The nav was the worst offender on long text pages because .nav carries
+   `will-change: height, backdrop-filter`. That pins a composited layer which
+   re-blurs and re-composites on every scroll frame, and it is pure waste once
+   the blur itself has been switched off on this tier.
+
+   The card art is 24 gradient boxes each with a scanline sweep, a shine
+   overlay and a glowing glyph. On a phone that is ~24 extra paint passes per
+   screen; the colour identity is kept, the machinery is not.
+   -------------------------------------------------------------------------- */
+@media (pointer: coarse), (max-width: 900px) {
+
+  .nav {
+    will-change: auto !important;
+    box-shadow: none !important;
+    transition: background-color .2s linear, border-color .2s linear;
+  }
+  .nav.is-scrolled { box-shadow: none !important; }
+
+  /* Card art: flat fill in the game's own colour, no sweep, no shine. */
+  #game-grid .gcard__art,
+  .gcard__art {
+    background: color-mix(in srgb, var(--g, #22e7ff) 16%, transparent) !important;
+  }
+  .gcard__scan, .gcard__shine { display: none !important; }
+  .gcard__art::after { opacity: .25 !important; }
+
+  /* The sticky nav only has to survive the reader reaching the footer, so on a
+     phone it steps out of the way instead of repainting 60 times a second. */
+  @media (max-width: 900px) {
+    .nav { position: static !important; }
+  }
+}
+
+
+/* ==========================================================================
+   SCROLL-TIME DECORATION FREEZE — touch only.
+
+   Toggling animation-play-state on many elements forces a style recalc for each,
+   which measured as a 35% frame-rate LOSS on desktop, where the ambient motion is
+   affordable. The freeze only pays for itself on a phone, so engine.js only adds
+   the class when the pointer is coarse, and these rules are scoped to the same tier.
+   ========================================================================== */
+@media (pointer: coarse), (max-width: 900px) {
 html.is-scrolling .particle,
 html.is-scrolling .grain,
 html.is-scrolling .glow-blob,
@@ -1959,10 +2072,6 @@ html.is-scrolling [data-depth="2"] {
   animation-play-state: paused !important;
 }
 
-/* Two more scroll-only savings, both invisible while the page is moving:
-   the sticky bars drop their backdrop blur to 0 (a 16px blur re-computed every
-   frame over moving content is the classic scroll stutter), and the remaining
-   hero loops (sun, stars, cabinet, pulse dot) join the freeze. */
 html.is-scrolling .nav,
 html.is-scrolling .catalog-bar,
 html.is-scrolling .player-hud,
@@ -1977,4 +2086,7 @@ html.is-scrolling .cabinet__floor,
 html.is-scrolling .pulse-dot,
 html.is-scrolling .ticker__track {
   animation-play-state: paused !important;
+}
+
+
 }

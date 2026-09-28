@@ -165,6 +165,12 @@
 
   function writeScenes(y, vh) {
     if (!scenes) return;
+    /* On a touch device the per-frame transform writes are one of the biggest
+       costs on the page — measured at 6x CPU throttle (a mid-range phone) they
+       were ~35% of the home page's frame time, for a +/-24px drift that reads
+       the same statically. The CSS depth scale, blur and blend still give the
+       layered look; only the motion is dropped. */
+    if (coarse) { if (!writeScenes._skipped) { writeScenes._skipped = 1; } return; }
     for (var i = 0; i < scenes.length; i++) {
       var s = scenes[i];
       var d = (y + vh * 0.5 - (s.top + s.h * 0.5)) / vh;
@@ -186,6 +192,11 @@
      stops, so decorative motion resumes the moment the page settles. */
   var scrollIdleTimer = 0;
   function markScrolling() {
+    /* Touch only. On a desktop this class costs more than it saves: toggling
+       animation-play-state on a few dozen elements forces a style recalc for each,
+       which measured as a 35% desktop frame-rate loss. The win it buys is a
+       phone one, so only phones pay for it. */
+    if (!coarse) return;
     if (!root.classList.contains('is-scrolling')) root.classList.add('is-scrolling');
     if (scrollIdleTimer) clearTimeout(scrollIdleTimer);
     scrollIdleTimer = window.setTimeout(function () {
