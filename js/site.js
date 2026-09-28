@@ -112,8 +112,14 @@
          (the catalog search bar) was still using the full --nav-h, which left a
          gap the page scrolled through. Publish the nav's REAL height so
          sticky siblings can sit flush against it. */
-      var live = Math.round(nav.getBoundingClientRect().height);
-      if (live > 0) root.style.setProperty('--nav-live', live + 'px');
+      /* Root custom-property writes invalidate style for the whole document,
+         so this one only happens when the nav actually changes size — the nav
+         only has two heights, and one of them is written by the class above. */
+      var live = shrunk ? (getComputedStyle(root).getPropertyValue('--nav-h-min').trim() || '58')
+                        : (getComputedStyle(root).getPropertyValue('--nav-h').trim() || '74');
+      if (live && getComputedStyle(root).getPropertyValue('--nav-live').trim() !== live) {
+        root.style.setProperty('--nav-live', live);
+      }
     }
     update();
     onScrollPassive(update, 'nav');
