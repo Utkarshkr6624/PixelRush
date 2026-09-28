@@ -20,7 +20,7 @@
   var SPAWN_X = 9, SPAWN_Y = 14;               // player start, facing left
   var HOUSE = [[6, 10], [7, 10], [13, 10], [14, 10]];        // Blaze, Vector, Drift, Ember
   var DOOR = { x: 10, y: 10 }, HOUSE_Y = 10, TURN_TOL = 0.34, FLICK = 22;
-  var PAC_R = 0.46, WALL_GAP = 0.5 + PAC_R, HIT_R2 = 0.32;     // body radius, wall stop, hit radius squared
+  var PAC_R = 0.46, HIT_R2 = 0.32;                            // body radius, hit radius squared
   var DIRS = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
   var KEYS = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
   function frightMax(l) { return Math.max(FRIGHT_MIN, FRIGHT_BASE - FRIGHT_STEP * (l - 1)); }
@@ -106,12 +106,15 @@
       return isFinite(n) ? 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')' : 'rgba(255,255,255,' + a + ')';
     }
     function walkable(x, y) { return x >= 0 && y >= 0 && x < COLS && y < ROWS && MAZE[y].charAt(x) !== '#'; }
+    // The ghost-house door is a ghost-only construct: the player may not use it, or he can camp in
+    // the house and no ghost can ever reach him.
+    function walkPlayer(x, y) { return walkable(x, y) && MAZE[y].charAt(x) !== 'o'; }
     /* ----------------------------- Game state ----------------------------- */
     var rafId = 0, destroyed = false, over = false;    // `over` latches api.gameOver()
     var state = 'ready';                              // ready | play | dying | over
     var paused = false, started = false, prevTime = 0, elapsed = 0, score = 0, best = readBest();
     var lives = LIVES_MAX, level = 1, pellets = 0, board = [], ghost = [], fruit = null, fruitT = 0, nextFruit = FRUIT_EVERY;
-    var px = SPAWN_X, py = SPAWN_Y, ptx = SPAWN_X, pty = SPAWN_Y, dir = DIRS.left, want = null;
+    var px = SPAWN_X, py = SPAWN_Y, ptx = SPAWN_X, pty = SPAWN_Y, dir = DIRS.left, queue = [];
     var grace = 0, deathT = 0, frightT = 0, chainIdx = 0, flashAt = -1e9, isRecord = false;
     function nowMs() { return elapsed * 1000; }       // one clock, in ms, for every flash and beat
     function fillBoard() {                             // fresh pellet layer for the current level
@@ -125,7 +128,7 @@
         wait: Math.max(0.4, (REL[i] - (level - 1) * 2.2) * Math.pow(0.86, level - 1)) };
     }
     function resetActors(keepScore) {
-      px = SPAWN_X; py = SPAWN_Y; ptx = SPAWN_X; pty = SPAWN_Y; dir = DIRS.left; want = null; grace = 1.6;
+      px = SPAWN_X; py = SPAWN_Y; ptx = SPAWN_X; pty = SPAWN_Y; dir = DIRS.left; queue.length = 0; grace = 1.6;
       frightT = 0; chainIdx = 0; fruit = null; fruitT = 0; state = 'play'; paused = false;
       ghost = [0, 1, 2, 3].map(makeGhost);
       if (!keepScore) { score = 0; lives = LIVES_MAX; level = 1; pellets = 0; isRecord = false; setScore(0); }
@@ -136,29 +139,49 @@
       if (score > best) { best = score; isRecord = true; writeBest(score); setBest(score); }
     }
     /* ---------------------------- Movement ---------------------------- */
-    // Smooth, not tile-by-tile. A queued heading is only committed when the perpendicular axis is
-    // lined up with a tile centre, and the axis we are NOT travelling along always drifts back onto
-    // its centreline — without that, a wall stop followed by a turn leaves the new perpendicular
-    // 0.46 off centre and the player is wedged for good. Wall stops halt the BODY at the face, which
-    // keeps Math.round() on the player's own tile.
+    // The player runs centre-to-centre, exactly like the ghosts, and `room()` reports the distance
+    // still available before he reaches the next centre (0 when that tile is solid). That is what
+    // makes a wall stop exact: he simply halts on the centre of the tile he already occupies, so he
+    // is never inside a wall band and never needs a corrective snap. The obvious shortcut — test
+    // `Math.round(px + dx*sp)` and clamp to ±(0.5 + radius) — reads a wall only AFTER the body is
+    // already 0.46 past the face, so the clamp teleports him back across it on the next frame,
+    // forever. That is the reported shiver: a 0.46-tile jitter against every wall, and a hard freeze
+    // in any corridor with a solid far end, because the backward snap drops him into the wall band
+    // again immediately. (Note the round half-up: Math.floor(v + 0.5), never Math.floor(v) — the
+    // latter reads the tile BEHIND the body once it is in the far half of its own tile.)
+    function room(x, y, d) {
+      var cx = Math.floor(x + 0.5), cy = Math.floor(y + 0.5);
+      if (d.x) {
+        if (!walkPlayer(cx + d.x, cy)) return 0;
+        return d.x > 0 ? (cx + 1) - x : x - (cx - 1);
+      }
+      if (d.y) {
+        if (!walkPlayer(cx, cy + d.y)) return 0;
+        return d.y > 0 ? (cy + 1) - y : y - (cy - 1);
+      }
+      return Infinity;
+    }
     function playerStep(dt) {
-      var sp = Math.min(PLAYER_CAP, BASE_PLAYER + PLAYER_STEP * (level - 1)) * dt, tx = Math.round(px), ty = Math.round(py);
-      var ahead = dir.x ? walkable(tx + dir.x, ty) : walkable(tx, ty + dir.y);
-      if (want && walkable(tx + want.x, ty + want.y)) {
-        var perp = dir.x ? py : px, along = dir.x ? px : py;
-        if (Math.abs(perp - Math.round(perp)) <= TURN_TOL && (ahead || Math.abs(along - Math.round(along)) <= TURN_TOL)) {
-          var k = Math.min(1, dt * 26);
-          px += (Math.round(px) - px) * k; py += (Math.round(py) - py) * k;
-          dir = want; want = null; tx = Math.round(px); ty = Math.round(py);
+      var sp = Math.min(PLAYER_CAP, BASE_PLAYER + PLAYER_STEP * (level - 1)) * dt;
+      var tx = Math.floor(px + 0.5), ty = Math.floor(py + 0.5);
+      if (!walkPlayer(tx, ty)) { px = ptx; py = pty; tx = ptx; ty = pty; }   // never stand inside a wall
+      // A queued heading is committed at a tile centre, and only into a tile that is really open.
+      // Two are held, so a fast up-then-side tap is not swallowed by the first.
+      if (queue.length) {
+        var w = DIRS[queue[0]], perp = dir.x ? py : px;
+        if (walkPlayer(tx + w.x, ty + w.y) && Math.abs(perp - Math.floor(perp + 0.5)) <= TURN_TOL) {
+          dir = w; queue.shift();
         }
       }
-      var nx = px + dir.x * sp, ny = py + dir.y * sp, cx = Math.round(nx), cy = Math.round(ny);
-      if (walkable(cx, cy)) { px = nx; py = ny; }
-      else if (dir.x) px = dir.x > 0 ? cx - WALL_GAP : cx + WALL_GAP;
-      else py = dir.y > 0 ? cy - WALL_GAP : cy + WALL_GAP;
-      if (dir.x) py += (Math.round(py) - py) * Math.min(1, dt * 20); else px += (Math.round(px) - px) * Math.min(1, dt * 20);
-      tx = Math.round(px); ty = Math.round(py);
-      if (tx !== ptx || ty !== pty) { ptx = tx; pty = ty; eatAt(ptx, pty); }
+      var lim = room(px, py, dir);
+      if (lim <= 0) { px = tx; py = ty; sp = 0; }           // solid ahead, or overshot: re-seat on the centre
+      else if (lim < sp) sp = lim;
+      px += dir.x * sp; py += dir.y * sp;
+      // The axis we are NOT travelling along always drifts back onto its centreline.
+      if (dir.x) py += (Math.floor(py + 0.5) - py) * Math.min(1, dt * 24);
+      else px += (Math.floor(px + 0.5) - px) * Math.min(1, dt * 24);
+      tx = Math.floor(px + 0.5); ty = Math.floor(py + 0.5);
+      if (walkPlayer(tx, ty) && (tx !== ptx || ty !== pty)) { ptx = tx; pty = ty; eatAt(ptx, pty); }
     }
     function eatAt(x, y) {
       var v = board[y][x], left = false;
@@ -240,7 +263,7 @@
         if (g.eaten > 0 || !g.out || grace > 0) continue;    // in-house, mid-respawn or in grace: harmless
         dx = g.x - px; dy = g.y - py;
         if (dx * dx + dy * dy > HIT_R2) continue;
-        if (!frightT > 0) {                                  // ghosts can only ever touch you head-on
+        if (frightT <= 0) {                                  // ghosts can only ever touch you head-on
           lives--; state = 'dying'; deathT = 0;
           live.textContent = lives > 0 ? lives + ' lives left.' : 'Out of lives.'; return;
         }
@@ -419,13 +442,17 @@
       checkHits();
     }
     /* ---------------------- Input: keyboard, swipe, pad ---------------------- */
+    function pushTurn(name) {                                // at most two deep, newest wins the tail
+      if (!name || queue[queue.length - 1] === name) return;
+      if (queue.length < 2) queue.push(name); else queue[1] = name;
+    }
     function act(name) {                                     // the single entry point for every control
       if (destroyed || state === 'dying') return;
       if (state === 'over') { over = false; fillBoard(); resetActors(false); started = true;
         live.textContent = 'New run. Score 0. Three lives.'; return; }
       started = true; paused = false;
       if (state === 'ready') state = 'play';
-      if (name) want = DIRS[name];
+      if (name) pushTurn(name);
     }
     function onKeyDown(e) {
       if (e.metaKey || e.ctrlKey || e.altKey) return;

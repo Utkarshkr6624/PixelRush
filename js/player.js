@@ -290,6 +290,16 @@
       current.over.appendChild(box);
       stage.appendChild(current.over);
       bind(gameListeners, again, 'click', function () { restart(); });
+      /* Tapping anywhere on the card restarts, not just the button. The box is
+         centred over the stage, so it swallowed the one tap a player naturally
+         makes — right in the middle of the screen — and the game read as
+         completely unresponsive. */
+      bind(gameListeners, current.over, 'click', function (e) {
+        if (e.target.closest && e.target.closest('a, button')) return;  /* let the real controls act */
+        e.stopPropagation();
+        restart();
+      });
+      current.over.setAttribute('aria-label', 'Round over — tap anywhere to play again');
     }
     if (current.overScore) current.overScore.textContent = String(v);
     current.overScoreValue = v;

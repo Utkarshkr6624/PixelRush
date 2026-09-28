@@ -10,7 +10,12 @@
   /* -------------------------------- Tuning -------------------------------- */
   var STORE_KEY = 'pixelrush.circuit-flow.best';
   var TOTAL_LEVELS = 8;            // the run ends after this many boards
-  var TIME_BASE = 36, TIME_FALLOFF = 2, TIME_MIN = 16;   // seconds, per level, floor
+  /* The clock is budgeted per open node, not per level index. Every tile costs the same one or
+     two turns whatever the grid size, so a flat per-level budget starves the 8x8 boards: level 8
+     asks for 70+ rotations and a fixed 22s makes it unreachable by a human no matter how well it
+     is generated. Keeping the per-node budget and tightening it slightly each level preserves the
+     intended pressure curve while still letting the late boards be played. */
+  var TIME_PER_NODE = 2, TIME_NODE_FALLOFF = 0.09, TIME_MIN = 16;   // seconds per open node, per level
   var TURN_POINTS = 2;             // per rotation
   var LIT_POINTS = 12;             // per node newly brought to life
   var CLEAR_POINTS = 150;          // x level, on completion
@@ -208,7 +213,7 @@
         if (!g4.blocked && !g4.locked) spin(g4);
       }
       selX = core.x; selY = core.y;
-      timeMax = Math.max(TIME_MIN, TIME_BASE - (n - 1) * TIME_FALLOFF);
+      timeMax = Math.max(TIME_MIN, Math.round(openCount * (TIME_PER_NODE - (n - 1) * TIME_NODE_FALLOFF)));
       timeLeft = timeMax;
       litCount = recompute();
     }
@@ -219,6 +224,12 @@
     }
     function enterLevel(n) {
       level = n; buildLevel(n);
+      // buildLevel() resizes the board (4x4 -> 8x8), so the layout has to be refitted here: cell
+      // size, board origin and the clock bar are all derived from cols/rows, and the pointer
+      // hit-test reads back the same bx/by/cell. Without this the new, larger grid is drawn and
+      // hit-tested with the previous level's geometry and the outer rows/columns fall off-stage,
+      // where they can be neither seen nor tapped.
+      resize();
       state = n === 1 ? 'intro' : 'play'; stateT = 0;
       setStatus(state === 'intro' ? 'Ready' : 'Playing');
       live.textContent = 'Level ' + n + ' of ' + TOTAL_LEVELS + '. ' + litCount + ' of ' + openCount + ' nodes powered.';
@@ -569,7 +580,6 @@
     BIND.forEach(function (b) { b[0].addEventListener(b[1], b[2], b[3]); });
     if (bestEver !== null) setBest(bestEver);
     enterLevel(1);   // the board exists before the first frame, so nothing is undefined on frame 1
-    resize();
     rafId = requestAnimationFrame(frame);
     return {
       destroy: function () {

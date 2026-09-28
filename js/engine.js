@@ -769,13 +769,27 @@
       if (type !== 'reload') return;
       var here = (location.pathname.split('/').pop() || 'index.html');
       if (here === 'index.html' || here === '') return;   /* already home */
+      /* The player is deliberately exempt: bouncing a refresh off the player
+         throws away a run in progress, which reads as a bug. Every other page
+         still lands on the home screen. */
+      if (here === 'play.html') return;
       location.replace('index.html');
     } catch (e) { /* never block the page */ }
   }
 
 
+  /* Register the service worker so the PWA manifest actually installs and the site
+     works offline. Only on https/localhost, and failure is never fatal. */
+  function initServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+    try { navigator.serviceWorker.register('sw.js').catch(function () { /* offline support is optional */ }); }
+    catch (e) { /* ignore */ }
+  }
+
   function boot() {
     landOnReload();
+    initServiceWorker();
     initMotionToggle();
     initPreloader();
     initCursor();

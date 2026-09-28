@@ -18,7 +18,8 @@
   var BIRD_X = 30, BIRD_R = 4.2, PIPE_W = 13, LEVEL_PIPES = 4;
   var GAP0 = 46, GAP_MIN = 31, SPEED0 = 24, SPEED_MAX = 44, GAP_STEP = 1.5, SPEED_STEP = 1.6;
   var PIPE_GAP_MIN = 58, PIPE_GAP_TIME = 1.45;     // pipe spacing: min distance, or 1.45s of scroll
-  var EDGE_PAD = 11, DEATH_TIME = 0.9, DEAD_GRACE = 0.7;
+  var PIPE_GAP_STEP = 34;                          // max vertical gap-to-gap jump, so it stays thumb-trackable
+  var EDGE_PAD = 11, DEATH_TIME = 0.9;
   var FALLBACK = { bg: '#05060f', ink: '#f2f5ff', dim: '#a7b0d0', cyan: '#22e7ff', magenta: '#ff2fb9', acid: '#c8ff2e', violet: '#8b5cf6', orange: '#ff8a3d' };
   /* STYLE BLOCK — `fl-` prefixed and scoped to the wrapper, so it cannot collide. */
   var STYLES = ['.fl{position:relative;width:100%;height:100%;overflow:hidden;user-select:none;',
@@ -100,16 +101,20 @@
       S.gapDist = Math.max(PIPE_GAP_MIN, S.speed * PIPE_GAP_TIME);
     }
     function spawnPipe() {
-      // Gap centre clamped inside the world, and never more than 34u from the last one,
-      // so the opening is always fully on screen and always thumb-trackable.
+      // Two constraints, and the centre has to satisfy BOTH: fully inside the playfield,
+      // and no more than PIPE_GAP_STEP from the last gap so the opening stays thumb-trackable.
+      // Clamping only to the step range used to shove a gap past lo/hi, which at the
+      // tighter late-game gaps hid part of the opening under the floor — a death the
+      // player could not have flown out of.
       var lo = EDGE_PAD + S.gap / 2, hi = DH - EDGE_PAD - S.gap / 2;
       var last = pipes.length ? pipes[pipes.length - 1].cy : by;
-      var cy = lo + Math.random() * Math.max(0, hi - lo);
-      pipes.push({ x: DW + PIPE_W, cy: clamp(cy, last - 34, last + 34), scored: false });
+      var from = Math.max(lo, last - PIPE_GAP_STEP), to = Math.min(hi, last + PIPE_GAP_STEP);
+      pipes.push({ x: DW + PIPE_W, cy: from + Math.random() * (to - from), scored: false });
     }
     function resetRun() {
       score = 0; lives = LIVES_MAX; level = 0; pipes.length = 0; gridOff = 0; deadT = 0;
       by = DH * 0.42; bvy = 0; tilt = 0; over = false; paused = false; state = READY; prevTime = 0;
+      elapsed = 0; flapAt = -9;                     // per-run clock: the wing cycle must not carry over
       applyLevel(); setScore(0); setBest(best); live.textContent = 'New run. Three lives.';
     }
     function flap() {

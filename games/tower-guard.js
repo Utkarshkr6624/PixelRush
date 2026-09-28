@@ -358,6 +358,11 @@
         pathAt(e.d, p); e.x = p.x; e.y = p.y; e.ang = p.a;
       }
       for (i = enemies.length - 1; i >= 0; i--) if (enemies[i].dead) enemies.splice(i, 1);
+      // The core fell earlier in THIS frame. Nothing below may run: turrets still firing
+      // would keep adding bounty (the round-over card then showed a different, higher number
+      // than the one api.gameOver() was handed), and the wave-clear branch below would award
+      // the 1500-point "all twelve held" bonus to a run that was actually breached.
+      if (ended) return;
       for (i = 0; i < turrets.length; i++) { // auto-target, auto-fire
         var t = turrets[i];
         if (t.flash > 0) t.flash -= dt;

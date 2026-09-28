@@ -184,6 +184,17 @@
       for (x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) map[y0 * COLS + x] = 0;
       for (y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) map[y * COLS + x1] = 0;
     }
+    /* A room is a solid open rectangle. It has to be, not an L: the corridors
+       below are driven from each room's CENTRE tile, so a room whose interior
+       is still rock either swallows its own centre or leaves the corridor
+       arriving on a tile the room cannot reach — which strands the stairs in
+       a component the player can never walk into, and the run never descends. */
+    function carveRoom(r) {
+      var x, y;
+      for (y = r.y; y < r.y + r.h; y++)
+        for (x = r.x; x < r.x + r.w; x++)
+          if (inBounds(x, y)) map[y * COLS + x] = 0;
+    }
     function buildFloor() {
       map = new Uint8Array(COLS * ROWS);
       for (var i = 0; i < map.length; i++) map[i] = 1;        // solid rock
@@ -204,7 +215,7 @@
         if (rooms[q].w < 4 || rooms[q].h < 3) continue;
         rooms.splice(q, 1); break;
       }
-      for (i = 0; i < rooms.length; i++) carve(rooms[i].x, rooms[i].y, rooms[i].x + rooms[i].w - 1, rooms[i].y + rooms[i].h - 1);
+      for (i = 0; i < rooms.length; i++) carveRoom(rooms[i]);
       for (i = 1; i < rooms.length; i++) {                    // L-corridor to the previous room
         var p = rooms[i - 1], c = rooms[i];
         carve(p.cx, p.cy, c.cx, p.cy); carve(c.cx, p.cy, c.cx, c.cy);
