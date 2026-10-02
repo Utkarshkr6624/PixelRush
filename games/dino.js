@@ -504,7 +504,10 @@
       var i, v = ctx.createRadialGradient(cssW / 2, cssH / 2, Math.min(cssW, cssH) * 0.25,
                                          cssW / 2, cssH / 2, Math.max(cssW, cssH) * 0.75);
       ctx.save();
-      if (!reduced) { ctx.fillStyle = 'rgba(0,0,0,.16)'; for (i = 0; i < cssH; i += 3) ctx.fillRect(0, i, cssW, 1); }
+      if (!reduced) { ctx.fillStyle = 'rgba(0,0,0,.16)'; if (ctx.__pxH !== cssH) { var __px = document.createElement('canvas'); __px.width = 1; __px.height = 3;
+          var __pxg = __px.getContext('2d'); __pxg.fillStyle = 'rgba(0,0,0,.16)'; __pxg.fillRect(0, 0, 1, 1);
+          ctx.__pxP = ctx.createPattern(__px, 'repeat'); ctx.__pxH = cssH; }
+        ctx.fillStyle = ctx.__pxP; ctx.fillRect(0, 0, cssW, cssH); }
       v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.55)');
       ctx.fillStyle = v; ctx.fillRect(0, 0, cssW, cssH); ctx.restore();
     }

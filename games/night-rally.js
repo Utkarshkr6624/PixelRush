@@ -3,8 +3,10 @@
  * Contract (GAME-CONTRACT.md): window.PixelGame = { name, instructions, start(root, api) }
  * where api = { setScore(n), setBest(n), gameOver(score) } and start() returns { destroy() }.
  * Pseudo-3D road: segments are projected through a camera while a curve accumulator shifts the
- * road laterally (the classic outrun model). The world is drawn flat, then re-darkened with a
- * destination-out headlight cone, so nothing outside the beam is visible.
+ * road laterally (the classic outrun model). The world is drawn flat, then darkened by a single
+ * headlight-cone gradient whose outer stop is the full blackout, so nothing outside the beam is
+ * visible. The road bands are batched into one path per colour and the far field is drawn at a
+ * coarser step; see drawRoad() and buildPaint().
  * Self-contained: no imports, no dependencies, no assets, no audio.
  */
 (function () {
@@ -60,6 +62,8 @@
     var styleTag = document.createElement('style'); styleTag.textContent = STYLES;
     wrap.appendChild(canvas); wrap.appendChild(live); wrap.appendChild(styleTag);
     root.appendChild(wrap);
+    // Left on the default transparent surface on purpose: alpha:false is faster, but it
+    // switches the HUD to LCD subpixel text, which fringes the glyphs against the night sky.
     var ctx = canvas.getContext('2d');
     if (!ctx) { root.removeChild(wrap); return { destroy: function () {} }; }
     /* ------------------------------ State ------------------------------ */
@@ -96,6 +100,27 @@
     function hexA(hex, a) { hex = (hex || '#fff').trim().replace('#', '');
       var n = parseInt(hex, 16);
       return isFinite(n) ? 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')' : 'rgba(255,255,255,' + a + ')'; }
+    /* Band colours, resolved once: the batching below reuses each string every frame. */
+    var COL_VERGE = '#0b0f1e', COL_TAR_A = '#20243a', COL_TAR_B = '#272c46';
+    var COL_TAR_FAR = '#242840';                          // far tarmac, alternation averaged away
+    var COL_RUM_A = hexA(C.magenta, 0.6), COL_RUM_B = hexA(C.cyan, 0.55),
+        COL_DASH = hexA(C.cyan, 0.55);
+    /* Every other colour the frame loop paints. A fresh rgba() string per draw makes the
+       canvas parse it again, and the loop used to mint ~50 of them a frame; the ones that
+       scale with a mark's distance now ride on globalAlpha instead, which multiplies into
+       the source alpha exactly the way baking the alpha into the string used to. */
+    var HUE = [C.magenta, C.violet, C.orange];            // body hues 0/1/2; 2 doubles as rock
+    var OB_BODY = [hexA(C.magenta, 0.92), hexA(C.violet, 0.92), hexA(C.orange, 0.92)];
+    var OB_ROCK = hexA(C.orange, 0.85), OB_GLASS = hexA(C.ink, 0.35), TAIL = '#ff3a4e';
+    var MK = [], mi;                                      // [hue][halo, tape, upright, brake]
+    for (mi = 0; mi < HUE.length; mi++) {
+      MK.push([hexA(HUE[mi], 0.16), hexA(HUE[mi], 0.8), hexA(HUE[mi], 0.3), hexA(HUE[mi], 0.85)]);
+    }
+    var BRAKE = 'rgba(255,58,78,0.85)';
+    var PL_CAR = hexA(C.cyan, 0.95), PL_GLASS = hexA(C.bg, 0.65), PL_POD = hexA(C.acid, 0.95);
+    var PAD_IDLE = hexA(C.cyan, 0.1), PAD_HOT = hexA(C.cyan, 0.4), PAD_EDGE = hexA(C.cyan, 0.45);
+    var HUD_HALO = hexA(C.bg, 0.9), CARD_WASH = hexA(C.bg, 0.76);
+    var HUD_FONT = {}, COMBO_FONT = {};                      // keyed by size, so resize-only
     /* ---------------------------- Road build ---------------------------- */
     function newSegment(i) {
       return { index: i, curve: 0, vis: false, gravel: 0, sprites: [],
@@ -237,54 +262,175 @@
       }
     }
     /* ------------------------------ Drawing ------------------------------ */
-    /** A road-spanning quad between two fractions of the half-road width, from `from` to `to`. */
-    function band(p1, p2, from, to, color) {
-      ctx.fillStyle = color; ctx.beginPath();
-      ctx.moveTo(p1.x - p1.w * from, p1.y); ctx.lineTo(p1.x - p1.w * to, p1.y);
-      ctx.lineTo(p2.x - p2.w * to, p2.y); ctx.lineTo(p2.x - p2.w * from, p2.y);
-      ctx.closePath(); ctx.fill();
+    /**
+     * Path sink. Every band the road draws is a quad, and quads that share a colour without
+     * overlapping can ride in ONE path: nonzero winding unions them, so a single fill paints
+     * exactly what filling them one by one would. Path2D also keeps the batching off the
+     * context's per-path bookkeeping; the op list is a fallback for engines without it.
+     */
+    var HAS_P2 = typeof Path2D === 'function';
+    function Sink() { this.p = HAS_P2 ? new Path2D() : null; this.ops = HAS_P2 ? null : []; }
+    Sink.prototype.moveTo = function (x, y) { if (this.p) this.p.moveTo(x, y); else this.ops.push(0, x, y); };
+    Sink.prototype.lineTo = function (x, y) { if (this.p) this.p.lineTo(x, y); else this.ops.push(1, x, y); };
+    Sink.prototype.close = function () { if (this.p) this.p.closePath(); else this.ops.push(2, 0, 0); };
+    Sink.prototype.quad = function (ax, ay, bx, by, cx, cy, dx, dy) {
+      if (this.p) { var p = this.p;
+        p.moveTo(ax, ay); p.lineTo(bx, by); p.lineTo(cx, cy); p.lineTo(dx, dy); p.closePath();
+      } else { var o = this.ops; o.push(0, ax, ay, 1, bx, by, 1, cx, cy, 1, dx, dy, 2, 0, 0); }
+    };
+    /** A continuous band: left edge near-to-far, then the right edge back down. */
+    Sink.prototype.strip = function (L, R) {
+      var i;
+      this.moveTo(L[0], L[1]);
+      for (i = 2; i < L.length; i += 2) this.lineTo(L[i], L[i + 1]);
+      for (i = R.length - 2; i >= 0; i -= 2) this.lineTo(R[i], R[i + 1]);
+      this.close();
+    };
+    Sink.prototype.fill = function (color) {
+      var i, o = this.ops;
+      ctx.fillStyle = color;
+      if (this.p) { ctx.fill(this.p); return; }
+      ctx.beginPath();
+      for (i = 0; i < o.length; i += 3) {
+        if (o[i] === 0) ctx.moveTo(o[i + 1], o[i + 2]);
+        else if (o[i] === 1) ctx.lineTo(o[i + 1], o[i + 2]);
+        else ctx.closePath();
+      }
+      ctx.fill(); o.length = 0;
+    };
+    /* --------------------- Cached paint (size-dependent) --------------------- */
+    /**
+     * Sky wash, distance haze, both headlight cone gradients and the CRT/vignette overlay only
+     * depend on the canvas size, so they are built here and reused until a resize changes it.
+     * The frame loop no longer calls createRadialGradient at all.
+     */
+    var paint = { key: '', sky: null, haze: null, hazeY: 0, over: null, cone: null, warm: null, beam: 0 };
+    function buildPaint() {
+      var key = cssW + 'x' + cssH + '|' + C.bg + '|' + (reduced ? 1 : 0);
+      if (paint.key === key) return;
+      paint.key = key;
+      var horizon = cssH * 0.5, camY = horizon + CAM_H, beam, o, oc, vig, i;
+      // Sky and backdrop in one pass. The old pair — a full-frame fill plus the wash over the
+      // top half — is the same pixels: the wash ends on C.bg exactly where the fill was, so one
+      // gradient carrying C.bg all the way down replaces both.
+      paint.sky = ctx.createLinearGradient(0, 0, 0, cssH);
+      paint.sky.addColorStop(0, '#0a0720');
+      paint.sky.addColorStop(0.5, C.bg); paint.sky.addColorStop(1, C.bg);
+      // The haze lands on the same strip the far segments project into, and that strip is
+      // fixed by the camera height: horizon .. (scale * camY * horizon) / distance. One
+      // gradient covers the ~20px it actually spans, instead of one rect per segment.
+      var hazeEnd = horizon + (CAM_D * camY * horizon) / (DRAW_DIST * 0.42 * SEG_LEN) + 2;
+      paint.hazeY = hazeEnd - horizon;
+      paint.haze = ctx.createLinearGradient(0, horizon, 0, hazeEnd);
+      paint.haze.addColorStop(0, hexA(C.bg, 0.85)); paint.haze.addColorStop(1, hexA(C.bg, 0));
+      beam = Math.min(cssW, cssH) * 0.7;                   // the cone is drawn in local space
+      paint.beam = beam;
+      paint.cone = ctx.createRadialGradient(0, 0, 0, 0, 0, beam);
+      paint.cone.addColorStop(0, hexA(C.bg, 0));
+      paint.cone.addColorStop(0.30, hexA(C.bg, 0.10));
+      paint.cone.addColorStop(0.62, hexA(C.bg, 0.42));
+      paint.cone.addColorStop(0.85, hexA(C.bg, 0.75));
+      paint.cone.addColorStop(1, hexA(C.bg, DARK));
+      paint.warm = ctx.createRadialGradient(0, 0, 0, 0, 0, beam);
+      paint.warm.addColorStop(0, 'rgba(255,238,200,1)'); paint.warm.addColorStop(1, 'rgba(255,238,200,0)');
+      /* Scanlines and vignette are both plain black over the same backdrop, and stacking two
+         black source-overs multiplies the backdrop's survival, so baking them into a single
+         RGBA layer reproduces the result exactly: on a scanline row the combined alpha is
+         0.15 + v - 0.15v, on a clear row it is just v. Two full-screen fills become one blit.
+         The scanlines keep the original per-row loop rather than a 3px tile: the layer is
+         built once per resize, so the loop costs nothing, and it lands on exactly the rows
+         the frame loop used to. */
+      if (reduced) { paint.over = null; return; }
+      o = document.createElement('canvas');
+      o.width = canvas.width; o.height = canvas.height;
+      oc = o.getContext('2d');
+      oc.setTransform(dpr, 0, 0, dpr, 0, 0);
+      vig = oc.createRadialGradient(cssW / 2, cssH / 2, Math.min(cssW, cssH) * 0.3,
+        cssW / 2, cssH / 2, Math.max(cssW, cssH) * 0.72);
+      vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.6)');
+      oc.fillStyle = vig; oc.fillRect(0, 0, cssW, cssH);
+      oc.fillStyle = 'rgba(0,0,0,.15)';
+      for (i = 0; i < cssH; i += 3) oc.fillRect(0, i, cssW, 1);
+      paint.over = o;
     }
+    /* Detail budget. Below a pixel of height a segment cannot show a rumble edge or a lane
+       dash, so the far half of the road is stepped and its alternation folded to the average —
+       which is what the eye already resolves at that scale. Widths are the smallest on-screen
+       size, in px, at which a feature still reads as itself. These are deliberately tight:
+       because the bands are batched, restoring detail costs path building, not draw calls. */
+    var LOD_PX = 1.0, LOD_FAR_PX = 0.45;
+    var RUMBLE_MIN = 1.1, DASH_MIN = 0.7, SPECK_MIN = 0.3;
     function glow(color, blur) { ctx.shadowColor = color; ctx.shadowBlur = reduced ? blur * 0.3 : blur; }
     function drawRoad() {
       marks.length = 0;
+      var verge = new Sink(), tarA = new Sink(), tarB = new Sink(), tarFar = new Sink(),
+          rumA = new Sink(), rumB = new Sink(), lane = new Sink();
+      var vL = [], vR = [], fL = [], fR = [];              // verge outline, far tarmac outline
       var base = findSegment(position);
       var camY = cssH * 0.5 + CAM_H;                       // camera sits CAM_H above the road
       var maxy = cssH, curveX = 0, dx = -(base.curve * ((position % SEG_LEN) / SEG_LEN));
-      var centrifugal = 0.35 + 1.25 * (speed / SPEED_MAX), loopZ = SEG_COUNT * SEG_LEN, n, s;
+      var centrifugal = 0.35 + 1.25 * (speed / SPEED_MAX), loopZ = SEG_COUNT * SEG_LEN, n, s, cam;
+      var lastN = -1, step = 1, dashes = false, i;
       for (n = 0; n < DRAW_DIST; n++) {
         s = segments[(base.index + n) % SEG_COUNT];
-        project(s.p1, playerX * HALF_ROAD - curveX, camY, position - (s.index < base.index ? loopZ : 0));
-        project(s.p2, playerX * HALF_ROAD - curveX - dx, camY, position - (s.index < base.index ? loopZ : 0));
+        cam = playerX * HALF_ROAD - curveX;
+        project(s.p1, cam, camY, position - (s.index < base.index ? loopZ : 0));
+        project(s.p2, cam - dx, camY, position - (s.index < base.index ? loopZ : 0));
         s.vis = false;
         if (s.p1.camera.z > CAM_D && s.p2.screen.y < s.p1.screen.y && s.p2.screen.y < maxy) {
           s.vis = true;
           var p1 = s.p1.screen, p2 = s.p2.screen;
-          var y1 = p1.y, y2 = p2.y, x1 = p1.x, x2 = p2.x, w1 = p1.w;
-          var dark = (Math.floor(s.index / 3) % 2) === 0;
-          band(p1, p2, -1.9, 1.9, '#0b0f1e');                                  // verge
-          band(p1, p2, -1, 1, dark ? '#20243a' : '#272c46');                  // tarmac
-          var rum = dark ? hexA(C.magenta, 0.6) : hexA(C.cyan, 0.55);
-          band(p1, p2, 1, 1.1, rum); band(p1, p2, -1.1, -1, rum);             // rumble strips
-          if (Math.floor(s.index / 4) % 2 === 0) {                            // dashed lane markers
-            glow(C.cyan, 12);
-            for (var q = -1; q <= 1; q += 2) band(p1, p2, q / 3, q / 3 + 0.06, hexA(C.cyan, 0.55));
-            ctx.shadowBlur = 0;
-          }
-          if (s.gravel) {                                                     // speckled patch
-            for (var q2 = 0; q2 < 9; q2++) {
-              var t = hash(s.index * 37 + q2 * 7.3), f = (q2 + 0.5) / 9;
-              var gx = x1 + (x2 - x1) * f + (s.gravel + (t - 0.5) * GRAVEL_W * 2) * w1;
-              var gs = (0.012 + t * 0.016) * w1, gy = y1 + (y2 - y1) * f;
-              ctx.fillStyle = hexA(C.orange, 0.2 + t * 0.22);
-              ctx.fillRect(gx - gs, gy - gs, gs * 2, gs * 2);
+          var y1 = p1.y, y2 = p2.y, x1 = p1.x, x2 = p2.x, w1 = p1.w, w2 = p2.w;
+          var h = y1 - y2;
+          step = h >= LOD_PX ? 1 : (h >= LOD_FAR_PX ? 2 : 4);
+          if (n - lastN >= step) {                         // every 2nd/4th segment once sub-pixel
+            lastN = n;
+            // Verge: one continuous strip, both shoulders. Skipping a point just joins two
+            // segments with a straight edge, and their edges differ by a fraction of a pixel.
+            vL.push(x1 - w1 * 1.9, y1, x2 - w2 * 1.9, y2);
+            vR.push(x1 + w1 * 1.9, y1, x2 + w2 * 1.9, y2);
+            var dark = (Math.floor(s.index / 3) % 2) === 0;
+            dashes = (Math.floor(s.index / 4) % 2) === 0 && w1 * 0.06 >= DASH_MIN;
+            if (h >= LOD_FAR_PX) {                         // near field: alternate, two paths
+              (dark ? tarA : tarB).quad(x1 - w1, y1, x1 + w1, y1, x2 + w2, y2, x2 - w2, y2);
+            } else {                                       // far field: one averaged strip
+              fL.push(x1 - w1, y1, x2 - w2, y2); fR.push(x1 + w1, y1, x2 + w2, y2);
+            }
+            if (w1 * 0.1 >= RUMBLE_MIN) {                  // rumble strips, only while they read
+              var rum = dark ? rumA : rumB;
+              rum.quad(x1 + w1, y1, x1 + w1 * 1.1, y1, x2 + w2 * 1.1, y2, x2 + w2, y2);
+              rum.quad(x1 - w1 * 1.1, y1, x1 - w1, y1, x2 - w2, y2, x2 - w2 * 1.1, y2);
+            }
+            if (dashes) {                                  // dashed lane markers
+              // Mirrors band(p1, p2, q / 3, q / 3 + 0.06) for q = +1 and q = -1, including
+              // which side of the lane line each dash falls on.
+              lane.quad(x1 - w1 / 3, y1, x1 - w1 / 3 - w1 * 0.06, y1,
+                        x2 - w2 / 3 - w2 * 0.06, y2, x2 - w2 / 3, y2);
+              lane.quad(x1 + w1 / 3, y1, x1 + w1 / 3 - w1 * 0.06, y1,
+                        x2 + w2 / 3 - w2 * 0.06, y2, x2 + w2 / 3, y2);
+            }
+            if (s.gravel && w1 * 0.012 >= SPECK_MIN) {     // speckled patch
+              for (i = 0; i < 9; i++) {
+                var t = hash(s.index * 37 + i * 7.3), f = (i + 0.5) / 9;
+                var gx = x1 + (x2 - x1) * f + (s.gravel + (t - 0.5) * GRAVEL_W * 2) * w1;
+                var gs = (0.012 + t * 0.016) * w1, gy = y1 + (y2 - y1) * f;
+                ctx.fillStyle = hexA(C.orange, 0.2 + t * 0.22);
+                ctx.fillRect(gx - gs, gy - gs, gs * 2, gs * 2);
+              }
             }
           }
-          var fog = clamp((n - DRAW_DIST * 0.42) / (DRAW_DIST * 0.58), 0, 1);   // distance haze
-          if (fog > 0) { ctx.fillStyle = hexA(C.bg, fog * 0.85); ctx.fillRect(0, y2, cssW, y1 - y2 + 1); }
           maxy = y2;
         }
         curveX += dx; dx += s.curve * centrifugal;
       }
+      verge.strip(vL, vR); verge.fill(COL_VERGE);
+      if (vL.length) tarA.fill(COL_TAR_A), tarB.fill(COL_TAR_B);
+      if (fL.length) { tarFar.strip(fL, fR); tarFar.fill(COL_TAR_FAR); }
+      rumA.fill(COL_RUM_A); rumB.fill(COL_RUM_B);
+      if (vL.length) {                                      // lane dashes carry their own glow
+        glow(C.cyan, 12); lane.fill(COL_DASH); ctx.shadowBlur = 0;
+      }
+      ctx.fillStyle = paint.haze; ctx.fillRect(0, cssH * 0.5, cssW, paint.hazeY);
       for (var m = DRAW_DIST - 1; m > 0; m--) {             // far-to-near, so cars occlude cars
         var sp = segments[(base.index + m) % SEG_COUNT];
         for (var j = 0; sp.vis && j < sp.sprites.length; j++) {
@@ -299,23 +445,22 @@
       if (hw < 0.7) return;
       var hh = hw * (o.rock ? 0.75 : 0.55);
       if (o.rock) {
-        glow(C.orange, 16); ctx.fillStyle = hexA(C.orange, 0.85);
+        glow(C.orange, 16); ctx.fillStyle = OB_ROCK;
         ctx.beginPath(); ctx.moveTo(x, y - hh * 1.4); ctx.lineTo(x + hw, y); ctx.lineTo(x - hw, y);
         ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
-        marks.push({ x: x, y: y, hw: hw, hh: hh, color: C.orange, rock: true });
+        marks.push({ x: x, y: y, hw: hw, hh: hh, hue: 2, rock: true });
         return;
       }
-      var body = o.hue === 0 ? C.magenta : (o.hue === 1 ? C.violet : C.orange);
-      glow(body, 18); ctx.fillStyle = hexA(body, 0.92);
+      glow(HUE[o.hue], 18); ctx.fillStyle = OB_BODY[o.hue];
       ctx.beginPath();
       if (ctx.roundRect) ctx.roundRect(x - hw, y - hh * 2.4, hw * 2, hh * 2.4, hh * 0.5);
       else ctx.rect(x - hw, y - hh * 2.4, hw * 2, hh * 2.4);
       ctx.fill(); ctx.shadowBlur = 0;
-      ctx.fillStyle = hexA(C.ink, 0.35); ctx.fillRect(x - hw * 0.7, y - hh * 1.9, hw * 1.44, hh * 0.7);
-      ctx.fillStyle = '#ff3a4e';                            // tail lights, seen from behind
+      ctx.fillStyle = OB_GLASS; ctx.fillRect(x - hw * 0.7, y - hh * 1.9, hw * 1.44, hh * 0.7);
+      ctx.fillStyle = TAIL;                                 // tail lights, seen from behind
       ctx.fillRect(x - hw * 0.85, y - hh * 0.5, hw * 0.45, hh * 0.35);
       ctx.fillRect(x + hw * 0.4, y - hh * 0.5, hw * 0.45, hh * 0.35);
-      marks.push({ x: x, y: y, hw: hw, hh: hh, color: body, rock: false });
+      marks.push({ x: x, y: y, hw: hw, hh: hh, hue: o.hue, rock: false });
     }
     /**
      * Retroreflective pass, drawn AFTER the blackout. The world fill alone leaves only a few
@@ -324,30 +469,32 @@
      * they punch through the dark, so every obstacle announces itself before it is in reach.
      */
     function drawMarkers() {
-      var i, m, w, a;
+      var i, m, w, a, k;
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
       for (i = 0; i < marks.length; i++) {
         m = marks[i];
         a = clamp(0.5 + m.hw / 70, 0.5, 1);                // far hazards keep a floor, not a fade-out
         w = Math.max(1.6, m.hw * 0.34);
+        k = MK[m.hue];
+        ctx.globalAlpha = a;                               // the distance fade, applied once
         if (m.rock) {
-          ctx.fillStyle = hexA(m.color, 0.3 * a);
+          ctx.fillStyle = k[2];
           ctx.beginPath();
           ctx.arc(m.x, m.y - m.hh * 0.7, Math.max(3, m.hw * 1.6), 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = hexA(m.color, 0.85 * a);
+          ctx.fillStyle = k[3];
           ctx.fillRect(m.x - w / 2, m.y - m.hh * 1.5, w, Math.max(2, m.hh * 1.5));
           continue;
         }
-        ctx.fillStyle = hexA(m.color, 0.16 * a);           // soft halo so the shape survives the dark
+        ctx.fillStyle = k[0];                             // soft halo so the shape survives the dark
         ctx.beginPath();
         ctx.ellipse(m.x, m.y - m.hh * 1.2, Math.max(5, m.hw * 1.7), Math.max(7, m.hh * 3), 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = hexA(m.color, 0.8 * a);             // two reflective uprights
+        ctx.fillStyle = k[1];                             // two reflective uprights
         ctx.fillRect(m.x - m.hw * 0.8, m.y - m.hh * 2.3, w, m.hh * 2.1);
         ctx.fillRect(m.x + m.hw * 0.8 - w, m.y - m.hh * 2.3, w, m.hh * 2.1);
-        ctx.fillStyle = 'rgba(255,58,78,' + (0.85 * a) + ')';  // brake bar across the pair
+        ctx.fillStyle = BRAKE;                             // brake bar across the pair
         ctx.fillRect(m.x - m.hw * 0.95, m.y - m.hh * 0.5, m.hw * 1.9, Math.max(1.5, m.hh * 0.3));
       }
       ctx.restore();
@@ -359,16 +506,16 @@
       var lean = clamp(latVel * 0.1 + slip * 0.16, -0.42, 0.42);
       if (!(invuln > 0 && !reduced && Math.floor(now / 90) % 2 === 0)) {   // blink while invulnerable
         ctx.save(); ctx.translate(x, y); ctx.rotate(lean);
-        glow(C.cyan, 22); ctx.fillStyle = hexA(C.cyan, 0.95);
+        glow(C.cyan, 22); ctx.fillStyle = PL_CAR;
         ctx.beginPath();
         if (ctx.roundRect) ctx.roundRect(-hw, -hh * 2.6, hw * 2, hh * 2.6, hh * 0.6);
         else ctx.rect(-hw, -hh * 2.6, hw * 2, hh * 2.6);
         ctx.fill(); ctx.shadowBlur = 0;
-        ctx.fillStyle = hexA(C.bg, 0.65); ctx.fillRect(-hw * 0.72, -hh * 2.1, hw * 1.44, hh * 0.75);
-        ctx.fillStyle = hexA(C.acid, 0.95);                // headlight pods
+        ctx.fillStyle = PL_GLASS; ctx.fillRect(-hw * 0.72, -hh * 2.1, hw * 1.44, hh * 0.75);
+        ctx.fillStyle = PL_POD;                            // headlight pods
         ctx.fillRect(-hw * 0.9, -hh * 0.7, hw * 0.5, hh * 0.4);
         ctx.fillRect(hw * 0.4, -hh * 0.7, hw * 0.5, hh * 0.4);
-        ctx.fillStyle = '#ff3a4e';
+        ctx.fillStyle = TAIL;
         ctx.fillRect(-hw * 0.85, -hh * 0.16, hw * 0.45, hh * 0.3);
         ctx.fillRect(hw * 0.4, -hh * 0.16, hw * 0.45, hh * 0.3);
         ctx.restore();
@@ -378,55 +525,48 @@
     /**
      * Night pass. A previous version filled the frame with a 0.955 blackout and then erased a
      * 0.98-alpha cone out of what was left, so the two passes multiplied: the lit road kept
-     * 0.045 * 0.02 = 0.1% of its own colour. Darkness is now applied ONCE — a full-frame fill
-     * clipped to everything outside the headlight ellipse, then a radial falloff inside it whose
-     * outermost stop matches the fill exactly, so the cone has no seam and no compounding.
+     * 0.045 * 0.02 = 0.1% of its own colour. Darkness is now applied ONCE. It used to take two
+     * full-frame passes to say it — a fill clipped to everything outside the headlight ellipse,
+     * then the radial falloff inside it — but the falloff's outermost stop already IS that
+     * blackout colour, and a radial gradient holds its last stop for every radius past it. So
+     * the clipped fill was painting exactly what the cone already covers, and the whole night
+     * pass is one gradient: falloff inside the beam, flat blackout outside, no seam, no clip.
      */
     var DARK = 0.92;
     function drawDarkness(car) {
-      var beam = Math.min(cssW, cssH) * 0.7, cx = car.x, cy = car.y - car.hw, ry = beam * 2.2, g;
+      var cx = car.x, cy = car.y - car.hw;
       ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, 0, cssW, cssH);
-      ctx.ellipse(cx, cy, beam, ry, 0, 0, Math.PI * 2);
-      ctx.clip('evenodd');
-      ctx.fillStyle = hexA(C.bg, DARK); ctx.fillRect(0, 0, cssW, cssH);
-      ctx.restore();
-      ctx.save();
-      ctx.translate(cx, cy); ctx.scale(1, ry / beam);        // the beam: a tall ellipse ahead
-      g = ctx.createRadialGradient(0, 0, 0, 0, 0, beam);
-      g.addColorStop(0, hexA(C.bg, 0));
-      g.addColorStop(0.30, hexA(C.bg, 0.10));
-      g.addColorStop(0.62, hexA(C.bg, 0.42));
-      g.addColorStop(0.85, hexA(C.bg, 0.75));
-      g.addColorStop(1, hexA(C.bg, DARK));
-      ctx.fillStyle = g; ctx.fillRect(-beam, -beam, beam * 2, beam * 2);
+      ctx.translate(cx, cy); ctx.scale(1, 2.2);              // the beam: a tall ellipse ahead
+      // The canvas bounds expressed in that space, so one fill covers the frame edge to edge.
+      ctx.fillStyle = paint.cone; ctx.fillRect(-cx, -cy / 2.2, cssW, cssH / 2.2);
       ctx.globalCompositeOperation = 'lighter';              // warm scatter, so it reads as light
       ctx.globalAlpha = reduced ? 0.05 : 0.1;
-      g = ctx.createRadialGradient(0, 0, 0, 0, 0, beam);
-      g.addColorStop(0, 'rgba(255,238,200,1)'); g.addColorStop(1, 'rgba(255,238,200,0)');
-      ctx.fillStyle = g; ctx.fillRect(-beam, -beam, beam * 2, beam * 2);
+      ctx.fillStyle = paint.warm; ctx.fillRect(-cx, -cy / 2.2, cssW, cssH / 2.2);
       ctx.restore();
     }
     var TITLE_F = 'Orbitron, system-ui, sans-serif', BODY_F = 'Rajdhani, system-ui, sans-serif';
     var SIDE = 0.92;                                        // share of the width a card line may use
+    var curFont = '';
+    /** Assign ctx.font only when the string actually changes. The HUD re-selects the same
+        font every frame, and each assignment makes the canvas drop its parsed font. */
+    function useFont(s) { if (s !== curFont) { curFont = s; ctx.font = s; } }
     /**
      * The stage is taller than it is wide on a phone, so a height-only font scale balloons the
      * card type until it runs off both edges. Measure once at 100px and scale against the WIDTH
      * as well: a wide desktop stage keeps its height-derived size, a narrow phone stage shrinks.
      */
     function fitFont(text, weight, family, want, minPx) {
-      ctx.font = weight + ' 100px ' + family;
+      useFont(weight + ' 100px ' + family);
       var perPx = ctx.measureText(text).width / 100 || 1;
       var px = clamp(Math.round(Math.min(want, cssW * SIDE / perPx)), minPx, want);
-      ctx.font = weight + ' ' + px + 'px ' + family;
+      useFont(weight + ' ' + px + 'px ' + family);
       return px;
     }
     /** Greedy word wrap; drops a size step only if the text still will not fit on two lines. */
     function wrapText(text, want, minPx) {
       var size = want, lines, rest, cut, sp;
       for (;;) {
-        ctx.font = '600 ' + size + 'px ' + BODY_F;
+        useFont('600 ' + size + 'px ' + BODY_F);
         lines = []; rest = text;
         while (rest.length) {
           cut = rest.length;
@@ -445,7 +585,7 @@
     }
     function drawBlock(w, color, yc) {                       // yc = centre line of the block
       var i;
-      ctx.font = '600 ' + w.size + 'px ' + BODY_F; ctx.fillStyle = color;
+      useFont('600 ' + w.size + 'px ' + BODY_F); ctx.fillStyle = color;
       for (i = 0; i < w.lines.length; i++)
         ctx.fillText(w.lines[i], cssW / 2, yc + (i - (w.lines.length - 1) / 2) * w.size * 1.2);
     }
@@ -455,9 +595,9 @@
       var tw = fitFont(title, '900', TITLE_F, Math.round(clamp(cssH * 0.13, 22, 58)), 16);
       var a = wrapText(sub, bsw, 12), b = hint ? wrapText(hint, bsw, 12) : null;
       var gap = Math.max(10, cssH * 0.035), th = tw * 1.05, y = (cssH - (th + gap + a.h + (b ? gap + b.h : 0))) / 2;
-      ctx.fillStyle = hexA(C.bg, 0.76); ctx.fillRect(0, 0, cssW, cssH);
+      ctx.fillStyle = CARD_WASH; ctx.fillRect(0, 0, cssW, cssH);
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = '900 ' + tw + 'px ' + TITLE_F;
+      useFont('900 ' + tw + 'px ' + TITLE_F);
       ctx.fillStyle = color; glow(color, 26);
       ctx.fillText(title, cssW / 2, y + th / 2); ctx.shadowBlur = 0;
       drawBlock(a, C.dim, y + th + gap + a.h / 2);
@@ -467,8 +607,8 @@
       var i, p;
       for (i = 0; i < 2; i++) {
         p = pads[i];
-        ctx.fillStyle = hot === p.ax ? hexA(C.cyan, 0.4) : hexA(C.cyan, 0.1);
-        ctx.strokeStyle = hexA(C.cyan, 0.45); ctx.lineWidth = 2;
+        ctx.fillStyle = hot === p.ax ? PAD_HOT : PAD_IDLE;
+        ctx.strokeStyle = PAD_EDGE; ctx.lineWidth = 2;
         ctx.beginPath();
         if (ctx.roundRect) ctx.roundRect(p.x, p.y, p.w, p.h, 14); else ctx.rect(p.x, p.y, p.w, p.h);
         ctx.fill(); ctx.stroke();
@@ -480,10 +620,8 @@
       }
     }
     function draw(now) {
-      ctx.fillStyle = C.bg; ctx.fillRect(0, 0, cssW, cssH);
-      var sky = ctx.createLinearGradient(0, 0, 0, cssH * 0.5);
-      sky.addColorStop(0, '#0a0720'); sky.addColorStop(1, C.bg);
-      ctx.fillStyle = sky; ctx.fillRect(0, 0, cssW, cssH * 0.5);
+      buildPaint();                                          // no-op unless the canvas changed size
+      ctx.fillStyle = paint.sky; ctx.fillRect(0, 0, cssW, cssH);
       drawRoad();                                            // road first, car over the top of it
       var car = drawPlayer(now);
       drawDarkness(car);
@@ -492,20 +630,13 @@
         ctx.fillStyle = hexA('#ff3a4e', 0.32 * (1 - (now - hitAt) / 380));
         ctx.fillRect(0, 0, cssW, cssH);
       }
-      if (!reduced) {                                        // CRT polish: world only
-        ctx.fillStyle = 'rgba(0,0,0,.15)';
-        for (var sy = 0; sy < cssH; sy += 3) ctx.fillRect(0, sy, cssW, 1);
-      }
-      var vig = ctx.createRadialGradient(cssW / 2, cssH / 2, Math.min(cssW, cssH) * 0.3,
-        cssW / 2, cssH / 2, Math.max(cssW, cssH) * 0.72);
-      vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.6)');
-      ctx.fillStyle = vig; ctx.fillRect(0, 0, cssW, cssH);
+      if (paint.over) ctx.drawImage(paint.over, 0, 0, cssW, cssH);   // scanlines + vignette
       /* HUD sits above the CRT overlay so it stays at full contrast over the vignette.
          A dark halo keeps it legible when a lit road or the car runs behind the text. */
-      ctx.shadowColor = hexA(C.bg, 0.9); ctx.shadowBlur = 6;
+      ctx.shadowColor = HUD_HALO; ctx.shadowBlur = 6;
       var fs = Math.round(clamp(Math.min(cssH * 0.042, cssW * 0.05), 11, 17)), m = Math.max(10, cssW * 0.04);
-      var top = Math.max(14, cssH * 0.05), i;
-      ctx.textBaseline = 'middle'; ctx.font = '700 ' + fs + 'px Rajdhani, system-ui, sans-serif';
+      var top = Math.max(14, cssH * 0.05), i, font = HUD_FONT[fs] || (HUD_FONT[fs] = '700 ' + fs + 'px Rajdhani, system-ui, sans-serif');
+      ctx.textBaseline = 'middle'; useFont(font);
       ctx.textAlign = 'left'; ctx.fillStyle = C.ink;
       ctx.fillText('SCORE ' + Math.floor(score), m, top);
       ctx.textAlign = 'right'; ctx.fillStyle = C.dim;
@@ -521,9 +652,9 @@
       if (combo > 1) {                                        // combo flares, then cools
         var cooling = (now - comboAt) / 1000 > COMBO_WINDOW - 0.6;
         ctx.textAlign = 'center'; ctx.fillStyle = cooling ? C.dim : C.magenta;
-        ctx.font = '900 ' + Math.round(fs * 1.35) + 'px Orbitron, system-ui, sans-serif';
+        useFont(COMBO_FONT[fs] || (COMBO_FONT[fs] = '900 ' + Math.round(fs * 1.35) + 'px Orbitron, system-ui, sans-serif'));
         glow(C.magenta, 18); ctx.fillText('COMBO x' + combo, cssW / 2, top + fs * 1.6);
-        ctx.shadowBlur = 0; ctx.font = '700 ' + fs + 'px Rajdhani, system-ui, sans-serif';
+        ctx.shadowBlur = 0; useFont(font);
       }
       ctx.shadowBlur = 0; ctx.shadowColor = 'rgba(0,0,0,0)';
       drawPads();

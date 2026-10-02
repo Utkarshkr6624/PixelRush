@@ -524,7 +524,10 @@
       // CRT polish: scanlines + vignette, applied to the WORLD only so the
       // scoreboard, angle/power strip and touch buttons below stay bright.
       if (!reduced) { ctx.fillStyle = 'rgba(0,0,0,.15)';
-        for (var sy = 0; sy < cssH; sy += 3) ctx.fillRect(0, sy, cssW, 1); }
+        if (ctx.__pxH !== cssH) { var __px = document.createElement('canvas'); __px.width = 1; __px.height = 3;
+          var __pxg = __px.getContext('2d'); __pxg.fillStyle = 'rgba(0,0,0,.15)'; __pxg.fillRect(0, 0, 1, 1);
+          ctx.__pxP = ctx.createPattern(__px, 'repeat'); ctx.__pxH = cssH; }
+        ctx.fillStyle = ctx.__pxP; ctx.fillRect(0, 0, cssW, cssH); }
       var vig = ctx.createRadialGradient(cssW / 2, cssH / 2, Math.min(cssW, cssH) * 0.34,
         cssW / 2, cssH / 2, Math.max(cssW, cssH) * 0.76);
       vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.55)');

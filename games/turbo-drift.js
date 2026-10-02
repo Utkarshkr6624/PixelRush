@@ -84,6 +84,16 @@
     function syncStatus() { setStatus(over ? 'Game over' : (paused ? 'Paused' : 'Playing')); }
     /* ----------------- Sizing (crisp devicePixelRatio) ----------------- */
     var dpr = 1, cssW = 1, cssH = 1;
+    /* Paint that does not move between frames is rendered once into an offscreen layer
+       and blitted: the backdrop (sky, horizon band, horizon line, ground, grid) and the
+       CRT pass (scanlines + vignette). Both were full-screen gradient/pattern fills every
+       frame, and on a software rasteriser the per-pixel gradient maths is what costs, not
+       the copy. The six road gradients carry the depth fog as a vertical ramp (see
+       buildCaches), which is what lets the road batch into six fills instead of four path
+       operations per segment. */
+    var cachesReady = false, backdrop = {}, crt = {}, crtReduced = null, pads = {};
+    var gradTarmacA = null, gradTarmacB = null, gradRumbleA = null, gradRumbleB = null;
+    var gradLane = null, gradEdge = null;
     function resize() {
       var r = wrap.getBoundingClientRect();
       cssW = Math.max(1, Math.round(r.width)); cssH = Math.max(1, Math.round(r.height));
@@ -91,6 +101,7 @@
       canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
       canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (cachesReady) buildCaches();
     }
     resize();
     // The shell pins the canvas to 100% of the stage, so the stage can change size without
@@ -112,17 +123,148 @@
       var n = parseInt(hex, 16);
       return isFinite(n) ? 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')' : 'rgba(255,255,255,' + a + ')';
     }
+    /* ------------------------- Cached paint (resize) ------------------------- */
+    /** Offscreen layer sized to the canvas backing store, so a blit is a straight 1:1 copy. */
+    function layer(store) {
+      if (!store.c) { store.c = document.createElement('canvas'); store.g = store.c.getContext('2d'); }
+      store.c.width = canvas.width; store.c.height = canvas.height;
+      store.g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      store.g.clearRect(0, 0, cssW, cssH);
+      return store.g;
+    }
+    /**
+     * The depth fog used to be a per-segment constant: every band built its own rgba()
+     * string from the fog at its far edge. Fog is a pure function of the projected y
+     * (fog = (K/(y-hz) - NEARZ)/FAR, because project() maps depth to y = hz + K/d), so the
+     * same fade is a vertical gradient. Sampling it geometrically in y puts the stops
+     * where the curve bends, and the same ramp serves every road surface because each one
+     * is affine in fog: alpha = ka - kb*fog.
+     */
+    function buildCaches() {
+      var w = cssW, h = cssH, hz = h * 0.5, i;
+      var K = CAM_DEPTH * CAM_H * h / 2, y1 = h + 8, N = 24, g = 1.28;
+      var gN = Math.pow(g, N), ramp = [];
+      for (var j = 0; j <= N; j++) {
+        var t = (Math.pow(g, j) - 1) / (gN - 1);
+        ramp.push(clamp((t <= 0 ? FAR : K / (t * (y1 - hz)) - NEARZ) / FAR, 0, 1));
+      }
+      function roadGrad(colHex, ka, kb) {
+        var gr = ctx.createLinearGradient(0, hz, 0, y1);
+        for (j = 0; j <= N; j++) gr.addColorStop((Math.pow(g, j) - 1) / (gN - 1), hexA(colHex, ka - kb * ramp[j]));
+        return gr;
+      }
+      gradTarmacA = roadGrad('#101228', 1, 0.92); gradTarmacB = roadGrad('#0c0e1e', 1, 0.92);
+      gradRumbleA = roadGrad(C.magenta, 0.5, 0.5); gradRumbleB = roadGrad(C.ink, 0.5, 0.5);
+      gradLane = roadGrad(C.acid, 0.55, 0.55); gradEdge = roadGrad(C.cyan, 0.85, 0.8);
+
+      // Backdrop: nothing in it moves — the sun is painted on top of it every frame. The
+      // glowing horizon line is left out: it has to sit over the sun.
+      var b = layer(backdrop);
+      var sky = b.createLinearGradient(0, 0, 0, hz);
+      sky.addColorStop(0, hexA(C.violet, 0.55)); sky.addColorStop(0.45, C.magenta);
+      sky.addColorStop(0.8, C.orange); sky.addColorStop(1, hexA(C.orange, 0.9));
+      b.fillStyle = sky; b.fillRect(-20, -20, w + 40, hz + 20);
+      b.fillStyle = C.bg; b.fillRect(-20, hz - h * 0.012, w + 40, h * 0.05);
+      var gnd = b.createLinearGradient(0, hz, 0, h);
+      gnd.addColorStop(0, '#0a0a1c'); gnd.addColorStop(1, C.bg);
+      b.fillStyle = gnd; b.fillRect(-20, hz, w + 40, h - hz + 20);
+      b.strokeStyle = hexA(C.violet, 0.35); b.lineWidth = 1; b.beginPath();
+      for (i = -7; i <= 7; i++) { b.moveTo(w / 2 + i * w * 0.06, hz); b.lineTo(w / 2 + i * w * 0.9, h); }
+      b.stroke();
+      buildCrt();
+      buildPads();
+    }
+    /**
+     * CRT pass: scanlines then vignette, pre-composited into one layer. Both are black at
+     * varying alpha, so stacking them is a single multiply — compositing them here gives the
+     * same result as two full-screen fills and costs one blit. The vignette is painted even
+     * when motion is reduced; only the scanlines are conditional, so the layer is rebuilt
+     * when the flag flips.
+     */
+    function buildCrt() {
+      var w = cssW, h = cssH;
+      var c = layer(crt);
+      if (!reduced) {
+        c.fillStyle = 'rgba(0,0,0,.16)';
+        for (var sy = 0; sy < h; sy += 3) c.fillRect(0, sy, w, 1);
+      }
+      var vig = c.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.34, w / 2, h / 2, Math.max(w, h) * 0.78);
+      vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.6)');
+      c.fillStyle = vig; c.fillRect(-20, -20, w + 40, h + 40);
+      crtReduced = reduced;
+    }
+    cachesReady = true; buildCaches();
+    /**
+     * One steering pad. The car can steer right under a pad, so the pad gets an opaque
+     * backing disc: the control has to stay readable even with a 200 px wide sprite
+     * underneath it.
+     */
+    function padShape(g, pxx, dirn, pr, pcy) {
+      g.beginPath();
+      g.moveTo(pxx + dirn * pr * 0.34, pcy); g.lineTo(pxx - dirn * pr * 0.16, pcy - pr * 0.36);
+      g.lineTo(pxx - dirn * pr * 0.16, pcy + pr * 0.36); g.closePath();
+    }
+    function paintPad(pxx, dirn, pr, pcy, on) {
+      ctx.globalAlpha = 0.72; ctx.fillStyle = C.bg;
+      ctx.beginPath(); ctx.arc(pxx, pcy, pr, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = on ? 0.55 : 0.22; ctx.fillStyle = C.cyan;
+      ctx.shadowColor = C.cyan; ctx.shadowBlur = on ? 18 : 0;
+      ctx.beginPath(); ctx.arc(pxx, pcy, pr, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.fillStyle = C.ink;
+      padShape(ctx, pxx, dirn, pr, pcy); ctx.fill();
+    }
+    /**
+     * The idle pads, baked into a layer only as big as the strip they occupy — a
+     * full-canvas copy of an otherwise empty layer would cost both memory and several
+     * hundred thousand wasted pixels a frame.
+     */
+    function buildPads() {
+      var pr = Math.min(cssW, cssH) * PAD_R, pcy = cssH - pr * 1.15;
+      var x0 = Math.max(0, Math.floor((pr * 0.15) * dpr) - 2);
+      var y0 = Math.max(0, Math.floor((pcy - pr) * dpr) - 2);
+      var x1 = Math.min(canvas.width, Math.ceil((cssW - pr * 0.15) * dpr) + 2);
+      var y1 = Math.min(canvas.height, Math.ceil((pcy + pr) * dpr) + 2);
+      if (!pads.c) { pads.c = document.createElement('canvas'); pads.g = pads.c.getContext('2d'); }
+      pads.c.width = Math.max(1, x1 - x0); pads.c.height = Math.max(1, y1 - y0);
+      pads.at = [x0, y0];
+      var g = pads.g;
+      g.setTransform(dpr, 0, 0, dpr, -x0, -y0);       // draw in stage coordinates
+      g.clearRect(0, 0, cssW, cssH);
+      for (var i = 0; i < 2; i++) {
+        var pxx = i === 0 ? pr * 1.15 : cssW - pr * 1.15, dirn = i === 0 ? -1 : 1;
+        g.globalAlpha = 0.72; g.fillStyle = C.bg;
+        g.beginPath(); g.arc(pxx, pcy, pr, 0, Math.PI * 2); g.fill();
+        g.globalAlpha = 0.22; g.fillStyle = C.cyan;
+        g.beginPath(); g.arc(pxx, pcy, pr, 0, Math.PI * 2); g.fill();
+        g.globalAlpha = 1; g.fillStyle = C.ink;
+        padShape(g, pxx, dirn, pr, pcy); g.fill();
+      }
+      g.globalAlpha = 1;
+    }
     function rr(x, y, w, h, r) { ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h); }
     /**
      * On-canvas text is sized from min(cssH, cssW): the stage is 16/9 on a desktop but
      * taller than it is wide on a portrait phone, and a height-only scale makes the strings
      * run off both edges. `fit` then trims the last few px so a string that is still too
      * long at the smallest permitted size is shrunk rather than clipped.
+     * Note the loop this replaces re-measured at the *starting* font size every pass (the
+     * caller only assigns ctx.font once, with the result), so the width it tested never
+     * changed and the function could only ever return the starting size or the 9px floor.
+     * That is preserved exactly here, with one measureText instead of one per pixel tried.
      * @param {number} px starting size @param {string} s text @param {number} maxW
      */
     function fit(px, s, maxW) {
-      while (px > 9 && ctx.measureText(s).width > maxW) px -= 1;
-      return Math.round(px);
+      return (px > 9 && ctx.measureText(s).width > maxW) ? 9 : Math.round(px);
+    }
+    /* One memo per HUD string: the best-score and level readouts rarely change, and
+       measureText (which shapes the string) was costing more than the text it sized. */
+    var fitMemo = ['', 0, 0, 0, '', 0, 0, 0, '', 0, 0, 0, '', 0, 0, 0];
+    function fitAt(k, px, s, maxW) {
+      var o = k * 4;
+      if (fitMemo[o] === px && fitMemo[o + 1] === s && fitMemo[o + 2] === maxW) return fitMemo[o + 3];
+      var r = fit(px, s, maxW);
+      fitMemo[o] = px; fitMemo[o + 1] = s; fitMemo[o + 2] = maxW; fitMemo[o + 3] = r;
+      return r;
     }
     /* ------------------------- Projection helpers ------------------------ */
     function camZ() { return position + CAM_D; }
@@ -137,6 +279,9 @@
       return out;
     }
     var pA = { x: 0, y: 0, w: 0, s: 0 }, pB = { x: 0, y: 0, w: 0, s: 0 }, pC = { x: 0, y: 0, w: 0, s: 0 };
+    /* Scratch for the batched road: 16 floats a band, reused every frame so the draw pass
+       allocates nothing. BAND_MAX bounds the walk at the segment cap. */
+    var BAND_MAX = DRAW + 2, band = new Float32Array(BAND_MAX * 16);
     /**
      * Lane offsets at which the car body still fits between the two stage edges, as a
      * signed [lo, hi] pair. The road is drawn relative to the corner shift, so the usable
@@ -255,64 +400,139 @@
       var w = cssW, h = cssH, hz = h * 0.5, i, n, car;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.save();
-      if (!reduced && shake > 0) ctx.translate(rand(-1, 1) * shake * 14, rand(-1, 1) * shake * 14);
-      /* sky: gradient sunset, slatted synthwave sun, glowing horizon line */
-      var sky = ctx.createLinearGradient(0, 0, 0, hz);
-      sky.addColorStop(0, hexA(C.violet, 0.55)); sky.addColorStop(0.45, C.magenta);
-      sky.addColorStop(0.8, C.orange); sky.addColorStop(1, hexA(C.orange, 0.9));
-      ctx.fillStyle = sky; ctx.fillRect(-20, -20, w + 40, hz + 20);
-      ctx.fillStyle = C.bg; ctx.fillRect(-20, hz - h * 0.012, w + 40, h * 0.05);
+      var shx = 0, shy = 0;
+      if (!reduced && shake > 0) { shx = rand(-1, 1) * shake * 14; shy = rand(-1, 1) * shake * 14; ctx.translate(shx, shy); }
+      /* sky, horizon and ground are one cached layer; only the sun moves, so it is the
+         only thing painted on top of it. The blit runs in device space so it is a 1:1
+         copy — drawImage under the DPR transform would rescale by a rounding error. */
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      if (shx || shy) ctx.translate(shx * dpr, shy * dpr);
+      ctx.drawImage(backdrop.c, 0, 0);
+      ctx.restore();
+      /* Slatted synthwave sun. The old order was sky, horizon band, sun, horizon line,
+         ground, grid — the opaque ground fill then hid everything the sun, its glow and
+         the lower half of the horizon line put below the horizon. The ground now lives in
+         the cached backdrop, so the same occlusion is one clip whose bottom edge is hz. */
       var sunR = Math.min(w, h) * 0.19, sunX = w / 2 - curveNow * Math.min(w, h) * 0.02, sunY = hz - sunR * 0.42;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(-20, -20, w + 40, hz + 20); ctx.clip();
+      ctx.fillStyle = hexA(C.bg, 0.85);
       ctx.save(); ctx.shadowColor = C.magenta; ctx.shadowBlur = 30; ctx.fillStyle = C.acid;
       ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-      ctx.fillStyle = hexA(C.bg, 0.85);
       for (i = 0; i < 7; i++) ctx.fillRect(sunX - sunR, sunY + i * sunR * 0.19, sunR * 2, sunR * 0.075);
-      ctx.strokeStyle = hexA(C.cyan, 0.5); ctx.lineWidth = 1;
+      ctx.strokeStyle = hexA(C.cyan, 0.5); ctx.lineWidth = 1;   // glowing horizon line
       ctx.beginPath(); ctx.moveTo(-20, hz); ctx.lineTo(w + 20, hz); ctx.stroke();
-      /* ground: dark plane + converging synthwave grid */
-      var gnd = ctx.createLinearGradient(0, hz, 0, h);
-      gnd.addColorStop(0, '#0a0a1c'); gnd.addColorStop(1, C.bg);
-      ctx.fillStyle = gnd; ctx.fillRect(-20, hz, w + 40, h - hz + 20);
-      ctx.strokeStyle = hexA(C.violet, 0.35); ctx.lineWidth = 1; ctx.beginPath();
-      for (i = -7; i <= 7; i++) { ctx.moveTo(w / 2 + i * w * 0.06, hz); ctx.lineTo(w / 2 + i * w * 0.9, h); }
-      ctx.stroke();
-      /* road strips, far to near */
-      var base = Math.floor(position / SEG), drawnY = 0, bottomY = h;
-      for (n = DRAW; n >= 0; n--) {
+      ctx.restore();
+      /* Road strips, far to near. Every band used to open its own path for the tarmac, the
+         glowing edges, the rumble and the lane dividers — about four beginPath a segment,
+         plus a fresh rgba() string and a shadowed stroke. The road is now walked once into
+         a flat band buffer and replayed as six batched paths, and the depth fog rides on
+         cached vertical gradients instead of per-band constants, so a band costs a few
+         numbers to gather and the whole road costs six fills.
+         The edges and the lane dashes are emitted as quads offset along their own line
+         normal, which is exactly the footprint of the old butt-capped stroke at that line
+         width. Width mattered: the old edge stroke inherited the *previous* band's lane
+         lineWidth (edgeH below) and so fattened as the road came toward the camera. Each
+         of the four lines has its own normal — left and right diverge because the road
+         fans out — so the buffer carries one per line. */
+      var base = Math.floor(position / SEG), drawnY = 0, bottomY = h, bands = 0;
+      var laneH = 0.5, edgeH = 0.5, sxd, swd, syd, len;
+      for (n = DRAW; n >= 0 && bands < BAND_MAX; n--) {
         var idx = base + n, zf = (idx + 1) * SEG - camZ(), zn = (idx + 2) * SEG - camZ();
         if (zf > FAR || zn < NEARZ) continue;
         project(0, clamp(zf, NEARZ, FAR), pA); project(0, clamp(zn, NEARZ, FAR), pB);
         if (pA.y <= drawnY) continue;                    // already covered by a nearer strip
-        var fog = clamp((zf - NEARZ) / FAR, 0, 1), alt = (Math.floor(idx / 3) % 2) === 0;
-        ctx.fillStyle = hexA(alt ? '#101228' : '#0c0e1e', 1 - fog * 0.92);   // asphalt
-        ctx.beginPath();
-        ctx.moveTo(pA.x - pA.w, pA.y); ctx.lineTo(pA.x + pA.w, pA.y);
-        ctx.lineTo(pB.x + pB.w, pB.y); ctx.lineTo(pB.x - pB.w, pB.y);
-        ctx.closePath(); ctx.fill();
-        if (!reduced) {                                   // glowing road edges
-          ctx.shadowColor = C.cyan; ctx.shadowBlur = 10; ctx.strokeStyle = hexA(C.cyan, 0.85 - fog * 0.8);
-          ctx.beginPath();
-          ctx.moveTo(pA.x - pA.w, pA.y); ctx.lineTo(pB.x - pB.w, pB.y);
-          ctx.moveTo(pA.x + pA.w, pA.y); ctx.lineTo(pB.x + pB.w, pB.y);
-          ctx.stroke(); ctx.shadowBlur = 0;
+        var even = (n % 2) === 0;
+        sxd = pB.x - pA.x; swd = pB.w - pA.w; syd = pB.y - pA.y;
+        var o = bands * 16;
+        band[o] = pA.x; band[o + 1] = pA.y; band[o + 2] = pA.w;
+        band[o + 3] = pB.x; band[o + 4] = pB.y; band[o + 5] = pB.w;
+        // left/right road edge normals (at +-p.w), already scaled to the stroke half width
+        len = Math.sqrt((sxd - swd) * (sxd - swd) + syd * syd) || 1;
+        band[o + 12] = -syd / len * edgeH; band[o + 13] = (sxd - swd) / len * edgeH;
+        len = Math.sqrt((sxd + swd) * (sxd + swd) + syd * syd) || 1;
+        band[o + 14] = -syd / len * edgeH; band[o + 15] = (sxd + swd) / len * edgeH;
+        band[o + 7] = (Math.floor(idx / 3) % 2) === 0 ? 1 : 0;
+        if (even) {                                        // lane dividers, dashed by parity
+          var t3 = swd / 1.5;                               // the lane sits at +-p.w/1.5
+          laneH = Math.max(1, pA.w * 0.02) * 0.5;
+          len = Math.sqrt((sxd - t3) * (sxd - t3) + syd * syd) || 1;
+          band[o + 8] = -syd / len; band[o + 9] = (sxd - t3) / len;
+          len = Math.sqrt((sxd + t3) * (sxd + t3) + syd * syd) || 1;
+          band[o + 10] = -syd / len; band[o + 11] = (sxd + t3) / len;
+          band[o + 6] = laneH;
+          band[o + 7] += 2;
         }
-        ctx.fillStyle = hexA(alt ? C.magenta : C.ink, 0.5 * (1 - fog));   // rumble strips
-        ctx.beginPath();
-        ctx.moveTo(pA.x - pA.w * 1.13, pA.y); ctx.lineTo(pA.x - pA.w, pA.y);
-        ctx.lineTo(pB.x - pB.w, pB.y); ctx.lineTo(pB.x - pB.w * 1.13, pB.y);
-        ctx.moveTo(pA.x + pA.w * 1.13, pA.y); ctx.lineTo(pA.x + pA.w, pA.y);
-        ctx.lineTo(pB.x + pB.w, pB.y); ctx.lineTo(pB.x + pB.w * 1.13, pB.y);
-        ctx.fill();
-        if (n % 2 === 0) {                                // lane dividers, dashed by parity
-          ctx.strokeStyle = hexA(C.acid, 0.55 * (1 - fog)); ctx.lineWidth = Math.max(1, pA.w * 0.02);
-          ctx.beginPath();
-          for (i = -1; i <= 1; i += 2) {
-            ctx.moveTo(pA.x + pA.w * (i / 1.5), pA.y); ctx.lineTo(pB.x + pB.w * (i / 1.5), pB.y);
-          }
-          ctx.stroke();
-        }
+        bands++;
+        edgeH = laneH;                                    // the old edge stroke used this width
         drawnY = pA.y; bottomY = pB.y;
       }
+      /* Paint order matters and is the original one: tarmac, then the glowing edges, then
+         the rumble strips (which cover the inner half of an edge), then the lane dividers.
+         Two shades of tarmac and two rumble colours, one batched path each: pass 0/1 walk
+         the odd/even tarmac bands, pass 2/3 the odd/even rumble ones. */
+      for (var pass = 0; pass < 4; pass += 2) {
+        var altOn = (pass & 1) === 0;
+        ctx.fillStyle = altOn ? gradTarmacA : gradTarmacB;
+        ctx.beginPath();
+        for (i = 0; i < bands; i++) {
+          var b = i * 16;
+          if (altOn ? !(band[b + 7] & 1) : (band[b + 7] & 1)) continue;
+          var ax = band[b], ay = band[b + 1], aw = band[b + 2];
+          var bxx = band[b + 3], byy = band[b + 4], bw = band[b + 5];
+          ctx.moveTo(ax - aw, ay); ctx.lineTo(ax + aw, ay);
+          ctx.lineTo(bxx + bw, byy); ctx.lineTo(bxx - bw, byy);
+        }
+        ctx.fill();
+      }
+      if (!reduced) {                                     // glowing road edges, one shadow pass
+        ctx.fillStyle = gradEdge;
+        ctx.shadowColor = C.cyan; ctx.shadowBlur = 10;
+        ctx.beginPath();
+        for (i = 0; i < bands; i++) {
+          var eb = i * 16;
+          var fx = band[eb], fy = band[eb + 1], fw = band[eb + 2];
+          var gx = band[eb + 3], gy = band[eb + 4], gw = band[eb + 5];
+          var ex = band[eb + 12], ey = band[eb + 13];
+          ctx.moveTo(fx - fw + ex, fy + ey); ctx.lineTo(gx - gw + ex, gy + ey);
+          ctx.lineTo(gx - gw - ex, gy - ey); ctx.lineTo(fx - fw - ex, fy - ey);
+          ex = band[eb + 14]; ey = band[eb + 15];
+          ctx.moveTo(fx + fw + ex, fy + ey); ctx.lineTo(gx + gw + ex, gy + ey);
+          ctx.lineTo(gx + gw - ex, gy - ey); ctx.lineTo(fx + fw - ex, fy - ey);
+        }
+        ctx.fill(); ctx.shadowBlur = 0;
+      }
+      for (var rpass = 2; rpass < 4; rpass++) {            // rumble strips, 13% proud of the edge
+        var rAlt = (rpass & 1) === 0;
+        ctx.fillStyle = rAlt ? gradRumbleA : gradRumbleB;
+        ctx.beginPath();
+        for (i = 0; i < bands; i++) {
+          var rb = i * 16;
+          if (rAlt ? !(band[rb + 7] & 1) : (band[rb + 7] & 1)) continue;
+          var rx = band[rb], ry = band[rb + 1], rw = band[rb + 2];
+          var sx = band[rb + 3], sy = band[rb + 4], sw = band[rb + 5];
+          ctx.moveTo(rx - rw * 1.13, ry); ctx.lineTo(rx - rw, ry);
+          ctx.lineTo(sx - sw, sy); ctx.lineTo(sx - sw * 1.13, sy);
+          ctx.moveTo(rx + rw * 1.13, ry); ctx.lineTo(rx + rw, ry);
+          ctx.lineTo(sx + sw, sy); ctx.lineTo(sx + sw * 1.13, sy);
+        }
+        ctx.fill();
+      }
+      ctx.fillStyle = gradLane; ctx.beginPath();          // lane dividers
+      for (i = 0; i < bands; i++) {
+        var lb = i * 16;
+        if (!(band[lb + 7] & 2)) continue;
+        var lh = band[lb + 6], q;
+        for (q = -1; q <= 1; q += 2) {
+          var jx = band[lb + 8 + (q < 0 ? 0 : 2)] * lh, jy = band[lb + 9 + (q < 0 ? 0 : 2)] * lh;
+          var lx = band[lb] + band[lb + 2] * (q / 1.5), ly = band[lb + 1];
+          var mx = band[lb + 3] + band[lb + 5] * (q / 1.5), my = band[lb + 4];
+          ctx.moveTo(lx + jx, ly + jy); ctx.lineTo(mx + jx, my + jy);
+          ctx.lineTo(mx - jx, my - jy); ctx.lineTo(lx - jx, ly - jy);
+        }
+      }
+      ctx.fill();
       ctx.fillStyle = '#0c0e1e'; ctx.fillRect(-20, bottomY, w + 40, h - bottomY + 20);
       /* traffic, far to near */
       for (i = cars.length - 1; i >= 0; i--) {
@@ -330,12 +550,16 @@
         ctx.fillStyle = 'rgba(4,4,12,.72)';               // windscreen
         rr(pC.x - cw * 0.34, pC.y - ch * 0.82, cw * 0.68, ch * 0.34, cw * 0.1); ctx.fill();
         ctx.fillStyle = car.hit ? hexA(C.dim, 0.4) : hexA(C.bg, 0.9);  // wheels
-        ctx.fillRect(pC.x - cw * 0.6, pC.y - ch * 0.34, cw * 0.14, ch * 0.34);
-        ctx.fillRect(pC.x + cw * 0.46, pC.y - ch * 0.34, cw * 0.14, ch * 0.34);
+        ctx.beginPath();
+        ctx.rect(pC.x - cw * 0.6, pC.y - ch * 0.34, cw * 0.14, ch * 0.34);
+        ctx.rect(pC.x + cw * 0.46, pC.y - ch * 0.34, cw * 0.14, ch * 0.34);
+        ctx.fill();
         if (!car.hit) {                                   // tail lights
           ctx.fillStyle = '#ff2b4d';
-          ctx.fillRect(pC.x - cw * 0.42, pC.y - ch * 0.2, cw * 0.16, ch * 0.1);
-          ctx.fillRect(pC.x + cw * 0.26, pC.y - ch * 0.2, cw * 0.16, ch * 0.1);
+          ctx.beginPath();
+          ctx.rect(pC.x - cw * 0.42, pC.y - ch * 0.2, cw * 0.16, ch * 0.1);
+          ctx.rect(pC.x + cw * 0.26, pC.y - ch * 0.2, cw * 0.16, ch * 0.1);
+          ctx.fill();
         }
         ctx.restore();
       }
@@ -377,11 +601,15 @@
       }
       ctx.globalAlpha = 1; ctx.shadowBlur = 0;
       /* CRT polish: scanlines + vignette — applied to the WORLD only, before the HUD,
-         so the on-canvas readouts and touch pads stay bright and legible. */
-      if (!reduced) { ctx.fillStyle = 'rgba(0,0,0,.16)'; for (var sy = 0; sy < h; sy += 3) ctx.fillRect(0, sy, w, 1); }
-      var vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.34, w / 2, h / 2, Math.max(w, h) * 0.78);
-      vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.6)');
-      ctx.fillStyle = vig; ctx.fillRect(-20, -20, w + 40, h + 40);
+         so the on-canvas readouts and touch pads stay bright and legible. Pre-composited
+         into one layer; window.PX.reduced drops the scanlines (not the vignette) and
+         rebuilds it. */
+      if (crtReduced !== reduced) buildCrt();
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      if (shx || shy) ctx.translate(shx * dpr, shy * dpr);
+      ctx.drawImage(crt.c, 0, 0);
+      ctx.restore();
       /* HUD: score, best, level, lives, multiplier, speed — drawn ABOVE the CRT overlay */
       var fs = Math.round(clamp(Math.min(h * 0.05, w * 0.055), 11, 20));
       ctx.fillStyle = 'rgba(5,6,15,.55)';                     // backing plate keeps text off the bright sky
@@ -390,14 +618,14 @@
       var kmTxt = Math.round(speed * 0.06) + ' KM/H';
       ctx.font = '800 ' + fs + 'px Rajdhani, system-ui, sans-serif'; ctx.textAlign = 'left';
       ctx.shadowColor = 'rgba(0,0,0,.9)'; ctx.shadowBlur = 4;  // text shadow for extra separation
-      ctx.font = '800 ' + fit(fs, scTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
+      ctx.font = '800 ' + fitAt(0, fs, scTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
       ctx.fillStyle = C.ink; ctx.fillText(scTxt, 12, fs * 1.1);
       ctx.textAlign = 'right'; ctx.fillStyle = C.dim;
-      ctx.font = '800 ' + fit(fs, beTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
+      ctx.font = '800 ' + fitAt(1, fs, beTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
       ctx.fillText(beTxt, w - 12, fs * 1.1);
       ctx.textAlign = 'center'; ctx.fillStyle = Math.abs(curveNow) > 0.8 ? C.acid : C.ink;
       var lvTxt = 'LV ' + level;
-      ctx.font = '800 ' + fit(fs, lvTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
+      ctx.font = '800 ' + fitAt(2, fs, lvTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
       ctx.fillText(lvTxt, w / 2, fs * 1.1);
       for (i = 0; i < 3; i++) {                            // lives as pips
         ctx.fillStyle = i < lives ? C.magenta : hexA(C.dim, 0.25);
@@ -411,24 +639,23 @@
       ctx.fillStyle = mult > 1.05 ? C.acid : C.ink;
       ctx.fillText('x' + mult.toFixed(1), w / 2, my + fs * 1.05);
       ctx.textAlign = 'right'; ctx.fillStyle = C.ink;
-      ctx.font = '800 ' + fit(fs * 0.85, kmTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
+      ctx.font = '800 ' + fitAt(3, fs * 0.85, kmTxt, w * 0.3) + 'px Rajdhani, system-ui, sans-serif';
       ctx.fillText(kmTxt, w - 12, fs * 2.35);
       ctx.shadowBlur = 0;
-      /* touch pads, bottom thumb zone */
+      /* Touch pads, bottom thumb zone. The pads never move and their idle look never
+         changes, so it is baked into a layer on resize and blitted. Note the old test
+         `(i === 0 ? padDir : -padDir) !== 0` is true for *both* pads whenever either one is
+         held — pressing one lights the pair — and that is kept. */
       var pr = Math.min(w, h) * PAD_R, pcy = h - pr * 1.15;
-      for (i = 0; i < 2; i++) {
-        var pxx = i === 0 ? pr * 1.15 : w - pr * 1.15, dirn = i === 0 ? -1 : 1, on = (i === 0 ? padDir : -padDir) !== 0;
-        // The car can steer right under a pad, so the pad gets an opaque backing disc: the
-        // control has to stay readable even with a 200 px wide sprite underneath it.
-        ctx.globalAlpha = 0.72; ctx.fillStyle = C.bg;
-        ctx.beginPath(); ctx.arc(pxx, pcy, pr, 0, Math.PI * 2); ctx.fill();
-        ctx.globalAlpha = on ? 0.55 : 0.22; ctx.fillStyle = C.cyan;
-        ctx.shadowColor = C.cyan; ctx.shadowBlur = on ? 18 : 0;
-        ctx.beginPath(); ctx.arc(pxx, pcy, pr, 0, Math.PI * 2); ctx.fill();
-        ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.fillStyle = C.ink;
-        ctx.beginPath();
-        ctx.moveTo(pxx + dirn * pr * 0.34, pcy); ctx.lineTo(pxx - dirn * pr * 0.16, pcy - pr * 0.36);
-        ctx.lineTo(pxx - dirn * pr * 0.16, pcy + pr * 0.36); ctx.closePath(); ctx.fill();
+      if (!padDir) {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        if (shx || shy) ctx.translate(shx * dpr, shy * dpr);
+        ctx.drawImage(pads.c, pads.at[0], pads.at[1]);   // 1:1, layer is already device-sized
+        ctx.restore();
+      } else {
+        paintPad(pr * 1.15, -1, pr, pcy, true);
+        paintPad(w - pr * 1.15, 1, pr, pcy, true);
       }
       ctx.globalAlpha = 1;
       ctx.restore();

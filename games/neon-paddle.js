@@ -60,7 +60,12 @@
     var bx = 0.5, by = 0.5, vx = 0, vy = 0, speed = 0, px = 0.5, aim = 0.5, keyL = false, keyR = false;
     function on(t, type, fn) { t.addEventListener(type, fn); listeners.push([t, type, fn]); }
     /* ---- Sizing: crisp devicePixelRatio, capped at 3 for 3x phones ---- */
-    var dpr = 1, cssW = 1, cssH = 1;
+    // `sizeGen` stamps the offscreen layers; a resize invalidates every one of them.
+    var dpr = 1, cssW = 1, cssH = 1, sizeGen = 0;
+    var L = { field: null, fldY: 0, fldDirty: true, fldGen: -1, layers: null,       // baked brick wall
+      ball: null, ballM: 0, disc: null, discR: 0, actGen: -1,                      // ball + trail dot
+      paddle: null, paddleM: 0, plate: null, pips: null, pipX: 0, pipY: 0,
+      hudGen: -1, hudLives: -1, vig: null, vigGen: -1 };
     function resize() {
       var r = wrap.getBoundingClientRect();
       cssW = Math.max(1, Math.round(r.width)); cssH = Math.max(1, Math.round(r.height));
@@ -68,6 +73,7 @@
       canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
       canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sizeGen++;
     }
     resize();
     var C = {};                                               // site tokens, with fallbacks
@@ -91,6 +97,7 @@
         b.x = pad + (i % COLS) * cell; b.y = top + Math.floor(i / COLS) * (bh + gap);
         b.w = cell - Math.max(3, cell * 0.09); b.h = bh;
       }
+      L.fldDirty = true;                                       // the wall moved: rebake it
     }
     function buildWave() {
       var r, c, idx, t;
@@ -149,6 +156,7 @@
       if (sp > 0) { vx = vx / sp * speed; vy = vy / sp * speed; }
     }
     function hitBrick(b) {
+      L.fldDirty = true;                                       // damaged or gone: rebake the wall
       if (--b.hp > 0) { flash('ARMORED', C.violet, 300); shake(3, 140); return; }
       score += b.t.pts * (1 + Math.floor(wave / 3));  // deeper waves pay more
       setScore(score); bricksLeft--; shake(4, 160);
@@ -171,18 +179,93 @@
       live.textContent = 'Game over. Final score ' + score + '.'; overCb(score);
     }
 
-    /* ---- Drawing ---- */
-    function roundRect(x, y, w, h, r) {
-      ctx.beginPath();
-      if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); return; }
-      ctx.moveTo(x + r, y);
-      ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-      ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+    /* ---- Drawing ----
+       The wall, the paddle, the ball and the HUD plate+pips never change shape
+       between events, so each is drawn once into its own canvas and blitted after
+       that. Per frame the only path left is the drifting grid; everything else
+       is a textured blit. Layers are sized in CSS px and carry the dpr scale, so
+       `blit` lands them 1:1 on the device grid — pixel-identical to drawing
+       straight onto `ctx`, glow included. */
+    function layer(w, h) {                                     // offscreen canvas, device-scaled
+      var c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(w * dpr)); c.height = Math.max(1, Math.round(h * dpr));
+      var g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      c.__g = g; c.__w = c.width / dpr; c.__h = c.height / dpr; return c;
     }
-    function neon(x, y, w, h, r, color, fillA, blur) {        // filled + glowing rounded rect
-      ctx.save(); ctx.shadowColor = hexA(color, 0.95); ctx.shadowBlur = blur;
-      roundRect(x, y, w, h, r); ctx.fillStyle = hexA(color, fillA); ctx.fill();
-      ctx.lineWidth = Math.max(1.5, h * 0.1); ctx.strokeStyle = color; ctx.stroke(); ctx.restore();
+    function blit(c, x, y) { ctx.drawImage(c, x, y, c.__w, c.__h); }
+    function roundRect(g, x, y, w, h, r) {
+      g.beginPath();
+      if (g.roundRect) { g.roundRect(x, y, w, h, r); return; }
+      g.moveTo(x + r, y);
+      g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+      g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+    }
+    function neon(g, x, y, w, h, r, color, fillA, blur) {     // filled + glowing rounded rect
+      g.save(); g.shadowColor = hexA(color, 0.95); g.shadowBlur = blur;
+      roundRect(g, x, y, w, h, r); g.fillStyle = hexA(color, fillA); g.fill();
+      g.lineWidth = Math.max(1.5, h * 0.1); g.strokeStyle = color; g.stroke(); g.restore();
+    }
+    var BM = 18;                                               // brick glow margin: blur 30 reaches ~15px
+    // Bricks only ever change on a hit, so the whole wall is one cached bitmap.
+    // It is rebuilt from per-(type,hp) brick sprites, which is what keeps a hit
+    // cheap: a damaged brick re-renders one small sprite, not all 45 glows.
+    function brickLayer(t, hp, max) {
+      var w = bricks[0].w, h = bricks[0].h, frac = hp / max, col = C[t.color], p;
+      var c = layer(w + BM * 2, h + BM * 2), g = c.__g;
+      neon(g, BM, BM, w, h, Math.min(6, h * 0.25), col, 0.16 + (1 - frac) * 0.1, reduced ? 8 : 16 + (1 - frac) * 14);
+      g.fillStyle = hexA(col, 0.9);                            // damage notches = hits taken
+      for (p = 0; p < max - hp; p++) g.fillRect(BM + w * (0.2 + p * 0.3), BM + h * 0.38, Math.max(2, w * 0.12), h * 0.24);
+      return c;
+    }
+    function buildField() {
+      if (L.fldGen !== sizeGen) { L.fldGen = sizeGen; L.layers = {}; }
+      var i, b, top = 1e9, bot = -1e9, c, g, m, key;
+      for (i = 0; i < bricks.length; i++) { top = Math.min(top, bricks[i].y - BM); bot = Math.max(bot, bricks[i].y + bricks[i].h + BM); }
+      c = layer(cssW, Math.max(1, Math.min(cssH, bot) - Math.max(0, top)));   // clipped to the canvas, as drawn
+      g = c.__g; L.fldY = Math.max(0, top);
+      for (i = 0; i < bricks.length; i++) {
+        b = bricks[i]; if (b.hp <= 0) continue;
+        key = b.t.color + b.hp + '_' + b.max;
+        m = L.layers[key] || (L.layers[key] = brickLayer(b.t, b.hp, b.max));
+        g.drawImage(m, b.x, b.y - L.fldY, m.__w, m.__h);
+      }
+      L.field = c;
+    }
+    function buildActors() {                                   // ball, trail dot and paddle
+      var r = cssH * BALL_R, m = 17, c, g;
+      c = layer(r * 2 + m * 2, r * 2 + m * 2); g = c.__g;
+      g.shadowColor = hexA(C.magenta, 0.95); g.shadowBlur = reduced ? 12 : 30; g.fillStyle = C.magenta;
+      g.beginPath(); g.arc(r + m, r + m, r, 0, 6.2832); g.fill();
+      L.ball = c; L.ballM = m; L.discR = r;
+      c = layer(r * 2, r * 2); g = c.__g;                      // trail dot; each is tinted by globalAlpha
+      g.fillStyle = hexA(C.cyan, 1);
+      g.beginPath(); g.arc(r, r, r, 0, 6.2832); g.fill();
+      L.disc = c;
+      m = 16;
+      c = layer(cssW * PAD_W + m * 2, cssH * PAD_H + m * 2); g = c.__g;
+      neon(g, m, m, cssW * PAD_W, cssH * PAD_H, cssH * PAD_H / 2, C.cyan, 0.3, reduced ? 12 : 26);
+      L.paddle = c; L.paddleM = m; L.actGen = sizeGen;
+    }
+    // Lives are pips on a plate; both move only when a life is spent, so they bake together.
+    function buildHud(lives) {
+      var pipH = clamp(cssH * 0.02, 5, 22), pipW = pipH * 1.6, pipGap = pipW * 0.8, PM = 8, c, g, i, capW;
+      var plateW = 0, plateH = cssH * 0.15, pipX = 0, pipY = cssH * 0.145 - pipH / 2;
+      ctx.save();                                               // measure on a scratch font, keep ctx's alone
+      ctx.font = '600 ' + Math.round(cssH * 0.035) + 'px Rajdhani, system-ui, sans-serif';
+      capW = ctx.measureText('SCORE').width; ctx.restore();
+      pipX = cssW * 0.05 + capW + pipGap;
+      var pipRight = pipX + lives * pipW + (lives - 1) * pipGap;
+      plateW = Math.max(cssW * 0.1, pipRight - cssW * 0.015);
+      c = layer(plateW, plateH); g = c.__g;
+      g.fillStyle = 'rgba(5,6,15,.55)';
+      roundRect(g, 0, 0, plateW, plateH, 6); g.fill();
+      L.plate = c;
+      c = layer(Math.max(1, pipRight - pipX + PM * 2), pipH + PM * 2); g = c.__g;
+      g.fillStyle = g.shadowColor = lives <= 1 ? C.orange : C.magenta;   // last life burns orange
+      g.shadowBlur = reduced ? 0 : 12;
+      for (i = 0; i < lives; i++) g.fillRect(PM + i * (pipW + pipGap), PM, pipW, pipH);
+      L.pips = c; L.pipX = pipX - PM; L.pipY = pipY - PM;
+      L.hudGen = sizeGen; L.hudLives = lives;
     }
     function label(text, x, y, size, weight, color, align) {
       ctx.textAlign = align;
@@ -249,7 +332,10 @@
     function crt() {                                          // scanlines + vignette: static and cheap
       var i, v = ctx.createRadialGradient(cssW / 2, cssH / 2, Math.min(cssW, cssH) * 0.25, cssW / 2, cssH / 2, Math.max(cssW, cssH) * 0.75);
       ctx.save(); ctx.fillStyle = 'rgba(0,0,0,.16)';
-      for (i = 0; i < cssH; i += 3) ctx.fillRect(0, i, cssW, 1);
+      if (ctx.__pxH !== cssH) { var __px = document.createElement('canvas'); __px.width = 1; __px.height = 3;
+          var __pxg = __px.getContext('2d'); __pxg.fillStyle = 'rgba(0,0,0,.16)'; __pxg.fillRect(0, 0, 1, 1);
+          ctx.__pxP = ctx.createPattern(__px, 'repeat'); ctx.__pxH = cssH; }
+        ctx.fillStyle = ctx.__pxP; ctx.fillRect(0, 0, cssW, cssH);
       v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.55)');
       ctx.fillStyle = v; ctx.fillRect(0, 0, cssW, cssH); ctx.restore();
     }

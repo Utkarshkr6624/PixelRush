@@ -338,7 +338,10 @@
       }
       // CRT polish: scanlines + vignette over the world only — the HUD is drawn after it.
       if (!reduced) { ctx.fillStyle = 'rgba(0,0,0,.15)';
-        for (var sy = 0; sy < h; sy += 3) ctx.fillRect(0, sy, w, 1); }
+        if (ctx.__pxH !== h) { var __px = document.createElement('canvas'); __px.width = 1; __px.height = 3;
+          var __pxg = __px.getContext('2d'); __pxg.fillStyle = 'rgba(0,0,0,.15)'; __pxg.fillRect(0, 0, 1, 1);
+          ctx.__pxP = ctx.createPattern(__px, 'repeat'); ctx.__pxH = h; }
+        ctx.fillStyle = ctx.__pxP; ctx.fillRect(0, 0, w, h); }
       var vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75);
       vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.55)');
       ctx.fillStyle = vig; ctx.fillRect(0, 0, w, h);

@@ -59,7 +59,7 @@
     var reduced = !!(window.PX && window.PX.reduced) ||
       !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     /* ------------------------------ State ------------------------------ */
-    var map = new Uint8Array(COLS * ROWS), rooms = [];
+    var map = new Uint8Array(COLS * ROWS), rooms = [], mapVer = 0;
     var px = 0, py = 0, pHp = START_HP, pMaxHp = START_HP, pAtk = START_ATK, pDef = 0, pShifts = START_SHIFTS;
     var fx = 0, fy = 1;                 // facing — decides what SPACE strikes
     var enemies = [], items = [], stairs = { x: 0, y: 0 }, depth = 0;
@@ -171,6 +171,44 @@
       ctx.beginPath();
       if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h);
     }
+    /* ------------------- Baked static floor/wall layer -------------------
+       The rock, the floor specks and the plate under them only change when the
+       layout is rerolled, so they are drawn once per floor into an offscreen
+       canvas and blitted each frame. Only what actually moves — glyphs, HP
+       pips, HUD, controls — costs a path per frame after that. The bake is
+       keyed on the geometry plus a layout counter, so a resize, a new floor or
+       a SHIFT all invalidate it; the key is cheap, so this is checked every
+       frame and never needs a manual call from the game logic. */
+    var bake = document.createElement('canvas'), bctx = bake.getContext('2d');
+    var bakeKey = '', bakeW = 0, bakeH = 0;
+    function bakeMap() {
+      var key = cell + '|' + mx + '|' + my + '|' + dpr + '|' + mapVer;
+      if (key === bakeKey) return;
+      bakeKey = key;
+      var w = cell * COLS + 6, h = cell * ROWS + 6;
+      bake.width = Math.max(1, Math.round(w * dpr));   // assigning width also clears it
+      bake.height = Math.max(1, Math.round(h * dpr));
+      bakeW = bake.width / dpr; bakeH = bake.height / dpr;
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bctx.fillStyle = 'rgba(255,255,255,.03)';
+      bctx.beginPath();
+      if (bctx.roundRect) bctx.roundRect(3, 3, cell * COLS, cell * ROWS, 8); else bctx.rect(3, 3, cell * COLS, cell * ROWS);
+      bctx.fill();
+      var sp = Math.max(1, cell * 0.12), rad = Math.max(1, cell * 0.22);
+      for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) {
+        var sx = x * cell + 3, sy = y * cell + 3;
+        if (map[y * COLS + x]) {
+          bctx.beginPath();
+          if (bctx.roundRect) bctx.roundRect(sx + 1, sy + 1, cell - 2, cell - 2, rad);
+          else bctx.rect(sx + 1, sy + 1, cell - 2, cell - 2);
+          bctx.fillStyle = hexA(C.violet, 0.16); bctx.fill();
+          bctx.strokeStyle = hexA(C.violet, 0.3); bctx.lineWidth = 1; bctx.stroke();
+        } else if ((x + y) % 2 === 0) {
+          bctx.fillStyle = hexA(C.cyan, 0.05);
+          bctx.fillRect(sx + cell * 0.44, sy + cell * 0.44, sp, sp);
+        }
+      }
+    }
     function say(t) {
       log.push(t);
       if (log.length > 3) log.shift();
@@ -224,6 +262,7 @@
         var a = pick(rooms), b = pick(rooms);
         if (a !== b) { carve(a.cx, a.cy, b.cx, a.cy); carve(b.cx, a.cy, b.cx, b.cy); }
       }
+      mapVer++;                                            // the baked wall layer is stale
     }
     function walkable(x, y) { return inBounds(x, y) && map[y * COLS + x] === 0; }
     function nearestOpen(x, y) {  // expanding ring search: used when SHIFT re-rolls the walls
@@ -444,36 +483,47 @@
     }
     function drawPad(on) {
       var keys = [['↑', pad.up], ['↓', pad.down], ['←', pad.left], ['→', pad.right]];
+      // The four keys never touch, and every unlit key shares one fill, one
+      // stroke and one shadow — so they go into a single path and cost one
+      // beginPath instead of four. Only the held key needs its own pass.
+      ctx.save();
+      ctx.beginPath();
+      var lit = -1;
       for (var i = 0; i < 4; i++) {
-        var r = keys[i][1], lit = on === keys[i][0], col = lit ? C.acid : C.cyan;
-        rr(r.x, r.y, r.w, r.h, r.w * 0.28);
-        ctx.fillStyle = hexA(col, lit ? 0.3 : 0.1); ctx.fill();
-        ctx.strokeStyle = hexA(col, lit ? 1 : 0.55); ctx.lineWidth = 2;
-        ctx.shadowColor = col; ctx.shadowBlur = lit ? 18 : 6; ctx.stroke(); ctx.shadowBlur = 0;
-        ctx.fillStyle = lit ? C.acid : hexA(C.cyan, 0.85);
-        ctx.font = '800 ' + Math.round(r.w * 0.5) + 'px Rajdhani, system-ui, sans-serif';
+        var r = keys[i][1];
+        if (on === keys[i][0]) { lit = i; continue; }
+        if (ctx.roundRect) ctx.roundRect(r.x, r.y, r.w, r.h, r.w * 0.28); else ctx.rect(r.x, r.y, r.w, r.h);
+      }
+      ctx.fillStyle = hexA(C.cyan, 0.1); ctx.fill();
+      ctx.strokeStyle = hexA(C.cyan, 0.55); ctx.lineWidth = 2;
+      ctx.shadowColor = C.cyan; ctx.shadowBlur = 6; ctx.stroke(); ctx.shadowBlur = 0;
+      if (lit >= 0) {
+        var lr = keys[lit][1];
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(lr.x, lr.y, lr.w, lr.h, lr.w * 0.28); else ctx.rect(lr.x, lr.y, lr.w, lr.h);
+        ctx.fillStyle = hexA(C.acid, 0.3); ctx.fill();
+        ctx.strokeStyle = C.acid; ctx.shadowColor = C.acid; ctx.shadowBlur = 18;
+        ctx.stroke(); ctx.shadowBlur = 0;
+      }
+      ctx.restore();
+      for (i = 0; i < 4; i++) {
+        var r2 = keys[i][1];
+        ctx.fillStyle = on === keys[i][0] ? C.acid : hexA(C.cyan, 0.85);
+        ctx.font = '800 ' + Math.round(r2.w * 0.5) + 'px Rajdhani, system-ui, sans-serif';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(keys[i][0], r.x + r.w / 2, r.y + r.h / 2 + 1);
+        ctx.fillText(keys[i][0], r2.x + r2.w / 2, r2.y + r2.h / 2 + 1);
       }
     }
     function draw(now) {
-      var w = cssW, h = cssH, bw = cell * COLS, bh = cell * ROWS;
+      var w = cssW, h = cssH;
       ctx.fillStyle = C.bg; ctx.fillRect(0, 0, w, h);
       var sh = !reduced && now < shakeUntil ? (shakeUntil - now) / 300 * cell * 0.18 : 0;
       ctx.save();
       if (sh) ctx.translate(Math.sin(now / 22) * sh, Math.cos(now / 17) * sh);
-      /* ---- map plate: rock blocks, floor specks, then every glyph on top ---- */
-      rr(mx - 3, my - 3, bw + 6, bh + 6, 8); ctx.fillStyle = 'rgba(255,255,255,.03)'; ctx.fill();
-      for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) {
-        var sx = mx + x * cell, sy = my + y * cell, sp = Math.max(1, cell * 0.12);
-        if (map[y * COLS + x]) {
-          rr(sx + 1, sy + 1, cell - 2, cell - 2, Math.max(1, cell * 0.22));
-          ctx.fillStyle = hexA(C.violet, 0.16); ctx.fill();
-          ctx.strokeStyle = hexA(C.violet, 0.3); ctx.lineWidth = 1; ctx.stroke();
-        } else if ((x + y) % 2 === 0) {
-          ctx.fillStyle = hexA(C.cyan, 0.05); ctx.fillRect(sx + cell * 0.44, sy + cell * 0.44, sp, sp);
-        }
-      }
+      /* ---- map plate: one blit of the baked rock/floor layer, then every
+             glyph on top of it. Nothing here is a path any more. ---- */
+      bakeMap();
+      ctx.drawImage(bake, mx - 3, my - 3, bakeW, bakeH);
       var i2, e, it, beat = reduced ? 1 : 0.85 + 0.15 * Math.sin(now / 260);
       glyph('▼', mx + (stairs.x + 0.5) * cell, my + (stairs.y + 0.5) * cell, C.acid, cell * 0.8 * beat, 20);
       for (i2 = 0; i2 < items.length; i2++) {
@@ -500,9 +550,16 @@
       /* ---- CRT polish: scanlines + vignette, applied to the WORLD only ----
          Drawn before the HUD so the readouts and touch controls stay bright. */
       if (!reduced) { ctx.fillStyle = 'rgba(0,0,0,.16)';
-        for (var sl = 0; sl < h; sl += 3) ctx.fillRect(0, sl, w, 1); }
-      var vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75);
-      vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.55)');
+        if (ctx.__pxH !== h) { var __px = document.createElement('canvas'); __px.width = 1; __px.height = 3;
+          var __pxg = __px.getContext('2d'); __pxg.fillStyle = 'rgba(0,0,0,.16)'; __pxg.fillRect(0, 0, 1, 1);
+          ctx.__pxP = ctx.createPattern(__px, 'repeat'); ctx.__pxH = h; }
+        ctx.fillStyle = ctx.__pxP; ctx.fillRect(0, 0, w, h); }
+      var vigKey = '', vig = null;                 // the vignette is a pure function of the box
+      if (vigKey !== w + '|' + h) {
+        vigKey = w + '|' + h;
+        vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75);
+        vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,.55)');
+      }
       ctx.fillStyle = vig; ctx.fillRect(0, 0, w, h);
       /* ---- HUD: score / depth / hp / stats / log ---- */
       var fs = Math.round(clamp(h * 0.042, 11, 18)), lh = fs + 4, pad2 = Math.max(8, w * 0.03), top = fs + 2;
@@ -653,6 +710,7 @@
         if (destroyed) return;
         destroyed = true; cancelAnimationFrame(rafId);
         BIND.forEach(function (b) { b[0].removeEventListener(b[1], b[2], b[3]); });
+        bake.width = bake.height = 0; bakeKey = '';   // drop the baked layer's backing store
         var parent = wrap.parentNode;
         // Removing the wrapper drops the canvas, the live region and the <style> together.
         if (parent && typeof parent.removeChild === 'function') parent.removeChild(wrap);
