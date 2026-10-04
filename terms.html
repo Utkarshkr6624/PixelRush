@@ -95,7 +95,7 @@
         "isPartOf": { "@id": "https://pixelrush.example/#website" },
         "about": { "@id": "https://pixelrush.example/#organization" },
         "breadcrumb": { "@id": "https://pixelrush.example/terms.html#breadcrumb" },
-        "dateModified": "2026-09-01"
+        "dateModified": "2026-10-04"
       },
       {
         "@type": "BreadcrumbList",
@@ -276,10 +276,10 @@
           <!--
             The "last updated" chip. It is plain text, not a time element, and it is
             the same date the JSON-LD WebPage node reports as dateModified
-            (2026-09-01) in this page's head. Change both together whenever the terms
+            (2026-10-04) in this page's head. Change both together whenever the terms
             are revised.
           -->
-          <span class="chip">Last updated 1 September 2026</span>
+          <span class="chip">Last updated 4 October 2026</span>
         </p>
       </div>
     </div>
@@ -351,7 +351,11 @@
             <a class="chip" href="#advertising">Advertising</a>
             <a class="chip" href="#ip">Intellectual property</a>
             <a class="chip" href="#acceptable-use">Acceptable use</a>
+            <a class="chip" href="#content-rules">Illegal and misleading content</a>
             <a class="chip" href="#liability">Limitation of liability</a>
+            <a class="chip" href="#operator">Who runs PixelRush</a>
+            <a class="chip" href="#grievance">Grievances and complaints</a>
+            <a class="chip" href="#language">Languages</a>
             <a class="chip" href="#contact">Questions</a>
           </nav>
 
@@ -511,6 +515,55 @@
             content down. We would much rather not — the point of a free arcade is that people use it — but we will if
             we have to.</p>
 
+          <!--
+            Added alongside the Indian-law blocks further down. Placement is deliberate:
+            #acceptable-use above is house rules (things that cost us money or make the
+            site worse for everyone), this is the heavier one (things that are simply
+            unlawful), and #liability below stays where it always was. The jump-nav chip
+            for #content-rules sits with the rest of the chips above.
+          -->
+          <h2 id="content-rules" data-animate="fade-up">Illegal, fake and misleading content</h2>
+          <p data-animate="fade-up">The list above is house rules. This list is heavier, and it does not bend. You must not
+            use PixelRush to produce, publish, host, distribute or circulate content that is unlawful in India. No
+            game menu, no &ldquo;but everyone does it&rdquo; and no joke is an exception to that.</p>
+          <ul data-animate="stagger-children">
+            <li><strong>Fake images, video, audio or text.</strong> Do not make, pass on or reshare synthetic,
+              deepfaked or otherwise fabricated images, video, audio or writing that is presented as something real
+              when it is not. That covers putting a real person&rsquo;s face on footage they were never in, inventing
+              words they never said, and staging an event that never happened and calling it real. It covers the
+              cheap version too: a doctored screenshot or a doctored quote with nothing on it saying it was
+              doctored.</li>
+            <li><strong>Impersonation and forgery.</strong> Do not pass yourself off as PixelRush or as its operator,
+              do not collect anyone&rsquo;s details under our name, and do not manufacture documents, seals, signatures
+              or certificates meant to look genuine.</li>
+            <li><strong>Harassment, hate and defamation.</strong> Do not use the site to harass, threaten, stalk or
+              demean anyone, and do not target people for who they are. Defamation counts too. Those offences sit in
+              the <strong>Bharatiya Nyaya Sanhita, 2023</strong>, the criminal code that replaced the Indian Penal Code
+              in July 2024. We name the Act and not the sections, because the point here is the line, not the
+              paperwork.</li>
+            <li><strong>Other people&rsquo;s rights.</strong> Do not infringe anyone&rsquo;s copyright, trade mark,
+              design or privacy rights — including by lifting a face out of a video or a voice out of a recording
+              and putting it somewhere it was never meant to be.</li>
+            <li><strong>Lies about the site itself.</strong> Do not publish fake score screens, fake leaderboards,
+              fake screenshots, or fake partnership, sponsorship, press or endorsement claims that suggest PixelRush is
+              connected to, or approves of, something it is not.</li>
+          </ul>
+          <p data-animate="fade-up">The two main sources for all of that are the <strong>Information Technology Act,
+            2000</strong> and the <strong>Information Technology (Intermediary Guidelines and Digital Media Ethics
+            Code) Rules, 2021</strong>, as amended since. In ordinary words: putting something out on the internet is
+            not a place where the law politely switches off. Where the law requires us to take content down, hand
+            over a record, preserve information or report something to an authority, we will do it — you do not
+            have to argue us into it first.</p>
+          <p data-animate="fade-up">Now the honest part, because it changes what this section is for. PixelRush has no
+            uploads, no comments, no accounts and no server. There is nowhere on this site for you to publish anything
+            at all: not a post, not a profile, not a file, not a comment. Every page ships as a fixed page. So if
+            something unlawful turns up somewhere, it was made and published outside this site, and that is covered by
+            the law, not by these terms. Reading this section still matters — it tells you what happens if you
+            send something like this our way, and what we will not lend a hand to.</p>
+          <p data-animate="fade-up">If you think something published using, or claiming a connection to, PixelRush
+            breaks any of the rules above, use the <a href="#grievance">grievance officer route</a> below. Say what it
+            is and where you saw it, and we will look at it.</p>
+
           <h2 id="liability" data-animate="fade-up">Limitation of liability</h2>
           <p data-animate="fade-up">To the fullest extent the law allows, and to the fullest extent anyone can agree to
             in a document nobody reads: we are not liable for anything that happens to you as a result of using
@@ -525,6 +578,85 @@
             limits your statutory consumer rights. Where the law says something is our fault regardless of what we
             have written, the law wins.</p>
 
+          <!--
+            Indian-law blocks: operator details, grievance officer and translation.
+            They sit between #liability and #contact on purpose — #contact is still the
+            last section of the document, so the closing line still closes it. Every
+            h2 id here has a matching chip in the jump nav above, including
+            #language, which is why the translation block is here rather than left to
+            the contact page alone.
+          -->
+          <h2 id="operator" data-animate="fade-up">Who runs PixelRush, and how to reach them in writing</h2>
+          <p data-animate="fade-up">PixelRush is run by one person, Utkarsh, who owns it. There is no company behind
+            it, no team, and no outsourced support desk you will be quietly handed off to. When this page says
+            &ldquo;we&rdquo;, it means him.</p>
+          <p data-animate="fade-up">Anything that has to exist in writing — a complaint, a legal notice, a translation
+            request, something you would rather not trust to a mail client — should come through one of these
+            three:</p>
+          <ul data-animate="stagger-children">
+            <li><strong>Operator.</strong> Utkarsh, the owner of PixelRush.</li>
+            <li><strong>Email.</strong>
+              <a href="mailto:Utkarsh6624@gmail.com">Utkarsh6624@gmail.com</a></li>
+            <li><strong>Postal address.</strong>
+              <!-- POSTAL-ADDRESS-PLACEHOLDER: replace the bracketed text below with the site's real
+                   postal address before publishing. Indian law requires the operator's address on
+                   the terms/privacy pages, so this must be filled in. -->
+              <span class="mono">[postal address — site owner to complete]</span></li>
+          </ul>
+          <p data-animate="fade-up">Email is the fast route and gets read first. Post is slower and sometimes gets opened
+            by somebody else, so if you are not in a hurry, write the subject on the envelope as well.</p>
+
+          <h2 id="grievance" data-animate="fade-up">Grievance officer, and how to complain</h2>
+          <p data-animate="fade-up">The Information Technology (Intermediary Guidelines and Digital Media Ethics Code)
+            Rules, 2021, as amended, require a named grievance officer for services that reach users in India. On a
+            one-person site the honest answer to &ldquo;who is the grievance officer&rdquo; is: the site operator,
+            Utkarsh. He built the games and he is the person your complaint reaches.</p>
+          <p data-animate="fade-up">Email
+            <a href="mailto:Utkarsh6624@gmail.com?subject=Grievance%3A%20">Utkarsh6624@gmail.com</a> with the subject
+            line starting &ldquo;Grievance:&rdquo;. That is not decoration. A message without it lands in the same
+            inbox as bug reports and gets read as one, which is exactly what you do not want when you are complaining
+            about something. If you would rather not use email, write instead to:</p>
+          <!-- POSTAL-ADDRESS-PLACEHOLDER: replace the bracketed text below with the site's real
+               postal address before publishing. Indian law requires the operator's address on
+               the terms/privacy pages, so this must be filled in. -->
+          <p data-animate="fade-up"><span class="mono">[postal address — site owner to complete]</span></p>
+          <p data-animate="fade-up">What you can expect once it has arrived:</p>
+          <ul data-animate="stagger-children">
+            <li>Every complaint is acknowledged within <strong>seven days</strong> of arriving.</li>
+            <li>Every complaint is answered within <strong>thirty days</strong> of arriving.</li>
+          </ul>
+          <p data-animate="fade-up">Thirty days is the window the Rules set. We are treating it as a commitment, not
+            an aspiration, which is a bigger promise than a one-person site usually volunteers.</p>
+          <p data-animate="fade-up">If the answer does not satisfy you, the complaint comes back to the same person.
+            There is no second internal tier to escalate it to, because there is no second person. That is a real
+            limitation of this site, not a trick, and we would rather say it than let you find out twice.</p>
+          <p data-animate="fade-up">And if you would rather not deal with the operator at all, that is allowed. Those
+            routes exist independently of anything written on this page:</p>
+          <ul data-animate="stagger-children">
+            <li><strong>Cybercrime.</strong> Offences involving computers, online fraud or this site can be reported to
+              your nearest Cyber Crime Cell, or filed online at
+              <a href="https://cybercrime.gov.in/" rel="noopener nofollow">cybercrime.gov.in</a>.</li>
+            <li><strong>Consumer disputes.</strong> If you are a consumer in India, a dispute about the service can be
+              taken to the relevant Consumer Disputes Redressal Commission.</li>
+          </ul>
+          <p data-animate="fade-up">Complaints about content that is unlawful or misleading — including fake images,
+            video or audio made using games from this site — are handled through exactly that route.</p>
+
+          <h2 id="language" data-animate="fade-up">Languages this page is available in</h2>
+          <p data-animate="fade-up">This document is published in English, which will not suit everybody. So: if you
+            browse the site in any of the 22 languages in the Eighth Schedule of the Constitution of India, you can ask
+            for a translation and you will get one. Email
+            <a href="mailto:Utkarsh6624@gmail.com?subject=Translation%20request%3A%20">Utkarsh6624@gmail.com</a> with
+            the subject line &ldquo;Translation request:&rdquo; followed by the language you want. No charge, no form,
+            no ticketing system.</p>
+          <p data-animate="fade-up">All 22, so the promise is concrete: Hindi, Bengali, Marathi, Telugu, Tamil,
+            Gujarati, Kannada, Malayalam, Punjabi, Odia, Assamese, Maithili, Sanskrit, Kashmiri, Konkani, Manipuri,
+            Nepali, Bodo, Dogri, Sindhi, Santali, and Goan Konkani.</p>
+
+          <p class="text-dim" data-animate="fade-up">No account is needed to read, save or print this page. Use your
+            browser&rsquo;s Print command — Ctrl+P on Windows and Linux, Cmd+P on macOS — and choose &ldquo;Save as
+            PDF&rdquo; if you want a copy that works offline. Nothing on this page is behind a wall.</p>
+
           <h2 id="contact" data-animate="fade-up">Questions, and changes to these terms</h2>
           <p data-animate="fade-up">We may revise these terms from time to time. The date at the top of this page is
             the one that counts: if a change is material, we will update that date. Continuing to use the site after a
@@ -537,6 +669,9 @@
             would rather read how the site works before the legal bit, start with <a href="about.html">about Pixel
             PixelRush</a>, the <a href="privacy.html">privacy policy</a>, or the <a href="games.html">full game
             library</a>.</p>
+          <p data-animate="fade-up">Anything that has to be on the record rather than in a bug pile — a formal complaint, a
+            takedown or removal request, a legal notice — goes to the <a href="#grievance">grievance officer</a>
+            instead, using the subject line and the response times set out there.</p>
           <p data-animate="fade-up">Now stop reading the small print and go play something.</p>
 
           <p class="text-mute" data-animate="fade-up">&copy; <span data-year>2026</span> PixelRush. All rights reserved.
