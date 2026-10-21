@@ -3,7 +3,7 @@
 A free browser arcade. Static site — vanilla HTML, CSS and JavaScript. No build step,
 no frameworks, no backend, no external assets beyond two Google Fonts.
 
-**Live base URL:** `https://pixelrush.example/`
+**Live base URL:** `https://pixel-rush-delta.vercel.app/`
 
 ---
 

@@ -18,14 +18,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>PixelRush — Free Browser Arcade Games | Play Instantly, No Download</title>
 <meta name="description" content="PixelRush is a free browser arcade with dozens of instant-play games — arcade, puzzle, racing, strategy and more. 100% free, no signup, no download. Press START and play right now.">
-<link rel="canonical" href="https://pixelrush.example/">
+<link rel="canonical" href="https://pixel-rush-delta.vercel.app/">
 <meta name="theme-color" content="#05060f">
 <meta property="og:type" content="website">
 <meta property="og:title" content="PixelRush — Free Browser Arcade Games">
 <meta property="og:description" content="Free browser arcade. No install. No account. Just press START. Arcade, puzzle, racing and strategy games you play in one tap.">
-<meta property="og:url" content="https://pixelrush.example/">
+<meta property="og:url" content="https://pixel-rush-delta.vercel.app/">
 <meta property="og:site_name" content="PixelRush">
-<meta property="og:image" content="https://pixelrush.example/og.jpg">
+<meta property="og:image" content="https://pixel-rush-delta.vercel.app/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="keywords" content="free online games, browser games, no download games, arcade games, play games online, puzzle games, casual games">
 <meta name="robots" content="index,follow">
@@ -74,26 +74,26 @@
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://pixelrush.example/#website",
-      "url": "https://pixelrush.example/",
+      "@id": "https://pixel-rush-delta.vercel.app/#website",
+      "url": "https://pixel-rush-delta.vercel.app/",
       "name": "PixelRush",
       "description": "PixelRush is a free browser arcade. Twenty-seven instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
       "inLanguage": "en",
-      "publisher": { "@id": "https://pixelrush.example/#organization" },
+      "publisher": { "@id": "https://pixel-rush-delta.vercel.app/#organization" },
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://pixelrush.example/games.html?q={search_term_string}"
+          "urlTemplate": "https://pixel-rush-delta.vercel.app/games.html?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       }
     },
     {
       "@type": "Organization",
-      "@id": "https://pixelrush.example/#organization",
+      "@id": "https://pixel-rush-delta.vercel.app/#organization",
       "name": "PixelRush",
-      "url": "https://pixelrush.example/",
+      "url": "https://pixel-rush-delta.vercel.app/",
       "description": "PixelRush is a free browser arcade. Twenty-seven instant-play canvas games — arcade, puzzle, racing, strategy, casual and sports. No download, no signup, plays in one tap.",
       "email": "mailto:Utkarsh6624@gmail.com",
       "logo": {
@@ -103,13 +103,13 @@
     },
     {
       "@type": "WebPage",
-      "@id": "https://pixelrush.example/#webpage",
-      "url": "https://pixelrush.example/",
+      "@id": "https://pixel-rush-delta.vercel.app/#webpage",
+      "url": "https://pixel-rush-delta.vercel.app/",
       "name": "PixelRush — Free Browser Arcade Games | Play Instantly, No Download",
       "description": "PixelRush is a free browser arcade with dozens of instant-play games — arcade, puzzle, racing, strategy and more. 100% free, no signup, no download. Press START and play right now.",
       "inLanguage": "en",
-      "isPartOf": { "@id": "https://pixelrush.example/#website" },
-      "about": { "@id": "https://pixelrush.example/#organization" }
+      "isPartOf": { "@id": "https://pixel-rush-delta.vercel.app/#website" },
+      "about": { "@id": "https://pixel-rush-delta.vercel.app/#organization" }
     }
   ]
 }
@@ -985,7 +985,7 @@
   }
 
   function propose(g) {
-    var where = 'https://pixelrush.example/play.html?game=' + encodeURIComponent(g.slug);
+    var where = 'https://pixel-rush-delta.vercel.app/play.html?game=' + encodeURIComponent(g.slug);
     return mailto('Suggest a game: ' + g.title, [
       'Hi PixelRush,',
       '',
@@ -997,7 +997,7 @@
       '',
       'More cabinets like this one, please.',
       '',
-      'Sent from pixelrush.example'
+      'Sent from pixel-rush-delta.vercel.app'
     ].join('\n'));
   }
 
@@ -1005,7 +1005,7 @@
     var list = (window.GAMES && typeof window.GAMES.length === 'number') ? window.GAMES.slice() : [];
     if (!list.length) {
       if (status) status.textContent = 'No games in the catalog — opening a blank suggestion.';
-      return mailto('Suggest a game', 'Hi PixelRush,\n\nI would love to see a new PixelRush cabinet.\n\nSent from pixelrush.example');
+      return mailto('Suggest a game', 'Hi PixelRush,\n\nI would love to see a new PixelRush cabinet.\n\nSent from pixel-rush-delta.vercel.app');
     }
     var pool = list.filter(function (g) { return g && g.slug && g.slug !== last; });
     if (!pool.length) pool = list.filter(function (g) { return g && g.title; });

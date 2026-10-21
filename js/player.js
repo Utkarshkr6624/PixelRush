@@ -381,7 +381,7 @@
     }
     var canonical = $('link[rel="canonical"]');
     if (canonical) {
-      canonical.href = 'https://pixelrush.example/play.html' +
+      canonical.href = 'https://pixel-rush-delta.vercel.app/play.html' +
         (meta ? '?game=' + encodeURIComponent(meta.slug) : '');
     }
     /* Open Graph and Twitter have to follow the game too, or every shared link
@@ -394,7 +394,7 @@
       var shareTitle = meta.title + ' — Play Free | PixelRush';
       var shareDesc = 'Play ' + meta.title + ' free in your browser on PixelRush. ' +
         (meta.blurb || 'No download, no signup — press START and play instantly.');
-      var shareUrl = 'https://pixelrush.example/play.html?game=' + encodeURIComponent(meta.slug);
+      var shareUrl = 'https://pixel-rush-delta.vercel.app/play.html?game=' + encodeURIComponent(meta.slug);
       setMeta('meta[property="og:title"]', shareTitle);
       setMeta('meta[property="og:description"]', shareDesc);
       setMeta('meta[property="og:url"]', shareUrl);
@@ -420,8 +420,8 @@
      to a rating value — so aggregateRating is emitted only if an entry ever
      gains a `reviews` number. Never fabricate that count.                  */
   var LD_ID = 'player-game-ldjson';
-  var LD_ORG = 'https://pixelrush.example/#organization';
-  var LD_PLAY = 'https://pixelrush.example/play.html';
+  var LD_ORG = 'https://pixel-rush-delta.vercel.app/#organization';
+  var LD_PLAY = 'https://pixel-rush-delta.vercel.app/play.html';
 
   function gameUrl(slug) {
     return LD_PLAY + '?game=' + encodeURIComponent(slug);

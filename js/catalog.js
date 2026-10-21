@@ -31,7 +31,7 @@
      entities to join up. The base URL is a placeholder the owner replaces. */
 
   var SITE = {
-    base: 'https://pixelrush.example',
+    base: 'https://pixel-rush-delta.vercel.app',
     description: 'PixelRush is a free browser arcade. Twenty-four instant-play ' +
       'canvas games — arcade, puzzle, racing, strategy, casual and sports. ' +
       'No download, no signup, plays in one tap.'

@@ -8,7 +8,8 @@
        node set-domain.cjs arcade.yourdomain.com/arcade     (subpath is fine)
 
    It updates, in place: every *.html page (canonical, og:url, twitter:url and
-   the JSON-LD @id graph), robots.txt, sitemap.xml and manifest.webmanifest.
+   the JSON-LD @id graph), robots.txt, sitemap.xml, manifest.webmanifest,
+   README.md and js/*.js (catalog base and player canonical/share URLs).
    Run it with no argument to see the current value.
    ========================================================================== */
 const fs = require('fs');
@@ -19,7 +20,10 @@ const arg = (process.argv[2] || '').trim().replace(/^https?:\/\//i, '').replace(
 
 const files = [];
 for (const f of fs.readdirSync('.')) {
-  if (/\.(html|xml|txt|webmanifest)$/i.test(f)) files.push(f);
+  if (/\.(html|xml|txt|webmanifest|md)$/i.test(f)) files.push(f);
+}
+for (const f of fs.readdirSync('js')) {
+  if (/\.js$/i.test(f)) files.push(path.join('js', f));
 }
 
 if (!arg) {

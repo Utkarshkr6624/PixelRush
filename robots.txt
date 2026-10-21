@@ -1,4 +1,4 @@
-# PixelRush — https://pixelrush.example/
+# PixelRush — https://pixel-rush-delta.vercel.app/
 # Free browser arcade. Static site, no auth, no gated content.
 
 User-agent: *
@@ -22,4 +22,4 @@ Disallow: /qa/
 
 # No crawl-delay, no rate limiting: the site is all static and cheap to serve.
 
-Sitemap: https://pixelrush.example/sitemap.xml
+Sitemap: https://pixel-rush-delta.vercel.app/sitemap.xml
